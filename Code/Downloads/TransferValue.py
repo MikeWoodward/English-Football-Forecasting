@@ -57,32 +57,22 @@ def get_team_values(season='2023'):
         if not table:
             raise ValueError("Could not find the teams table on the page")
 
-        # Create StringIO object from the HTML content
-        html_io = StringIO(response.text)
-
-        # Read the table with pandas using StringIO
-        dfs = pd.read_html(html_io, extract_links='all')
+        # Extract team names and market values directly from BeautifulSoup
+        teams = []
+        values = []
         
-        # Find the table with team values (usually the first one)
-        df = None
-        for temp_df in dfs:
-            if isinstance(temp_df, pd.DataFrame) and len(temp_df.columns) > 5:
-                df = temp_df
-                break
-        
-        if df is None:
-            raise ValueError("Could not find the correct table in the HTML")
-
-        # Extract team names and market values
-        # The team name is in column 1 (index 1) and market value is in the last column
-        team_col = 1
-        value_col = -1
-
-        # Extract team names from the tuples (text, link)
-        teams = [team[0] for team in df.iloc[:, team_col]]
-        
-        # Extract market values from the last column
-        values = df.iloc[:, value_col].str[0]  # Get the text part of the tuple
+        # Find all team rows
+        for row in table.find_all('tr')[1:]:  # Skip header row
+            team_cell = row.find('td', {'class': 'hauptlink'})
+            value_cell = row.find('td', {'class': 'rechts'})
+            
+            if team_cell and value_cell:
+                team_name = team_cell.text.strip()
+                market_value = value_cell.text.strip()
+                
+                if team_name and market_value:
+                    teams.append(team_name)
+                    values.append(market_value)
         
         # Create a new DataFrame with clean data
         result_df = pd.DataFrame({
