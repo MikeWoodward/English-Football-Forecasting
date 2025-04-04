@@ -7,14 +7,13 @@ The data is saved in a structured format for further analysis.
 """
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup  # Adding back BeautifulSoup for header analysis
 import pandas as pd
 import os
 import time
 import random
 from datetime import datetime
 import numpy as np
-from io import StringIO
 
 def get_headers():
     """
@@ -52,27 +51,34 @@ def get_team_values(season='2023'):
 
         # First use BeautifulSoup to analyze the table structure
         soup = BeautifulSoup(response.text, 'html.parser')
-        table_element = soup.find('table', {'class': 'items'})
+        table = soup.find('table', {'class': 'items'})
         
-        if not table_element:
+        if not table:
             raise ValueError("Could not find the teams table on the page")
 
-        # Extract team names and market values directly
-        teams = []
-        values = []
+        # Read the table with pandas
+        dfs = pd.read_html(response.text, extract_links='all')
         
-        # Find all team rows
-        for row in table_element.find_all('tr')[1:]:  # Skip header row
-            team_cell = row.find('td', {'class': 'hauptlink'})
-            value_cell = row.find('td', {'class': 'rechts'})
-            
-            if team_cell and value_cell:
-                team_name = team_cell.text.strip()
-                market_value = value_cell.text.strip()
-                
-                if team_name and market_value:
-                    teams.append(team_name)
-                    values.append(market_value)
+        # Find the table with team values (usually the first one)
+        df = None
+        for temp_df in dfs:
+            if isinstance(temp_df, pd.DataFrame) and len(temp_df.columns) > 5:
+                df = temp_df
+                break
+        
+        if df is None:
+            raise ValueError("Could not find the correct table in the HTML")
+
+        # Extract team names and market values
+        # The team name is in column 1 (index 1) and market value is in the last column
+        team_col = 1
+        value_col = -1
+
+        # Extract team names from the tuples (text, link)
+        teams = [team[0] for team in df.iloc[:, team_col]]
+        
+        # Extract market values from the last column
+        values = df.iloc[:, value_col].str[0]  # Get the text part of the tuple
         
         # Create a new DataFrame with clean data
         result_df = pd.DataFrame({
