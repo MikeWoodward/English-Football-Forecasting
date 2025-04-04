@@ -7,11 +7,13 @@ The data is saved in a structured format for further analysis.
 """
 
 import requests
+from bs4 import BeautifulSoup  # Adding back BeautifulSoup for header analysis
 import pandas as pd
 import os
 import time
 import random
 from datetime import datetime
+import numpy as np
 
 def get_headers():
     """
@@ -28,6 +30,7 @@ def get_headers():
 def get_team_values(season='2023'):
     """
     Scrapes team market values from Transfermarkt for the specified season using pandas read_html.
+    Handles complex table structure with colspan headers.
     
     Args:
         season (str): The season to get values for (e.g., '2023' for 2023/24)
@@ -44,29 +47,47 @@ def get_team_values(season='2023'):
     
     try:
         response = requests.get(url, headers=get_headers())
-        response.raise_for_status()  # Raise an exception for bad status codes
+        response.raise_for_status()
+
+        # First use BeautifulSoup to analyze the table structure
+        soup = BeautifulSoup(response.text, 'html.parser')
+        table = soup.find('table', {'class': 'items'})
         
-        # Read all tables from the HTML
-        tables = pd.read_html(response.text)
-        
-        # Find the correct table (usually the first one with team values)
-        df = None
-        for table in tables:
-            if 'Club' in table.columns or 'Team' in table.columns:
-                df = table
-                break
-                
-        if df is None:
+        if not table:
             raise ValueError("Could not find the teams table on the page")
-            
-        # Clean and rename columns
-        df = df.iloc[:, [1, -1]]  # Select only team name and market value columns
-        df.columns = ['Team', 'Market_Value']
+
+        # Read the table with pandas
+        dfs = pd.read_html(response.text, extract_links='all')
         
-        # Add season information
-        df['Season'] = f'{season}-{int(season) + 1}'
+        # Find the table with team values (usually the first one)
+        df = None
+        for temp_df in dfs:
+            if isinstance(temp_df, pd.DataFrame) and len(temp_df.columns) > 5:
+                df = temp_df
+                break
         
-        return df
+        if df is None:
+            raise ValueError("Could not find the correct table in the HTML")
+
+        # Extract team names and market values
+        # The team name is in column 1 (index 1) and market value is in the last column
+        team_col = 1
+        value_col = -1
+
+        # Extract team names from the tuples (text, link)
+        teams = [team[0] for team in df.iloc[:, team_col]]
+        
+        # Extract market values from the last column
+        values = df.iloc[:, value_col].str[0]  # Get the text part of the tuple
+        
+        # Create a new DataFrame with clean data
+        result_df = pd.DataFrame({
+            'Team': teams,
+            'Market_Value': values,
+            'Season': f'{season}-{int(season) + 1}'
+        })
+        
+        return result_df
     
     except Exception as e:
         print(f"Error fetching data: {e}")
