@@ -122,8 +122,27 @@ def get_team_values(season='2023'):
             # Get all cells in the row and extract text content
             rows.append([cell.text.strip() for cell in table_row.find_all('td')])
 
-        # Create DataFrame and add season information
+        # Create initial DataFrame with raw data
         df = pd.DataFrame(rows, columns=header)
+        
+        # Clean and transform the DataFrame
+        # --------------------------------
+        # 1. Remove unnecessary columns that don't provide value for analysis
+        df = df.drop(['Club', 'ø market value'], axis=1)
+        
+        # 2. Rename columns to more Python-friendly names and add descriptive labels
+        # - 'name' becomes 'club_name' for clarity
+        # - 'Squad' becomes 'squad_size' to indicate it's a numerical count
+        # - 'Foreigners' becomes 'foreigner_count' for consistency
+        # - 'ø age' becomes 'mean_age' to use standard statistical terminology
+        df = df.rename(columns={
+            'name': 'club_name',
+            'Squad': 'squad_size',
+            'Foreigners': 'foreigner_count',
+            'ø age': 'mean_age'
+        })
+        
+        # 3. Add season identifier in YYYY-YYYY+1 format (e.g., "2023-2024")
         df['Season'] = f'{season}-{int(season) + 1}'
 
         return df
