@@ -11,9 +11,12 @@ It implements ethical web scraping practices including:
 Data Structure:
 - Input: None (uses command line parameters)
 - Output: CSV file with columns:
-    * Team: Name of the Premier League team
-    * Market_Value: Total market value of the team's squad
-    * Season: Season identifier (e.g., "2023-2024")
+    * club_name: Name of the Premier League team
+    * squad_size: Number of players in squad
+    * foreigner_count: Number of non-domestic players
+    * mean_age: Average age of squad
+    * total_market_value: Total squad value in millions
+    * season: Season identifier (e.g., "2023-2024")
 
 Usage:
     python TransferValue.py
@@ -84,9 +87,12 @@ def get_team_values(season='2023'):
     
     Returns:
         pandas.DataFrame: DataFrame containing:
-            - Team: Team names
-            - Market_Value: Team market values
-            - Season: Season identifier (e.g., "2023-2024")
+            - club_name: Team names
+            - squad_size: Number of players in squad
+            - foreigner_count: Number of non-domestic players
+            - mean_age: Average age of squad
+            - total_market_value: Total squad value in millions
+            - season: Season identifier (e.g., "2023-2024")
             
     Raises:
         ValueError: If the teams table cannot be found on the page
@@ -135,15 +141,18 @@ def get_team_values(season='2023'):
         # - 'Squad' becomes 'squad_size' to indicate it's a numerical count
         # - 'Foreigners' becomes 'foreigner_count' for consistency
         # - 'ø age' becomes 'mean_age' to use standard statistical terminology
+        # - 'Total Market Value' becomes 'total_market_value' for consistency
         df = df.rename(columns={
             'name': 'club_name',
             'Squad': 'squad_size',
             'Foreigners': 'foreigner_count',
-            'ø age': 'mean_age'
+            'ø age': 'mean_age',
+            'Total Market Value': 'total_market_value'
         })
         
         # 3. Add season identifier in YYYY-YYYY+1 format (e.g., "2023-2024")
-        df['Season'] = f'{season}-{int(season) + 1}'
+        # Use lowercase for consistency with other column names
+        df['season'] = f'{season}-{int(season) + 1}'
 
         return df
     
@@ -162,9 +171,12 @@ def save_values(df, season):
     
     Args:
         df (pandas.DataFrame): DataFrame containing:
-            - Team: Team names
-            - Market_Value: Team market values
-            - Season: Season identifier
+            - club_name: Team names
+            - squad_size: Number of players in squad
+            - foreigner_count: Number of non-domestic players
+            - mean_age: Average age of squad
+            - total_market_value: Total squad value in millions
+            - season: Season identifier
         season (str): Season identifier used in filename generation.
             If None, uses current date in filename.
     
@@ -205,30 +217,31 @@ def main():
     Main execution function for the transfer value scraping process.
     
     This function:
-    1. Initiates the scraping process for the current season
+    1. Initiates the scraping process for historical Premier League seasons
     2. Handles the results and error cases
     3. Triggers the save process for successful scrapes
     
-    The process follows these steps:
-    1. Print start message
-    2. Get current season's values
-    3. Check if data was retrieved successfully
-    4. Save the data if successful
-    5. Print appropriate status messages
+    Historical Data Collection:
+    - Starts from 1992 (Premier League formation)
+    - Ends at 2023 (current season)
+    - Processes each season sequentially with appropriate delays
     
-    No arguments or return values - this is the script's entry point.
+    Note: Data availability and quality may vary for older seasons.
+    Transfermarkt's historical data might be incomplete or less detailed
+    for seasons before certain dates.
     """
     print("Starting transfer value download...")
     
-    # Get current season's values
-    current_season = 2023
-    df = get_team_values(current_season)
-    
-    if df is not None:
-        print(f"Successfully retrieved {len(df)} team values")
-        save_values(df, current_season)
-    else:
-        print("Failed to retrieve team values")
+    # Iterate through all Premier League seasons
+    # Starting from 1992 (Premier League formation) to 2023 (current)
+    for current_season in range(1992, 2024):
+        df = get_team_values(current_season)
+        
+        if df is not None:
+            print(f"Successfully retrieved {len(df)} team values for season {current_season}-{current_season+1}")
+            save_values(df, current_season)
+        else:
+            print(f"Failed to retrieve team values for season {current_season}-{current_season+1}")
 
 if __name__ == "__main__":
     main() 
