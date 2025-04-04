@@ -9,6 +9,7 @@
 | Comments | A     |
 | GitHub integration  | A    |
 | Error finding | B |
+| Code for downloading scraped data | D |
 
 ## Introduction
 
@@ -43,4 +44,8 @@ Outstanding.
 ## Error finding
 
 In most cases, it did really well, however I found a cases where its error correction made the code much worse. This was processing a complex HTML table. Code generation just couldn't give me a correct answer, and asking the engine (Claude) to correct the error just produced worse code.
+
+## Scraping data
+
+It really can't generate code that works for anything other than a simple scrape. Even asking it to correct its errors doesn't work very well. The general code structure was OK, but a little too restictive and I had to remove some of its generated functions. It's marginal to me whether it's really worth using code generation here.
 
