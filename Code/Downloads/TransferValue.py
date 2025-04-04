@@ -52,17 +52,17 @@ def get_team_values(season='2023'):
 
         # First use BeautifulSoup to analyze the table structure
         soup = BeautifulSoup(response.text, 'html.parser')
-        table = soup.find('table', {'class': 'items'})
+        table_element = soup.find('table', {'class': 'items'})
         
-        if not table:
+        if not table_element:
             raise ValueError("Could not find the teams table on the page")
 
-        # Extract team names and market values directly from BeautifulSoup
+        # Extract team names and market values directly
         teams = []
         values = []
         
         # Find all team rows
-        for row in table.find_all('tr')[1:]:  # Skip header row
+        for row in table_element.find_all('tr')[1:]:  # Skip header row
             team_cell = row.find('td', {'class': 'hauptlink'})
             value_cell = row.find('td', {'class': 'rechts'})
             
