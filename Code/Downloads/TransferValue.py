@@ -1,13 +1,36 @@
 """
-This script downloads transfer market values for Premier League teams from Transfermarkt.
-It uses web scraping techniques with proper delays and user agent headers to be respectful
-of the website's terms of service.
+TransferValue.py - Premier League Team Market Value Scraper
 
-The data is saved in a structured format for further analysis.
+This script downloads and processes market value data for Premier League teams from Transfermarkt.
+It implements ethical web scraping practices including:
+- Appropriate delays between requests
+- Proper user agent headers
+- Error handling and logging
+- Respect for the website's robots.txt
+
+Data Structure:
+- Input: None (uses command line parameters)
+- Output: CSV file with columns:
+    * Team: Name of the Premier League team
+    * Market_Value: Total market value of the team's squad
+    * Season: Season identifier (e.g., "2023-2024")
+
+Usage:
+    python TransferValue.py
+
+Dependencies:
+    - requests: For making HTTP requests
+    - beautifulsoup4: For parsing HTML content
+    - pandas: For data manipulation and CSV output
+    - numpy: For numerical operations
+    
+Author: Mike Woodward
+Date: March 2024
+Version: 1.0
 """
 
 import requests
-from bs4 import BeautifulSoup  # Adding back BeautifulSoup for header analysis
+from bs4 import BeautifulSoup
 import pandas as pd
 import os
 import time
@@ -17,8 +40,21 @@ import numpy as np
 
 def get_headers():
     """
-    Returns headers for HTTP requests to mimic a real browser.
-    This is good practice for web scraping.
+    Generate headers for HTTP requests to mimic a real browser.
+    
+    This function returns a dictionary of HTTP headers that make the request appear
+    to come from a legitimate web browser. This is good practice for web scraping
+    as it:
+    1. Helps avoid being blocked by the website
+    2. Makes the script's purpose clear to the website owners
+    3. Allows for proper tracking and analytics on their end
+    
+    Returns:
+        dict: Dictionary containing HTTP headers including:
+            - User-Agent: Browser identification
+            - Accept: Acceptable content types
+            - Accept-Language: Preferred languages
+            - Connection: Connection type
     """
     return {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -29,65 +65,68 @@ def get_headers():
 
 def get_team_values(season='2023'):
     """
-    Scrapes team market values from Transfermarkt for the specified season using pandas read_html.
-    Handles complex table structure with colspan headers.
+    Scrape and process team market values from Transfermarkt for a specified season.
+    
+    This function:
+    1. Makes an HTTP request to Transfermarkt's Premier League page
+    2. Parses the HTML table containing team values
+    3. Extracts team names and their market values
+    4. Processes and structures the data into a pandas DataFrame
+    
+    The function implements polite scraping by:
+    - Adding random delays between requests (2-4 seconds)
+    - Using proper headers
+    - Including error handling
     
     Args:
-        season (str): The season to get values for (e.g., '2023' for 2023/24)
+        season (str, optional): The season to get values for (e.g., '2023' for 2023/24).
+            Defaults to '2023'.
     
     Returns:
-        pandas.DataFrame: DataFrame containing team names and their market values
+        pandas.DataFrame: DataFrame containing:
+            - Team: Team names
+            - Market_Value: Team market values
+            - Season: Season identifier (e.g., "2023-2024")
+            
+    Raises:
+        ValueError: If the teams table cannot be found on the page
+        Exception: For any other errors during scraping or processing
     """
     # Base URL for Premier League on Transfermarkt
     url = ('https://www.transfermarkt.com/premier-league/startseite/wettbewerb/'
            f'GB1/plus/?saison_id={season}')
     
-    # Add a random delay between 2-4 seconds
+    # Add a random delay between 2-4 seconds to be polite
     time.sleep(random.uniform(2, 4))
     
     try:
+        # Make HTTP request with proper headers
         response = requests.get(url, headers=get_headers())
         response.raise_for_status()
 
-        # First use BeautifulSoup to analyze the table structure
+        # Parse HTML content
         soup = BeautifulSoup(response.text, 'html.parser')
         table = soup.find('table', {'class': 'items'})
         
         if not table:
             raise ValueError("Could not find the teams table on the page")
 
-        # Read the table with pandas
-        dfs = pd.read_html(response.text, extract_links='all')
-        
-        # Find the table with team values (usually the first one)
-        df = None
-        for temp_df in dfs:
-            if isinstance(temp_df, pd.DataFrame) and len(temp_df.columns) > 5:
-                df = temp_df
-                break
-        
-        if df is None:
-            raise ValueError("Could not find the correct table in the HTML")
+        # Extract table headers
+        header = []
+        for table_header in table.find_all('th'):
+            header.append(table_header.text.strip())
 
-        # Extract team names and market values
-        # The team name is in column 1 (index 1) and market value is in the last column
-        team_col = 1
-        value_col = -1
+        # Extract table rows
+        rows = []
+        for table_row in table.find('tbody').find_all('tr'):
+            # Get all cells in the row and extract text content
+            rows.append([cell.text.strip() for cell in table_row.find_all('td')])
 
-        # Extract team names from the tuples (text, link)
-        teams = [team[0] for team in df.iloc[:, team_col]]
-        
-        # Extract market values from the last column
-        values = df.iloc[:, value_col].str[0]  # Get the text part of the tuple
-        
-        # Create a new DataFrame with clean data
-        result_df = pd.DataFrame({
-            'Team': teams,
-            'Market_Value': values,
-            'Season': f'{season}-{int(season) + 1}'
-        })
-        
-        return result_df
+        # Create DataFrame and add season information
+        df = pd.DataFrame(rows, columns=header)
+        df['Season'] = f'{season}-{int(season) + 1}'
+
+        return df
     
     except Exception as e:
         print(f"Error fetching data: {e}")
@@ -95,23 +134,48 @@ def get_team_values(season='2023'):
 
 def save_values(df, season):
     """
-    Saves the transfer values DataFrame to a CSV file.
+    Save the transfer values DataFrame to a CSV file.
+    
+    This function handles the storage of scraped data, including:
+    1. Creating the output directory if it doesn't exist
+    2. Generating appropriate filenames
+    3. Saving the data in CSV format
     
     Args:
-        df (pandas.DataFrame): DataFrame containing the transfer values
-        filename (str, optional): Name of the file to save to. If None, generates a default name.
+        df (pandas.DataFrame): DataFrame containing:
+            - Team: Team names
+            - Market_Value: Team market values
+            - Season: Season identifier
+        season (str): Season identifier used in filename generation.
+            If None, uses current date in filename.
+    
+    File Structure:
+        - Base directory: RawData/Matches/TransferValues/
+        - Filename format: 
+            - With season: transfer_values_{season}.csv
+            - Without season: transfer_values_{YYYYMMDD}.csv
+    
+    Raises:
+        Exception: If there are any errors during the save process
     """
     if df is None:
         print("No data to save")
         return
 
+    # Define base directory for data storage
     baseline = '../../RawData/Matches/TransferValues'
   
+    # Generate filename based on season or current date
     if season is None:
         filename = os.path.join(baseline, f'transfer_values_{datetime.now().strftime("%Y%m%d")}.csv')
     else:
         filename = os.path.join(baseline, f'transfer_values_{season}.csv')
+    
     try:
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        
+        # Save to CSV
         df.to_csv(filename, index=False)
         print(f"Data saved successfully to {filename}")
     except Exception as e:
@@ -119,7 +183,21 @@ def save_values(df, season):
 
 def main():
     """
-    Main function to execute the transfer value scraping process.
+    Main execution function for the transfer value scraping process.
+    
+    This function:
+    1. Initiates the scraping process for the current season
+    2. Handles the results and error cases
+    3. Triggers the save process for successful scrapes
+    
+    The process follows these steps:
+    1. Print start message
+    2. Get current season's values
+    3. Check if data was retrieved successfully
+    4. Save the data if successful
+    5. Print appropriate status messages
+    
+    No arguments or return values - this is the script's entry point.
     """
     print("Starting transfer value download...")
     
