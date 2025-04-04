@@ -7,13 +7,14 @@ The data is saved in a structured format for further analysis.
 """
 
 import requests
-from bs4 import BeautifulSoup  # Adding back BeautifulSoup for header analysis
+from bs4 import BeautifulSoup
 import pandas as pd
 import os
 import time
 import random
 from datetime import datetime
 import numpy as np
+from io import StringIO
 
 def get_headers():
     """
@@ -56,8 +57,11 @@ def get_team_values(season='2023'):
         if not table:
             raise ValueError("Could not find the teams table on the page")
 
-        # Read the table with pandas
-        dfs = pd.read_html(response.text, extract_links='all')
+        # Create StringIO object from the HTML content
+        html_io = StringIO(response.text)
+
+        # Read the table with pandas using StringIO
+        dfs = pd.read_html(html_io, extract_links='all')
         
         # Find the table with team values (usually the first one)
         df = None
