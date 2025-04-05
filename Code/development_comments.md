@@ -6,7 +6,7 @@
 | -------- | ------- |
 | Getting started  | D    |
 | Usability | B |
-| Comments | A     |
+| Code commenting | A     |
 | GitHub integration  | A    |
 | Error finding | B |
 | Code for downloading scraped data | D |
