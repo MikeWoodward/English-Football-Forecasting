@@ -6,10 +6,11 @@
 | -------- | ------- |
 | Getting started  | D    |
 | Usability | B |
+| Debugging | C |
 | Code commenting | A     |
 | GitHub integration  | A    |
 | Error finding | B |
-| Code for downloading scraped data | D |
+| Code generation for web scraping | D |
 
 ## Introduction
 
@@ -33,6 +34,10 @@ I got started by watching videos and working on this project. That's great for m
 
 Mostly good, but a mixed bag. I'm not familar with VS Code (Cursor is built on VS Code), which made things a little harder (I'm not knocking it for this). There are things like rules which should be easier and more obvious to set up. 
 
+## Debugging
+
+This is kind-of OK, but clunky compared to using a notebook or using a data science-oriented IDE like Spyder. I'd actually say it's way behind the times. Frankly, I found debugging possible, but much harder than other envionments.
+
 ## Commenting code
 
 This is definately a Cursor superpower. It's almost unbelieveably good.
@@ -45,7 +50,7 @@ Outstanding.
 
 In most cases, it did really well, however I found a cases where its error correction made the code much worse. This was processing a complex HTML table. Code generation just couldn't give me a correct answer, and asking the engine (Claude) to correct the error just produced worse code.
 
-## Scraping data
+## Code generation for scraping data
 
 It really can't generate code that works for anything other than a simple scrape. Even asking it to correct its errors doesn't work very well. The general code structure was OK, but a little too restictive and I had to remove some of its generated functions. It's marginal to me whether it's really worth using code generation here.
 
