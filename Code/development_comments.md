@@ -48,7 +48,7 @@ Outstanding.
 
 ## Error finding
 
-In most cases, it did really well, however I found a cases where its error correction made the code much worse. This was processing a complex HTML table. Code generation just couldn't give me a correct answer, and asking the engine (Claude) to correct the error just produced worse code.
+In most cases, it did really well, however I found a case where its error correction made the code much worse; Tthis was processing a complex HTML table. Code generation just couldn't give me a correct answer, and asking the engine (Claude) to correct the error just produced worse code.
 
 ## Code generation for scraping data
 
