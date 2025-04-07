@@ -36,7 +36,7 @@ Mostly good, but a mixed bag. I'm not familar with VS Code (Cursor is built on V
 
 ## Debugging
 
-Frankly, I found debugging possible, but much harder than other envionments. I missed having notebook-like features. There's no variable explorer. You can't easily comment out blocks of code. 
+Frankly, I found debugging harder than other envionments. I missed having notebook-like features. There's no variable explorer. On the plus side, you can set breakpoints and step through the code.
 
 ## Commenting code
 
