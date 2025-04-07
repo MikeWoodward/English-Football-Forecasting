@@ -48,9 +48,9 @@ Outstanding.
 
 ## Error finding
 
-In most cases, it did really well, however I found a case where its error correction made the code much worse; Tthis was processing a complex HTML table. Code generation just couldn't give me a correct answer, and asking the engine (Claude) to correct the error just produced worse code.
+In most cases, it did really well, however I found a case where its error correction made the code much worse; this was processing a complex HTML table. Code generation just couldn't give me a correct answer, and asking the engine (Claude) to correct the error just produced worse code.
 
 ## Code generation for scraping data
 
-On the plus side, it managed to give me the URLs for the pages I wanted to scrape purely on a prompt, which frankly flt a bit supernatural. However, it really can't generate code that works for anything other than a simple scrape. Even asking it to correct its errors doesn't work very well. The general code structure was OK, but a little too restictive and I had to remove some of its generated functions. It's marginal to me whether it's really worth using code generation here.
+On the plus side, it managed to give me the URLs for the pages I wanted to scrape purely on a prompt, which frankly felt a bit supernatural. However, it really can't generate code that works for anything other than a simple scrape. Even asking it to correct its errors doesn't work very well. The general code structure was OK, but a little too restictive and I had to remove some of its generated functions. It's marginal to me whether it's really worth using code generation here.
 
