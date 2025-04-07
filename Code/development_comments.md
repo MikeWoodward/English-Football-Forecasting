@@ -36,7 +36,7 @@ Mostly good, but a mixed bag. I'm not familar with VS Code (Cursor is built on V
 
 ## Debugging
 
-This is kind-of OK, but clunky compared to using a notebook or using a data science-oriented IDE like Spyder. I'd actually say it's way behind the times. Frankly, I found debugging possible, but much harder than other envionments.
+Frankly, I found debugging possible, but much harder than other envionments. I missed having notebook-like features. There's no variable explorer. You can't easily comment out blocks of code. 
 
 ## Commenting code
 
