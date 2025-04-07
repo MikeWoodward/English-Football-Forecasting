@@ -32,11 +32,11 @@ I got started by watching videos and working on this project. That's great for m
 
 ## Usability
 
-Mostly good, but a mixed bag. I'm not familar with VS Code (Cursor is built on VS Code), which made things a little harder (I'm not knocking it for this). There are things like rules which should be easier and more obvious to set up. 
+Mostly good, but a mixed bag. I'm not familar with VS Code (Cursor is built on VS Code), which made things a little harder (I'm not knocking it for this). There are things like rules which should be easier and more obvious to set up. The fact you an specify rules in "natural" English feels like a benefit, but I'd rather have something more restrictive that's less open to interpretation, may be a combination would work well.
 
 ## Debugging
 
-Frankly, I found debugging harder than other envionments. I missed having notebook-like features. There's no variable explorer. On the plus side, you can set breakpoints and step through the code.
+Frankly, I found debugging harder than other envionments. I missed having notebook-like features. There's a variable explorer, but it's weaker than in an IDE like Spyder. On the plus side, you can set breakpoints and step through the code.
 
 ## Commenting code
 
@@ -52,5 +52,5 @@ In most cases, it did really well, however I found a cases where its error corre
 
 ## Code generation for scraping data
 
-It really can't generate code that works for anything other than a simple scrape. Even asking it to correct its errors doesn't work very well. The general code structure was OK, but a little too restictive and I had to remove some of its generated functions. It's marginal to me whether it's really worth using code generation here.
+On the plus side, it managed to give me the URLs for the pages I wanted to scrape purely on a prompt, which frankly flt a bit supernatural. However, it really can't generate code that works for anything other than a simple scrape. Even asking it to correct its errors doesn't work very well. The general code structure was OK, but a little too restictive and I had to remove some of its generated functions. It's marginal to me whether it's really worth using code generation here.
 
