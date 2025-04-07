@@ -76,8 +76,13 @@ def main():
     # Ensure output directory exists
     os.makedirs(output_path, exist_ok=True)
     
-    # Source folders to process
-    folders = ['TransferValues', 'Football-data', 'FBRef', 'Matches/Attendance']
+    # Source folders to process - updated paths to match actual directory structure
+    folders = [
+        'Matches/TransferValues', 
+        'Matches/Football-data', 
+        'Matches/FBRef', 
+        'Matches/Attendance'
+    ]
     
     # Collect all unique club names
     all_club_names = set()
@@ -86,6 +91,8 @@ def main():
     for folder in folders:
         print(f"Processing files in {folder}...")
         csv_files = get_csv_files(raw_data_path, folder)
+        
+        print(f"Found {len(csv_files)} CSV files")
         
         for file in csv_files:
             club_names = extract_club_names(file)
