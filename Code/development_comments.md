@@ -23,6 +23,7 @@ I had several goals with this project:
 For Cursor to work:
 * You must have a good internet connection
 * Cursor's servers must be up and running.
+
 This means code development has now become SaaS.
 
 ## Getting started with Cursor
