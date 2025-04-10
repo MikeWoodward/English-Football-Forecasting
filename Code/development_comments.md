@@ -11,6 +11,7 @@
 | GitHub integration  | A    |
 | Error finding | B |
 | Code generation for web scraping | D |
+| Data cleansing| In progress |
 
 ## Introduction
 
