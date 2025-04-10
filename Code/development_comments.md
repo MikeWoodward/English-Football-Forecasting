@@ -26,6 +26,7 @@ I had several goals with this project:
 For Cursor to work:
 * You must have a good internet connection
 * Cursor's servers must be up and running.
+* You very quickly exhaust the free tier. To do anything useful, you need to subscribe.
 
 This means code development has now become SaaS.
 
