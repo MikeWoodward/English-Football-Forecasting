@@ -15,9 +15,11 @@
 
 ## Introduction
 
+The overall goal of this project is to build a machine learning system to forecast English Premier League football matches. It's based on an old project (2020) I did in R.
+
 I had several goals with this project:
 1. Get me up to speed with Cursor, figuring out it's strengths and weaknesses for data science projects.
-2. Rebuild my R models in Python.
+2. Rebuild my R models in Python and use more up to date machine learning methods.
 
 ## General observations
 
