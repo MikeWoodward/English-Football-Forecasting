@@ -7,6 +7,7 @@
 | Getting started  | D    |
 | Usability | B |
 | Debugging | C |
+| Code completion | A |
 | Code commenting | A     |
 | GitHub integration  | A    |
 | Error finding | B |
@@ -49,6 +50,10 @@ Mostly good, but a mixed bag. I'm not familar with VS Code (Cursor is built on V
 ## Debugging
 
 Frankly, I found debugging harder than other envionments. I missed having notebook-like features. There's a variable explorer, but it's weaker than in an IDE like Spyder. On the plus side, you can set breakpoints and step through the code.
+
+## Code completion
+
+Excellent. Best I've come across.
 
 ## Commenting code
 
