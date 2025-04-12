@@ -31,6 +31,8 @@ For Cursor to work:
 
 This means code development has now become SaaS.
 
+You should "reset" the chat between code generation tasks for different files. If you don't, code generation requests take longer and longer.
+
 ## Getting started with Cursor
 
 Getting started is hard. This is very definately an early adopter tool:
