@@ -39,7 +39,7 @@ Getting started is hard. This is very definately an early adopter tool:
 * Product documentation is sparse.
 * There are very few written tutorials online.
 * There are a handful of courses, but only on Udemy.
-* Although there are many, many videos on YouTube, there are problems with them.
+* Although there are many, many videos on YouTube, there are problems with them (they are all variants on the same basic presentation, they're uncritical, and they don't focus on more technical problems).
 
 All of the YouTube videos I watched followed the same format; the development of a UI-based app. In all cases, the videos showed connections to LLMs to do some form of text processing, and in some cases videos went through connecting to databases, but none showed any significant computation in Python. None of the videos I could find were aimed at 'traditional' data science or analytics.
 
