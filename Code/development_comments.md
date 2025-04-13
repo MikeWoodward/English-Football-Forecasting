@@ -18,9 +18,9 @@
 
 The overall goal of this project is to build a machine learning system to forecast English Premier League football matches. It's based on an old project (2020) I did in R.
 
-I had several goals with this project:
+I had several goals:
 1. Get me up to speed with Cursor, figuring out it's strengths and weaknesses for data science projects.
-2. Rebuild my R models in Python and use more up to date machine learning methods.
+2. Rebuild my R models in Python and use more up-to-date machine learning methods.
 
 ## General observations
 
@@ -35,13 +35,13 @@ You should "reset" the chat between code generation tasks for different files. I
 
 ## Getting started with Cursor
 
-Getting started is hard. This is very definately an early adopter tool:
+Getting started is hard. This is very definitely an early adopter tool:
 * Product documentation is sparse.
 * There are very few written tutorials online.
 * There are a handful of courses, but only on Udemy.
 * Although there are many, many videos on YouTube, there are problems with them (they are all variants on the same basic presentation, they're uncritical, and they don't focus on more technical problems).
 
-All of the YouTube videos I watched followed the same format; the development of a UI-based app. In all cases, the videos showed connections to LLMs to do some form of text processing, and in some cases videos went through connecting to databases, but none showed any significant computation in Python. None of the videos I could find were aimed at 'traditional' data science or analytics.
+All of the YouTube videos I watched followed the same format, the development of a UI-based app. In all cases, the videos showed connections to LLMs to do some form of text processing, and in some cases videos went through connecting to databases, but none showed any significant (data science) computation in Python. None of the videos I could find were aimed at 'traditional' data science or analytics. On reflection, all of the vidoes had the flavor of a good sales engineer presentation.
 
 I got started by watching videos and working on this project. That's great for me, but it's not scalable.
 
@@ -51,7 +51,7 @@ Mostly good, but a mixed bag. I'm not familar with VS Code (Cursor is built on V
 
 ## Debugging
 
-Frankly, I found debugging harder than other envionments. I missed having notebook-like features. There's a variable explorer, but it's weaker than in an IDE like Spyder. On the plus side, you can set breakpoints and step through the code.
+Frankly, I found debugging harder than other environments. I missed having notebook-like features. There's a variable explorer, but it's weaker than in an IDE like Spyder. On the plus side, you can set breakpoints and step through the code.
 
 ## Code completion
 
