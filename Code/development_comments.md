@@ -22,6 +22,12 @@ I had several goals:
 1. Get me up to speed with Cursor, figuring out it's strengths and weaknesses for data science projects.
 2. Rebuild my R models in Python and use more up-to-date machine learning methods.
 
+## Overview
+
+Cursor is a game-changer, but it's not a wonder-drug. It has limitations which some people and organizations will find hard to overcome. It requires a different way of working and a different mindset. Despite the videos and social media commentary, inexperienced people will run into problems very quickly in real-world projects. This is a tool for middle and upper skilled people.
+
+In it's current iteration, it's very much an early adopter tool. 
+
 ## General observations
 
 For Cursor to work:
@@ -32,6 +38,8 @@ For Cursor to work:
 This means code development has now become SaaS.
 
 You should "reset" the chat between code generation tasks for different files. If you don't, code generation requests take longer and longer.
+
+There's no notebook option, this is a classic coding IDE, which is unsurprising because it's based on VSCode.
 
 ## Getting started with Cursor
 
@@ -71,7 +79,11 @@ In most cases, it did really well, however I found a case where its error correc
 
 ## Code generation for scraping data
 
-On the plus side, it managed to give me the URLs for the pages I wanted to scrape purely on a prompt, which frankly felt a bit supernatural. However, it really can't generate code that works for anything other than a simple scrape. Even asking it to correct its errors doesn't work very well. The general code structure was OK, but a little too restictive and I had to remove some of its generated functions. It's marginal to me whether it's really worth using code generation here.
+On the plus side, it managed to give me the URLs for the pages I wanted to scrape purely on a prompt, which frankly felt a bit supernatural. 
+
+On the negative side, it really can't generate code that works for anything other than a simple scrape. Even asking it to correct its errors doesn't work very well. The general code structure was OK, but a little too restictive and I had to remove some of its generated functions. It's marginal to me whether it's really worth using code generation here.
+
+Code completion was very useful here.
 
 ## Data cleansing
 
