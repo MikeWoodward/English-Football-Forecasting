@@ -101,7 +101,7 @@ leagues = [
 ]
 
 # Iterate through seasons (from 1992 to current)
-for season in range(1992, 2024):
+for season in range(2010, 2024):
     # Process each league
     for league_info in leagues:
         # Initialize list to store match data
