@@ -13,7 +13,7 @@
 | Code generation | C |
 | Code completion | A |
 | Code commenting | A     |
-| GitHub integration  | A    |
+| GitHub integration  | B    |
 | Error finding | B |
 
 ### Specific tasks
@@ -94,7 +94,7 @@ This is definitely a Cursor superpower. It's almost unbelievably good.
 
 ## GitHub integration
 
-Outstanding.
+Mostly great, but I ran into a few issues where Cursor tied itself in knots needlessly. This needs some work.
 
 ## Error finding
 
