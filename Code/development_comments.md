@@ -99,7 +99,7 @@ This means creating markdown files that explain what the code is doing. It did a
 
 ## GitHub integration
 
-Mostly OK, but I ran into a few issues where Cursor tied itself in knots needlessly. More seriously, it deleted a bunch of data files. This needs some work.
+Setup was really easy. Usage was mostly OK, but I ran into a few issues where Cursor tied itself in knots needlessly. More seriously, it deleted a bunch of data files. I'm contrasting the usability of GitHub in Cursor with the GitHub desktop app. Frankly, the GitHub desktop app has the edge right now. Github integration needs some work.
 
 ## Error finding
 
