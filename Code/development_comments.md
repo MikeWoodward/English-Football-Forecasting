@@ -13,6 +13,7 @@
 | Code generation | C |
 | Code completion | A |
 | Code commenting | A     |
+| Documentation | A     |
 | GitHub integration  | B    |
 | Error finding | B |
 
@@ -91,6 +92,10 @@ I found code completion to be a very compelling feature.
 ## Commenting code
 
 This is definitely a Cursor superpower. It's almost unbelievably good.
+
+## Documentation
+
+This means creating markdown files that explain what the code is doing. It did a really great job here.
 
 ## GitHub integration
 
