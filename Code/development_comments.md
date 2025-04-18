@@ -85,7 +85,7 @@ On the negative side, it really can't generate code that works for anything othe
 
 Code completion was very useful here.
 
-(As an aside, I tried to use AI to get specific match infomration. I found the results to be completely unreliable.)
+(As an aside, I tried to use AI to get specific match infomation. I found the results to be completely unreliable.)
 
 ## Data cleansing
 
