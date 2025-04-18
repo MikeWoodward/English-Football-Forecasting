@@ -1,5 +1,13 @@
 This data set is a very difficult one to cleanse automatically. There are several oddities, for example:
-* How to cope with "phoenix clubs". These are clubs that went bankrupt and then were revived. The rules are the team has to have a different name. In practice, teams that have gone bankrupt and then were revived take on a new name and a few years later petition for the old name back.
-* How to cope with Wimbledon. Wimbledon moved to to Milton Keynes in 2004 and changed their name to "Milton Keynes Dons". Fans in Wimbledon formed a new local team called "AFC Wimbledon". Both "Milton Keynes Dons" and "AFC Wimbledon" have played in the same league and played each other.
-* Nicknames, abbreviations, and truncations. Manchester United is sometimes known as MUFC, Man United, Man Utd, and various variants.
-* The league names have changed over the years.
+ - How to cope with "phoenix clubs". These are clubs that went bankrupt and then were revived. The rules are the team has to have a different name when it's "reborn". In practice, teams that have gone bankrupt and then were revived take on a new name and a few years later petition for the old name back.
+	 - I considered phoenix clubs to be a continuation of the old club.
+- How to cope with Wimbledon. Wimbledon moved to to Milton Keynes in 2004 and changed their name to "Milton Keynes Dons". Fans in Wimbledon formed a new local team called "AFC Wimbledon". Both "Milton Keynes Dons" and "AFC Wimbledon" have played in the same league and played each other.
+  - I considered pre-2004 Wimbledon, MK Dons, and AFC Wimbledon to be separate teams.
+- Nicknames, abbreviations, and truncations. Manchester United is sometimes known as MUFC, Man United, Man Utd, and various variants.
+  -  I normalized the names using a name normalization table I created by hand. 
+- The league names have changed over the years, but the tiering hasn't.
+  -  I've used the tiering with the modern league names. This does yield some historical inconsistencies (there was no Premier League in 1890 for example), but it does keep the data set consistent.
+- Some games were canceled but a score awarded and some games were played but the score didn't count. These kinds of fun and games happened around COVID. In a few odd cases teams refused to play, so the match was awarded against them without being played. In a few other cases, the match was played but the results canceled (e.g. [Dover Athletic](https://en.wikipedia.org/wiki/Dover_Athletic_F.C.)).
+  - Where the game was not played but a score awarded, I ignored the match.
+  - Where the game was played but the result later canceled, I included the match.
+- Attendance figures are patchy. Some data sources are missing attendance figures for both historic and more modern matches. I filled in the gaps manually from a variety of sources, including individual club records. In only one case (an 1890 match) did I need to use an average figure. 
