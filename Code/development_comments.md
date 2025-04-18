@@ -37,7 +37,7 @@ The vehicle to achieve these goals is developing a machine learning system to fo
 
 Cursor is a game-changer, but it's not a wonder-drug. It has limitations which some people and organizations will find hard to overcome, especially for data science (e.g. it's not a notebook). Cursor requires a different way of working and a different mindset which of itself will pose challenges. Despite the videos and social media commentary, inexperienced people will run into problems very quickly in real-world projects. Code generation has been significantly oversold, but code completion has not. This is very much a tool for middle and upper skilled people.
 
-In it's current iteration, it's an early adopter tool. It requires thoughtful and careful roll-out. In my view, some roll-outs will fail due to poor expectation management and roll-out support.
+In it's current iteration, it's an early adopter tool. It requires thoughtful and careful roll-out. In my view, some roll-outs will fail due to poor expectation management and roll-out support. Rolling out Cursor to a data science team is going to be a very bumpy ride.
 
 ## Getting started with Cursor
 
