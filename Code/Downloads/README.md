@@ -1,4 +1,2 @@
-# Python-EPL-forecasting
-Project to forecast EPL results.
-
-This is a work in progress.
+# Downloading data
+The data comes from several sources.
