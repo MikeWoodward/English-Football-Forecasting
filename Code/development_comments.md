@@ -1,4 +1,6 @@
-# Comments on the process
+# Comments on using Cursor for data science
+
+## Contents
 
 ## Cursor scorecard
 
@@ -7,26 +9,31 @@
 | Getting started  | D    |
 | Usability | B |
 | Debugging | C |
+| Code generation | C |
 | Code completion | A |
 | Code commenting | A     |
 | GitHub integration  | A    |
 | Error finding | B |
-| Code generation for web scraping | D |
 | Data cleansing| In progress |
 
 ## Introduction
 
-The overall goal of this project is to build a machine learning system to forecast English Premier League football matches. It's based on an old project (2020) I did in R.
-
-I had several goals:
-1. Get me up to speed with Cursor, figuring out it's strengths and weaknesses for data science projects.
+The goals of this project are to:
+1. Get me up to speed with Cursor, figuring out it's strengths and weaknesses for data science projects. Understand what I have to do to implment Cursor (or something like it) in a data science team.
 2. Rebuild my R models in Python and use more up-to-date machine learning methods.
+
+The vehicle to achieve these goals is developing a machine learning system to forecast English Premier League football matches. It's based on an old project (2020) I did in R.
 
 ## Overview
 
-Cursor is a game-changer, but it's not a wonder-drug. It has limitations which some people and organizations will find hard to overcome. It requires a different way of working and a different mindset. Despite the videos and social media commentary, inexperienced people will run into problems very quickly in real-world projects. This is a tool for middle and upper skilled people.
+Cursor is a game-changer, but it's not a wonder-drug. It has limitations which some people and organizations will find hard to overcome, especially for data science (e.g. it's not a notebook). Cursor requires a different way of working and a different mindset which of itself will pose challenges. Despite the videos and social media commentary, inexperienced people will run into problems very quickly in real-world projects. Code generation has been significantly oversold, but code completion has not. This is very much a tool for middle and upper skilled people.
 
-In it's current iteration, it's very much an early adopter tool. 
+In it's current iteration, it's an early adopter tool. It requires thoughtful and careful roll-out. In my view, some roll-outs will fail due to poor expectation management and roll-out support.
+
+
+
+
+
 
 ## General observations
 
@@ -49,13 +56,17 @@ Getting started is hard. This is very definitely an early adopter tool:
 * There are a handful of courses, but only on Udemy.
 * Although there are many, many videos on YouTube, there are problems with them (they are all variants on the same basic presentation, they're uncritical, and they don't focus on more technical problems).
 
-All of the YouTube videos I watched followed the same format, the development of a UI-based app. In all cases, the videos showed connections to LLMs to do some form of text processing, and in some cases videos went through connecting to databases, but none showed any significant (data science) computation in Python. None of the videos I could find were aimed at 'traditional' data science or analytics. On reflection, all of the vidoes had the flavor of a good sales engineer presentation.
+Although the free tier is useful, you very quickly exhaust your free tokens. To do any form of evaluation, you need a subscription. It's cheap enough for that not to be a problem, but you should be aware you'll need to spend some money.
+
+All of the YouTube videos I watched followed the same format, the development of a UI-based app. In all cases, the videos showed connections to LLMs to do some form of text processing, and in some cases videos went through connecting to databases, but none showed any significant (data science) computation in Python. None of the videos I could find were aimed at 'traditional' data science or analytics. On reflection, pretty much every Cursor demo I've seen has been solely focused on prototyping.
 
 I got started by watching videos and working on this project. That's great for me, but it's not scalable.
 
 ## Usability
 
-Mostly good, but a mixed bag. I'm not familar with VS Code (Cursor is built on VS Code), which made things a little harder (I'm not knocking it for this). There are things like rules which should be easier and more obvious to set up. The fact you an specify rules in "natural" English feels like a benefit, but I'd rather have something more restrictive that's less open to interpretation, may be a combination would work well.
+The obvious issue is that Cursor isn't a notebook. Given that most data scientists are addicted to their notebooks (with good reason), it's a major stumbling block and any data science roll-out will have to deal with it. In fact, this may well stop data science adoption dead in its tracks in some organizations.
+
+Once you get nround the nototebook issue, usability is mostly good, but it's a mixed bag. I'm not familar with VS Code (Cursor is built on VS Code), which made things a little harder (I'm not knocking it for this). There are things like rules which should be easier and more obvious to set up; the fact you an specify rules in "natural" English feels like a benefit, but I'd rather have something more restrictive that's less open to interpretation.
 
 ## Debugging
 
