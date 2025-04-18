@@ -14,7 +14,7 @@
 | Code completion | A |
 | Code commenting | A     |
 | Documentation | A     |
-| GitHub integration  | B    |
+| GitHub integration  | C    |
 | Error finding | B |
 
 ### Specific tasks
@@ -99,7 +99,7 @@ This means creating markdown files that explain what the code is doing. It did a
 
 ## GitHub integration
 
-Mostly great, but I ran into a few issues where Cursor tied itself in knots needlessly. This needs some work.
+Mostly OK, but I ran into a few issues where Cursor tied itself in knots needlessly. More seriously, it deleted a bunch of data files. This needs some work.
 
 ## Error finding
 
