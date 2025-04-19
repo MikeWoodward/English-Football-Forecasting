@@ -35,29 +35,29 @@ The vehicle to achieve these goals is developing a machine learning system to fo
 
 ## Overview
 
-Cursor is a game-changer, but it's not a wonder-drug. It has limitations which some people and organizations will find hard to overcome, especially for data science (e.g. it's not a notebook). Cursor requires a different way of working and a different mindset which of itself will pose challenges. Despite the videos and social media commentary, inexperienced people will run into problems very quickly in real-world projects. Code generation has been significantly oversold, but code completion has not. This is very much a tool for middle and upper skilled people.
+Cursor is a game-changer, but it's not a wonder-drug. It has limitations which some people and organizations will find hard to overcome, especially for data science (e.g. it's not a notebook). Cursor requires a different way of working and a different mindset which of itself will pose challenges. Despite the claims in videos and social media commentary, inexperienced people will run into problems very quickly in real-world projects. Code generation has been significantly oversold, but code completion has not. This is very much a tool for middle and upper skilled people.
 
-In it's current iteration, it's an early adopter tool. It requires thoughtful and careful roll-out. In my view, some roll-outs will fail due to poor expectation management and roll-out support. Rolling out Cursor to a data science team is going to be a very bumpy ride.
+In it's current iteration, it's an early adopter tool. It requires thoughtful and careful roll-out. In my view, some roll-outs will fail due to poor expectation management and support. Rolling out Cursor to a data science team is going to be a very bumpy ride.
 
 ## Getting started with Cursor
 
 Getting started is hard. This is very definitely an early adopter tool:
 * Product documentation is sparse.
-* There are very few written tutorials online.
+* There are very few online written tutorials.
 * There are a handful of courses, but only on Udemy.
-* Although there are many, many videos on YouTube, there are problems with them (they are all variants on the same basic presentation, they're uncritical, and they don't focus on more technical problems).
+* Although there are many, many videos on YouTube, there are problems with them (they are all variants on the same basic presentation, they're uncritical, and they don't focus on technical projects).
 
 Although the free tier is useful, you very quickly exhaust your free tokens. To do any form of evaluation, you need a subscription. It's cheap enough for that not to be a problem, but you should be aware you'll need to spend some money.
 
-All of the YouTube videos I watched followed the same format, the development of a UI-based app. In all cases, the videos showed connections to LLMs to do some form of text processing, and in some cases videos went through connecting to databases, but none showed any significant (data science) computation in Python. None of the videos I could find were aimed at 'traditional' data science or analytics. On reflection, pretty much every Cursor demo I've seen has been solely focused on prototyping.
+All of the YouTube videos I watched followed the same format, the development of a UI-based app. In all cases, the videos showed connections to LLMs to do some form of text processing, and in some cases, videos went through the process of connecting to databases, but none of the videos showed any significant (data science) computation in Python. On reflection, pretty much every Cursor demo I've seen has been focused on prototyping.
 
 I got started by watching videos and working on this project. That's great for me, but it's not scalable.
 
 ## Usability
 
-The obvious issue is that Cursor isn't a notebook. Given that most data scientists are addicted to their notebooks (with good reason), it's a major stumbling block and any data science roll-out will have to deal with it. In fact, this may well stop data science adoption dead in its tracks in some organizations.
+The obvious problem is that Cursor isn't a notebook. Given that most data scientists are addicted to notebooks (with good reason), it's a major stumbling block any data science roll-out will have to deal with. In fact, it may well stop data science adoption dead in its tracks in some organizations.
 
-Once you get round the notebook issue, usability is mostly good, but it's a mixed bag. I'm not familar with VS Code (Cursor is built on VS Code), which made things a little harder (I'm not knocking it for this). There are things like rules which should be easier and more obvious to set up; the fact you an specify rules in "natural" English feels like a benefit, but I'd rather have something more restrictive that's less open to interpretation. Rules have a bit of a voodoo flavor right now.
+Once you get round the notebook issue, usability is mostly good, but it's a mixed bag. There are settings like rules which should be easier and more obvious to set up; the fact you an specify rules in "natural" English feels like a benefit, but I'd rather have something more restrictive that's less open to interpretation. Rules have a bit of a voodoo flavor right now.
 
 ## Debugging
 
@@ -69,7 +69,7 @@ Very, very mixed results here.
 
 Bottom line: code generation often can't be trusted for anything technical and requires manual review. However for commodity tasks, it does very well.
 
-For generating a UI in Streamlit, it did outstandingly well. The code was a little old-fashioned and didn't use the latest features, but it got me to a working solution astonishingly fast.
+It did outstandingly well at generating a UI in Streamlit. The code was a little old-fashioned and didn't use the latest features, but it got me to a working solution astonishingly fast.
 
 It produces 'framework' code really well and saved a lot of time. For example, I wanted to save results to a csv and save intermediate results. It generated that code for me in seconds. Similarly, I wanted to create 'commodity' functions to do relatively simple tasks, and it generated them very quickly. It can automate much of the 'boring' coding work.
 
