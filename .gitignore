@@ -32,9 +32,16 @@ env/
 *.swp
 *.swo
 
-# Checkpoint files
-*_checkpoint_*.csv
-
 # OS
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Raw Data Files
+RawData/**/*.txt
+RawData/**/*.csv
+RawData/**/*.json
+RawData/**/*.xlsx
+RawData/**/*.xls
+
+# But keep directory structure
+!RawData/**/.gitkeep 
