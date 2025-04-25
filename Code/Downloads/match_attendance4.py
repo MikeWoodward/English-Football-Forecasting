@@ -1,21 +1,46 @@
-# Import required libraries
-# requests: for making HTTP requests to fetch web pages
-# BeautifulSoup: for parsing HTML content
-# os and Path: for handling file paths cross-platform
-# traceback and sys: for detailed error reporting
-# pandas: for data manipulation and CSV handling
-# time: for adding delays between requests
+"""Match Attendance Data Scraper.
+
+This script scrapes attendance data from football match web pages and processes it into a structured format.
+It reads match URLs from a text file, extracts relevant match information including attendance figures,
+and saves the data to CSV files with periodic checkpoints.
+
+The script handles:
+- Reading match URLs from an input file
+- Web scraping of match details (teams, scores, dates, times, attendance)
+- Data extraction using BeautifulSoup
+- Error handling and progress tracking
+- Saving data to CSV files with checkpoints
+
+Typical usage:
+    python match_attendance4.py
+
+Requirements:
+    - requests: For making HTTP requests
+    - beautifulsoup4: For HTML parsing
+    - pandas: For data manipulation and CSV handling
+
+The script expects a match_urls.txt file in the specified input directory and
+creates CSV output in the specified output directory.
+
+Author: [Your Name]
+Date: [Current Date]
+Version: 4.0
+"""
+
+# Standard library imports
+import os
+import sys
+import time
+import traceback
+from pathlib import Path
+
+# Third-party imports
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import os
-from pathlib import Path
-import traceback
-import sys
-import pandas as pd
-import time
 
-# Define the path to the input file containing match URLs
-# Using Path for cross-platform compatibility
+# File paths configuration
+# Using Path for cross-platform compatibility and better path handling
 match_urls_path = Path('../../RawData/Matches/MatchURLs/match_urls.txt')
 
 # Try to read the URLs from the file
@@ -27,124 +52,119 @@ except FileNotFoundError:
     print(f"Error: Could not find file at {match_urls_path}")
     match_list_urls = []
 
-# Initialize empty list to store match data dictionaries
-match_list = []
+# Initialize data structures
+match_list = []  # List to store match data dictionaries
 
-# Create the output directory if it doesn't exist
-output_dir = Path('../../CleansedData/Normalization')
+# Create output directory structure
+output_dir = Path('../../RawData/Matches/Attendance4')
 output_dir.mkdir(parents=True, exist_ok=True)
 
-# Function to save current progress to CSV
-def save_progress(data, step_number):
-    """
-    Save the current match data to a CSV file
+def save_progress(data: list, step_number: int) -> None:
+    """Save the current match data to a CSV checkpoint file.
+
+    Creates a checkpoint CSV file containing all processed match data up to the current point.
+    Useful for data recovery in case of script interruption.
+
     Args:
-        data: List of match dictionaries
-        step_number: Current step number for filename
+        data: List of dictionaries containing match information.
+        step_number: Current processing step number used in the checkpoint filename.
+
+    Returns:
+        None. Saves data to a CSV file and prints confirmation message.
     """
-    # Convert match_list to pandas DataFrame
     df = pd.DataFrame(data)
-    # Create filename with step number
     output_file = output_dir / f'attendance2_checkpoint_{step_number}.csv'
-    # Save to CSV without index
     df.to_csv(output_file, index=False)
     print(f"\nCheckpoint saved: {output_file}")
 
-# Process each URL in the list
+# Main processing loop - iterate through each match URL
 for i, url in enumerate(match_list_urls):
     try:
-        # Add a polite delay between requests (2 seconds)
-        if i > 0:  # Don't delay on the first request
+        # Add a polite delay between requests to avoid overwhelming the server
+        if i > 0:  # Skip delay for first request
             time.sleep(2)
             
-        # Make HTTP request to get the webpage content
+        # Fetch and parse the webpage content
         print(f"Processing URL {i+1} of {len(match_list_urls)}: {url}")
         response = requests.get(url)
         match_page = response.text
-        
-        # Create BeautifulSoup object to parse HTML
         soup = BeautifulSoup(match_page, 'html.parser')
         
-        # Find all tables with class 'standard_tabelle'
-        # These tables contain the match information
+        # Find match information tables
+        # The page structure has multiple 'standard_tabelle' tables
         tables = soup.find_all('table', class_='standard_tabelle')
         
-        # Skip if no tables found
         if not tables:
             print(f"Warning: No tables found with class 'standard_tabelle' for URL: {url}")
             continue
         
-        # Get the first table which contains main match details
+        # Process main match details from the first table
         first_table = tables[0]
         rows = first_table.find_all('tr')
         
-        # Skip if table has no rows
         if not rows:
             print(f"Warning: No rows found in the table for URL: {url}")
             continue
             
-        # Process the first row which contains team names and match timing
+        # Extract team names and match timing from the first row
         first_row = rows[0]
         columns = first_row.find_all('th')
         
-        # Ensure we have enough columns for home team, date/time, and away team
+        # Validate column count
         if len(columns) < 3:
             print(f"Warning: Not enough columns in first row for URL: {url}")
             continue
         
-        # Extract home team name from first column's anchor tag
+        # Extract home team information
         home_team_link = columns[0].find('a')
         if not home_team_link:
             print(f"Warning: No home team link found for URL: {url}")
             continue
         home_team_name = home_team_link.text.strip()
         
-        # Extract date and time from second column
-        # Some entries have date and time separated by <br> tag
+        # Extract match date and time
+        # Handle cases where date and time are separated by <br> tag
         if (br_tag := columns[1].find('br')):
-            # If <br> exists, get text before and after it
             match_date = br_tag.previous_sibling.strip() if br_tag.previous_sibling else ''
             match_time = br_tag.next_sibling.strip() if br_tag.next_sibling else ''
-            # Remove 'Clock' text if present in time
-            if 'Clock' in match_time:
-                match_time = match_time.replace('Clock', '').strip()
+            match_time = match_time.replace('Clock', '').strip()  # Clean up time format
         else:
-            # If no <br>, entire text is the date
             match_date = columns[1].text.strip()
             match_time = ''
         
-        # Extract away team name from third column's anchor tag
+        # Extract away team information
         away_team_link = columns[2].find('a')
         if not away_team_link:
             print(f"Warning: No away team link found for URL: {url}")
             continue
         away_team_name = away_team_link.text.strip()
         
-        # Extract match score from second row
+        # Extract match score from the second row
         if len(rows) < 2:
             print(f"Warning: No second row found for URL: {url}")
             continue
             
-        # Get cells from second row and ensure enough columns exist
         second_row_cells = rows[1].find_all('td')
         if len(second_row_cells) < 2:
             print(f"Warning: Not enough columns in second row for URL: {url}")
             continue
+        
+        # Parse the score (format: "home_score:away_score")
         match_score = second_row_cells[1].text.strip().split(":")
         match_home_score = match_score[0]
         match_away_score = match_score[1]
         
-        # Extract attendance
+        # Extract attendance from the last table
+        # Look for row with attendance icon
         rows = tables[-1].find_all('tr')
+        match_attendance = None
         for row in rows:
             image = row.find('img')
             if image and image['title'] == 'Attendance':
-                match_attendance = row.text.strip().replace(".", "")
+                match_attendance = row.text.strip().replace(".", "")  # Remove thousand separators
                 break
-        else:
-            match_attendance = None
         
-        # Create dictionary with all match information
+        # Create structured match data dictionary
         match_dict = {
             'match_date': match_date,
             'match_time': match_time,
@@ -154,28 +174,24 @@ for i, url in enumerate(match_list_urls):
             'match_away_score': match_away_score,
             'attendance': match_attendance
         }
-        # Add match dictionary to the list of matches
         match_list.append(match_dict)
         
-        # Save progress every 100 matches
+        # Create periodic checkpoints
         if (i + 1) % 100 == 0:
             save_progress(match_list, i + 1)
             
     except Exception as e:
-        # If any error occurs, get the line number and error details
+        # Detailed error logging with line numbers
         exc_type, exc_value, exc_traceback = sys.exc_info()
         line_number = traceback.extract_tb(exc_traceback)[-1].lineno
         print(f"Error processing URL {url} at line {line_number}: {str(e)}")
         continue
 
-# Save final results to CSV
-# Convert match_list to pandas DataFrame
+# Save final results
 df = pd.DataFrame(match_list)
-
-# Save to final CSV file
-output_file = output_dir / 'attendance2.csv'
+output_file = output_dir / 'attendance4.csv'
 df.to_csv(output_file, index=False)
 print(f"\nSaved final match data to {output_file}")
 
-# Print summary of processed matches
+# Print processing summary
 print(f"\nProcessed {len(match_list)} matches successfully.") 
