@@ -13,6 +13,7 @@
 | Code generation | C |
 | Code completion | A |
 | Code commenting | A     |
+| PEP8 compliance | B |
 | Documentation | A     |
 | GitHub integration  | C    |
 | Error finding | B |
@@ -100,6 +101,10 @@ I found code completion to be a very compelling feature.
 ## Commenting code
 
 This is definitely a Cursor superpower. It's almost unbelievably good.
+
+## PEP8 compliance
+
+Surprisingly, generated code/completion code isn't PEP8 'out of the box'. It will happily give you code that's way over 79 characters long for example. It sometimes takes multiple times to get code to be PEP8 compliant. I had set a rule for PEP8 compliance, but it still did it.
 
 ## Documentation
 
