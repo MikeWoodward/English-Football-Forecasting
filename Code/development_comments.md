@@ -69,15 +69,23 @@ Very, very mixed results here.
 
 Bottom line: code generation often can't be trusted for anything technical and requires manual review. However for commodity tasks, it does very well.
 
+### Positives
+
 It did outstandingly well at generating a UI in Streamlit. The code was a little old-fashioned and didn't use the latest features, but it got me to a working solution astonishingly fast.
 
 It produces 'framework' code really well and saved a lot of time. For example, I wanted to save results to a csv and save intermediate results. It generated that code for me in seconds. Similarly, I wanted to create 'commodity' functions to do relatively simple tasks, and it generated them very quickly. It can automate much of the 'boring' coding work.
+
+It also did well on some low-level and obscure tasks that would have otherwise requires some time on Stack Overflow, e.g. date conversion.
+
+### Negatives
 
 Technical code is a different story.
 
 With very careful prompting, it got me to an acceptable solution for statistics-oriented code. But I had to check the code carefully. Several times, it produced code that was either flat-out wrong or just a really bad implementation. 
 
 I found that code that required details instructions (e.g. specific dataframe joins) could be generated, but given how detailed the prompt needed to be, the cost savings for code generation were minimal.
+
+On occassions, code generatiom gave overly-complex solutions to simple tasks, for example, its solution for changing the text "an example" to "An Example" was a function using a loop.
 
 Although it's a niche topic, it's worth mentioning that code generation didn't work at all well for web scraping. 
 
