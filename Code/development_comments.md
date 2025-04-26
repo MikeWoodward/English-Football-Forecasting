@@ -104,7 +104,7 @@ This is definitely a Cursor superpower. It's almost unbelievably good.
 
 ## PEP8 compliance
 
-Surprisingly, generated code/completion code isn't PEP8 'out of the box'. It will happily give you code that's way over 79 characters long for example. It sometimes takes multiple times to get code to be PEP8 compliant. I had set a rule for PEP8 compliance, but it still did it.
+Surprisingly, generated code/completion code isn't PEP8 'out of the box', for example, it will happily give you code that's way over 79 characters. Even asking the AI to make the code PEP8 compliant sometimes takes multiple attempts. I had set a rule for PEP8 compliance, but it still did didn't comply.
 
 ## Documentation
 
