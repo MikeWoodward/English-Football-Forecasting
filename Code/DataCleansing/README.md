@@ -5,6 +5,10 @@ Gathering and consolidating English football data is fraught with difficulties:
 * Data sources contain errors, for example, incorrect match results.
 * The data itself is problemtic, e.g. phoenix clubs, canceled matches, patchy attendance figures etc.
 
+# Incorrect data
+
+For this project, I've taken data from multiple sources. Where the fields contain the same data, I compare the values and flag any differences for resolution by hand.
+
 # Structural issues
 
 ## Phoenix clubs
