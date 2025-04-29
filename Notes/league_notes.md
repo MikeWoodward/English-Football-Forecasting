@@ -11,4 +11,5 @@
 | 3 | 1958-1992: Football League Third Division</br>1992-2004: Football League Second Division</br>2004-2015: Football League One</br>2016 - EFL League One
 | | 
 | 4 | 1958-1992: Football League Fourth Division</br>1992-2004: Football League Third Division</br>2004-2016: Football League Two</br>2016-: EFL League Two | | 
-| 5 | A | | 
+| 5 | 1979-1986: Alliance Premier League</br>1986-2002: Football Conference</br>2002-2004: Nationwide Conference</br> 2004-2007: Conference National</br>2007-2015: Football Conference</br>2015-: National League</br>
+| | 
