@@ -28,7 +28,7 @@ The table below is a simplified version of the league structure over time.
 | 2 | 1892-1992 Football League Second Division</br>1992-2004 Football League First Division</br>2004-2016 Football League Championship<br>2016- EFL Championship | 1892-1893: 12 </br>1893-1898: 16 </br>1898-1905: 18 </br>1905-1915: 20 </br>1919-1987: 22 </br>1987-1988: 23 </br>1988-: 24 | 
 | 3 | 1958-1992: Football League Third Division</br>1992-2004: Football League Second Division</br>2004-2015: Football League One</br>2016 - EFL League One| 1950-2019: 24 clubs</br>2019-2020: 23 clubs (Bury FC expelled)</br>2020-present: 24 clubs</br>| 
 | 4 | 1958-1992: Football League Fourth Division</br>1992-2004: Football League Third Division</br>2004-2016: Football League Two</br>2016-: EFL League Two | 1958-1991: 24 clubs </br>1991-1992: 22 clubs </br>1992-: 24 clubs | 
-| 5 | 1979-1986: Alliance Premier League</br>1986-2002: Football Conference</br>2002-2004: Nationwide Conference</br> 2004-2007: Conference National</br>2007-2015: Football Conference</br>2015-: National League</br>| 1979-2006 22</br>2006-2009 24</br>2009-2010 23</br>2010- 24| 
+| 5 | 1979-1984: Alliance Premier League</br>1984-1987: Gola League</br>1987-1997: Vauxhall Conference</br>1997-2002: Football Conference</br>2002-2006: Nationwide Conference</br>2006-2007: Conference National</br>2007-2011: Blue Square Premier</br>2011-2013: Blue Square Bet Premier</br>2013-2014: Skrill Premier</br>2014-2015: Vanarama Conference</br>2015-2024: Vanarama National League| 1979-2006 22</br>2006-2009 24</br>2009-2010 23</br>2010- 24| 
 
 # Oddities
 
