@@ -27,7 +27,7 @@ The table below is a simplified version of the league structure over time.
 | 1  | 1888-1992 First Division</br>1992-1993 FA Premier League </br>1993-2001 FA Carling Premiership.</br>2001-2004 FA  FA Barclaycard Premiership</br> 2004-2007 Barclays Premiership</br>2007-2016 Barclays Premier League</br>  2016- Premier League |  1888-1891 12</br> 1891-1892 14</br>1892-1898 16</br>1898-1904 18</br>1904-1915 20</br>1919-1939 22<br>1946-1987 22<br>1987-1988 21</br> 1988-1991 20</br>1991-1992 22</br>  1992-1995 22</br> 1995- 20 | 
 | 2 | 1892-1992 Football League Second Division</br>1992-2004 Football League First Division</br>2004-2016 Football League Championship<br>2016- EFL Championship | 1892-1893: 12 </br>1893-1898: 16 </br>1898-1905: 18 </br>1905-1915: 20 </br>1919-1987: 22 </br>1987-1988: 23 </br>1988-: 24 | 
 | 3 | 1958-1992: Football League Third Division</br>1992-2004: Football League Second Division</br>2004-2015: Football League One</br>2016 - EFL League One| 1950-2019: 24 clubs</br>2019-2020: 23 clubs (Bury FC expelled)</br>2020-present: 24 clubs</br>| 
-| 4 | 1958-1992: Football League Fourth Division</br>1992-2004: Football League Third Division</br>2004-2016: Football League Two</br>2016-: EFL League Two | | 
+| 4 | 1958-1992: Football League Fourth Division</br>1992-2004: Football League Third Division</br>2004-2016: Football League Two</br>2016-: EFL League Two | 1958-1991: 24 clubs </br>1991-1992: 22 clubs </br>1992-: 24 clubs | 
 | 5 | 1979-1986: Alliance Premier League</br>1986-2002: Football Conference</br>2002-2004: Nationwide Conference</br> 2004-2007: Conference National</br>2007-2015: Football Conference</br>2015-: National League</br>| | 
 
 # Oddities
