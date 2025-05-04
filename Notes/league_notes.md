@@ -39,3 +39,9 @@ Matches were suspended during most of the First and Second World War.
 A number of teams have gone bankrupt which is a breach of Football Association rules. In most cases, these teams have been resurrected under new names (so-called phoenix clubs), and again in most cases, these teams have reclaimed their old names after a few years.
 
 The Football Association (FA) has penalized clubs for breach of its financial rules and several other issues. These penalties have been fines and/or points deductions. In a few cases (most notably, Dover Athletic), the FA has "canceled" match results, and in a few cases, the FA has awarded the match points to a club even though the match wasn't played.
+
+# Notes
+
+I removed Dover Athletic for the 2020-2021 season (complex story, but they only played part of the season).
+
+
