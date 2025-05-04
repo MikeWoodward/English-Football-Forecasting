@@ -14,6 +14,8 @@ In England, from 1981 onward, the system changed:
 
 The intention of awarding 3 points was to encourage teams to go for a win rather than settling for a draw.
 
+(Obviously, there's no promotion from the top league, but the top teams in the league play in the UEFA Champions League, a European-level club competition. This can be extremely lucrative as this league is the most watched in the world. In other words, there's a financial benefit to being at the top of the top league.)
+
 # The English football league structure
 
 English football has undergone a number of organizational changes over the years, including a number of confusing name changes. However, the basic structure has stayted the same: a hierarchical set of leagues with promotion and relegation between them.
