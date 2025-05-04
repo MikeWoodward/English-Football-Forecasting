@@ -18,7 +18,7 @@ The intention of awarding 3 points was to encourage teams to go for a win rather
 
 # The English football league structure
 
-English football has undergone a number of organizational changes over the years, including a number of confusing name changes. However, the basic structure has stayted the same: a hierarchical set of leagues with promotion and relegation between them.
+English football has undergone a number of organizational changes over the years, including a number of confusing name changes. However, the basic structure has stayed the same: a hierarchical set of leagues with promotion and relegation between them.
 
 At the time of writing (mid-2025), there are five national professional leagues. Below these leagues are semi-professional regional leagues. The top league (the EPL) takes the lion's share of the available money and the money falls off the lower down the league system you go.
 
