@@ -26,7 +26,11 @@ Wimbledon moved to to Milton Keynes in 2004 and changed their name to "Milton Ke
 Manchester United is sometimes known as MUFC, Man United, Man Utd, and various variants.
   -  I normalized the names using a name normalization table I created by hand.
 
-Sheffield Wednesday was intially known as "The Wednesday". I call the team "Sheffield Wednesday" for itw s entire life.
+Sheffield Wednesday was intially known as "The Wednesday". I call the team "Sheffield Wednesday" for it's entire life.
+
+I've used the "traditional" names for Phoenix clubs.
+
+Gravesend & Northfleet changed their name to Ebbsfleet United in 2007, so I've used the modern name from the club formation in 1946.
  
 ## League names
 
@@ -37,7 +41,7 @@ English football since the early 1990s has had a convoluted history of renaming 
 
 Some games were canceled but a score awarded and some games were played but the score didn't count. These kinds of fun and games happened around COVID. In a few odd cases teams refused to play, so the match was awarded against them without being played. In other cases, the match was played but the results canceled (e.g. [Dover Athletic](https://en.wikipedia.org/wiki/Dover_Athletic_F.C.)).
   - Where the game was not played but a score awarded, I ignored the match.
-  - Where the game was played but the result later canceled, I included the match.
+  - Where the game was canceled after it was played, I ignored the match,
 
 ## Attendance figures patchy in the early days of the leagues
 
@@ -46,7 +50,3 @@ Some data sources are missing attendance figures for both historic and more mode
 ## Other changes
 
 I removed Dover Athletic for the 2020-2021 season (complex story, but they only played part of the season).
-
-I've used the "traditional" names for Phoenix clubs.
-
-Gravesend & Northfleet changed their name to Ebbsfleet United in 2007, so I've used the modern name from the club formation in 1946.
