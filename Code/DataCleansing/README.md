@@ -33,7 +33,7 @@ Sheffield Wednesday was intially known as "The Wednesday". I call the team "Shef
 English football since the early 1990s has had a convoluted history of renaming leagues. The league tiering remains the same, but the names of the tiers have changed. This is ultimately driven by money (e.g. naming rights).  
   -  I've used the tiering with the modern league names. This does yield some historical inconsistencies (there was no Premier League in 1890 for example), but it does keep the data set consistent.
 
-## Canceled ganes
+## Canceled games
 
 Some games were canceled but a score awarded and some games were played but the score didn't count. These kinds of fun and games happened around COVID. In a few odd cases teams refused to play, so the match was awarded against them without being played. In other cases, the match was played but the results canceled (e.g. [Dover Athletic](https://en.wikipedia.org/wiki/Dover_Athletic_F.C.)).
   - Where the game was not played but a score awarded, I ignored the match.
