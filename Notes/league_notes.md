@@ -44,4 +44,8 @@ The Football Association (FA) has penalized clubs for breach of its financial ru
 
 I removed Dover Athletic for the 2020-2021 season (complex story, but they only played part of the season).
 
+I've used the "traditional" names for Phoenix clubs.
+
+Gravesend & Northfleet changed their name to Ebbsfleet United in 2007, so I've used the modern name from the club formation in 1946.
+
 
