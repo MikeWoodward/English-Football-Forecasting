@@ -33,14 +33,6 @@ Sheffield Wednesday was intially known as "The Wednesday". I call the team "Shef
 English football since the early 1990s has had a convoluted history of renaming leagues. The league tiering remains the same, but the names of the tiers have changed. This is ultimately driven by money (e.g. naming rights).  
   -  I've used the tiering with the modern league names. This does yield some historical inconsistencies (there was no Premier League in 1890 for example), but it does keep the data set consistent.
 
-## Notes
-
-I removed Dover Athletic for the 2020-2021 season (complex story, but they only played part of the season).
-
-I've used the "traditional" names for Phoenix clubs.
-
-Gravesend & Northfleet changed their name to Ebbsfleet United in 2007, so I've used the modern name from the club formation in 1946.
-
 ## Canceled games
 
 Some games were canceled but a score awarded and some games were played but the score didn't count. These kinds of fun and games happened around COVID. In a few odd cases teams refused to play, so the match was awarded against them without being played. In other cases, the match was played but the results canceled (e.g. [Dover Athletic](https://en.wikipedia.org/wiki/Dover_Athletic_F.C.)).
@@ -50,3 +42,11 @@ Some games were canceled but a score awarded and some games were played but the 
 ## Attendance figures patchy in the early days of the leagues
 
 Some data sources are missing attendance figures for both historic and more modern matches. I filled in the gaps manually from a variety of sources, including individual club records. In only one case (an 1890 match) did I need to use an average figure. The attendance figures for some of the older games are plainly estimates; record keeping wasn't great at the end of the 19th century.
+
+## Other changes
+
+I removed Dover Athletic for the 2020-2021 season (complex story, but they only played part of the season).
+
+I've used the "traditional" names for Phoenix clubs.
+
+Gravesend & Northfleet changed their name to Ebbsfleet United in 2007, so I've used the modern name from the club formation in 1946.
