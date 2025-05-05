@@ -39,6 +39,6 @@ Some games were canceled but a score awarded and some games were played but the 
   - Where the game was not played but a score awarded, I ignored the match.
   - Where the game was played but the result later canceled, I included the match.
 
-## Attendace figures patchy in the early days of the leagues
+## Attendance figures patchy in the early days of the leagues
 
 Some data sources are missing attendance figures for both historic and more modern matches. I filled in the gaps manually from a variety of sources, including individual club records. In only one case (an 1890 match) did I need to use an average figure. The attendance figures for some of the older games are plainly estimates; record keeping wasn't great at the end of the 19th century.
