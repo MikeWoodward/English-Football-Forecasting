@@ -48,4 +48,6 @@ I've used the "traditional" names for Phoenix clubs.
 
 Gravesend & Northfleet changed their name to Ebbsfleet United in 2007, so I've used the modern name from the club formation in 1946.
 
+On 2019-04-17, a match was scheduled to take place between Bolton Wanderers and Brentford. Unfortunately, the Bolton players hadn't been paid, so they refused to play. The match was called off. Although the match was originally going to be rescehduled, the Football Association (FA) awarded the match to Brentford 1-0 without it being played. I've chosen to keep the score in the data even though the match wasn't played. I've done this for simplicity.
 
+Over the years, the FA has deducted points from teams for a range of issues, mostly involving financial issues. In my analysis, I've not included these point deductions because they reflect off-the-field issues.
