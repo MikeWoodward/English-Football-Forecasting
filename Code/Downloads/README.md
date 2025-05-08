@@ -1,69 +1,104 @@
-# Websites Used in the Python Codebase
+# Football Data Collection Scripts
 
-This document lists all the websites that are used in the Python files for data collection and web scraping. Each website serves a specific purpose in gathering football-related data.
+This repository contains Python scripts for collecting and processing football (soccer) data from various sources. Below is a comprehensive overview of the data sources and their usage.
 
-## 1. Transfermarkt (transfermarkt.com)
+## Data Sources
 
-**Purpose**: Collecting team and match data including market values, squad information, and attendance figures.
+### 1. FBRef.com
+**Used by:** `FBRef.py`
+- **Purpose:** Scrapes match schedules, scores, and additional metadata
+- **Data Collected:**
+  - Match dates
+  - Teams (home and away)
+  - Scores
+  - Attendance
+  - Match report URLs
+- **Server-friendly Practices:**
+  - Implements random delays between requests
+  - Uses proper user agent headers
+  - Respects rate limits
+  - Includes error handling and logging
 
-**Used in**:
-- `TransferValue.py`: Scrapes team market values and squad information
-- `MatchAttendance.py`: Collects match attendance data
+### 2. football-data.co.uk
+**Used by:** `FootballData.py`
+- **Purpose:** Downloads historical match data
+- **Data Collected:**
+  - Match results
+  - League standings
+  - Historical data from 1993-2024
+- **Server-friendly Practices:**
+  - Implements 60-120 second random delays between requests
+  - Uses proper user agent headers
+  - Processes one league at a time
+- **League Coverage:**
+  - Premier League (E0)
+  - Championship (E1)
+  - League One (E2)
+  - League Two (E3)
+  - Conference/National League (EC)
 
-**Specific URLs**:
-- Premier League: `https://www.transfermarkt.com/premier-league/...`
-- Championship: `https://www.transfermarkt.com/championship/...`
-- League One: `https://www.transfermarkt.com/league-one/...`
-- League Two: `https://www.transfermarkt.com/league-two/...`
+### 3. Transfermarkt
+**Used by:** `TransferValue.py`
+- **Purpose:** Scrapes team market values and squad information
+- **Data Collected:**
+  - Club names
+  - Squad sizes
+  - Foreign player counts
+  - Mean age
+  - Total market values
+- **Server-friendly Practices:**
+  - 2-4 second random delays between requests
+  - Proper user agent headers
+  - Respects robots.txt
+  - Error handling and logging
+- **League Coverage:**
+  - Premier League (Tier 1)
+  - Championship (Tier 2)
+  - League One (Tier 3)
+  - League Two (Tier 4)
 
-## 2. Football-Data.co.uk (football-data.co.uk)
+### 4. engsoccerdata (GitHub Repository)
+**Used by:** `match_attendance5.py`
+- **Purpose:** Downloads historical English football match data
+- **Data Collected:**
+  - Match results
+  - League information
+  - Historical data
+- **Files Used:**
+  - england.csv
+  - england_nonleague.csv
+- **Server-friendly Practices:**
+  - Uses GitHub's raw content API
+  - Implements timeout for requests
+  - Error handling and logging
 
-**Purpose**: Downloading historical football match data and statistics.
+## Output Locations
 
-**Used in**: `FootballData.py`
+All processed data is saved in the following directory structure:
+```
+../../RawData/Matches/
+├── EngSoccerData/
+│   └── engsoccerdata.csv
+├── Football-data/
+│   └── {tier_level}_{year}-{year+1}.csv
+└── TransferValues/
+    └── transfer_values_tier{tier}_{season}.csv
+```
 
-**URL Format**: `https://www.football-data.co.uk/mmz4281/{season}/{league}.csv`
+## General Best Practices
 
-**Leagues covered**:
-- E0 (Premier League)
-- E1 (Championship)
-- E2 (League One)
-- E3 (League Two)
-- EC (Conference/National League)
+All scripts implement:
+- Proper error handling
+- Logging functionality
+- Data validation
+- Clean data processing
+- Respectful web scraping practices
+- Documentation and type hints
 
-## 3. FBRef (fbref.com)
+## Requirements
 
-**Purpose**: Scraping detailed match data, schedules, and scores.
-
-**Used in**: `FBRef.py`
-
-**URL Format**: `https://fbref.com/en/comps/{league_index}/{season}/schedule/{season}-{league_name}-Scores-and-Fixtures`
-
-## 4. World Football (worldfootball.net)
-
-**Purpose**: Collecting historical match reports and data since 1892.
-
-**Used in**: `match_attendance3.py`
-
-**URL Format**: `https://www.worldfootball.net/all_matches/eng-{league}-{season}/`
-
-**Leagues covered**:
-- Premier League
-- Championship
-- League One
-- League Two
-- National League
-
-## 5. Football Web Pages (footballwebpages.co.uk)
-
-**Purpose**: Downloading football attendance data.
-
-**Used in**: `match_attendance2.py`
-
-## Common Features
-
-All scripts implement ethical web scraping practices including:
-- Random delays between requests (typically 2-4 seconds)
-- Proper user agent headers
-- Error handling and logging
-- Respect for website rate limits 
+- Python >= 3.10
+- pandas
+- requests
+- beautifulsoup4
+- numpy
