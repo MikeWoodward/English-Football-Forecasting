@@ -172,7 +172,8 @@ if __name__ == "__main__":
     try:
         # Define list of English football leagues to scrape
         # These are the current names of the top 5 tiers of English football
-        # Each league has a start year when it was founded or reorganized
+        # Each league has a start year when it was founded or reorganized. 
+        # The start year might also be the first year in the dataset.
         leagues: List[Dict[str, Union[str, int]]] = [
             {'name': 'premier-league', 'league_tier': 1, 'start_year': 1888},
             {'name': 'championship', 'league_tier': 2, 'start_year': 1892},

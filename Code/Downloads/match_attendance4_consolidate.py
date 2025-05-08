@@ -200,6 +200,11 @@ def main() -> None:
         
         # Combine the DataFrames
         consolidated_df = combine_attendance4s(dfs)
+
+        # Order the dataframe by season, league_tier, match_date, home_club
+        consolidated_df = consolidated_df.sort_values(
+            by=['season', 'league_tier', 'match_date', 'home_club']
+        )
         
         # Save the consolidated DataFrame to CSV
         output_path = Path("../../RawData/Matches/Attendance4/attendance4.csv")
