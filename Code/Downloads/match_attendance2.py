@@ -199,7 +199,7 @@ EXCLUDED_COMPETITIONS = [
     "Mid Cheshire District FA Secretary's Cup",
 
     "Papa John's Trophy",
-    'Papa John’s Trophy',
+    "Papa John’s Trophy",
     
     # Other
     'Friendly'
@@ -250,37 +250,100 @@ def download_file(url: str, output_path: str) -> Tuple[bool, Optional[pd.DataFra
             f.write(response.content)
         
         # Read the CSV file into a pandas DataFrame
-        attendance = pd.read_csv(output_path)
+        attendance2 = pd.read_csv(output_path)
         
         # Filter out excluded competitions
-        if 'Competition' in attendance.columns:
-            initial_rows = len(attendance)
-            attendance = attendance[~attendance['Competition'].isin(EXCLUDED_COMPETITIONS)]
-            print(attendance['Competition'].unique())
-            filtered_rows = len(attendance)
+        if 'Competition' in attendance2.columns:
+            initial_rows = len(attendance2)
+            attendance2 = attendance2[~attendance2['Competition'].isin(EXCLUDED_COMPETITIONS)]
+            print(attendance2['Competition'].unique())
+            filtered_rows = len(attendance2)
             print(f"Filtered out {initial_rows - filtered_rows} non-top-tier matches")
 
         # Filter out rounds
-        if 'Round' in attendance.columns:
-            attendance = attendance[attendance['Round'].isna()]
+        if 'Round' in attendance2.columns:
+            attendance2 = attendance2[attendance2['Round'].isna()]
 
         # add a league_tier column
-        if 'Competition' in attendance.columns:
+        if 'Competition' in attendance2.columns:
             conditions = [
-                (attendance['Competition'].str.contains('Premiership|Premier League', case=False, na=False)),
-                (attendance['Competition'].str.contains('Championship', case=False, na=False)),
-                (attendance['Competition'].str.contains('League One', case=False, na=False)),
-                (attendance['Competition'].str.contains('League Two', case=False, na=False)),
-                (attendance['Competition'].str.contains('National League|Conference', case=False, na=False))
+                (attendance2['Competition'].str.contains('Premiership|Premier League', case=False, na=False)),
+                (attendance2['Competition'].str.contains('Championship', case=False, na=False)),
+                (attendance2['Competition'].str.contains('League One', case=False, na=False)),
+                (attendance2['Competition'].str.contains('League Two', case=False, na=False)),
+                (attendance2['Competition'].str.contains('National League|Conference', case=False, na=False))
             ]
             values = [1, 2, 3, 4, 5]
-            attendance['league_tier'] = pd.NA
-            attendance['league_tier'] = np.select(conditions, values, default=pd.NA)
+            attendance2['league_tier'] = pd.NA
+            attendance2['league_tier'] = np.select(conditions, values, default=pd.NA)
+
+        # Drop unnecessary columns that we don't need for analysis
+        # Using errors='ignore' to handle cases where columns might not exist
+        attendance2 = attendance2.drop(
+            ['Competition', 'Round'], 
+            axis=1, 
+            errors='ignore'
+        )
+        
+        # Define mapping of original column names to new standardized names
+        # Following Python naming conventions (lowercase with underscores)
+        column_renames = {
+            # Raw attendance number
+            'Attendance': 'attendance',
+            # Name of home team
+            'Home Team': 'home_club',
+            # Name of away team
+            'Away Team': 'away_club',
+            # Goals scored by home team
+            'Home Score': 'home_goals',
+            # Goals scored by away team
+            'Away Score': 'away_goals'
+        }
+        
+        # Apply the column renaming to the DataFrame
+        attendance2 = attendance2.rename(columns=column_renames)
+
+        # Split Date/Time column and format dates
+        if 'Date/Time' in attendance2.columns:
+            # Initialize match_time column with NaN values
+            attendance2['match_time'] = pd.NA
+            attendance2['match_date'] = pd.NA
+            
+            # Handle rows with Date/Time values
+            mask = attendance2['Date/Time'].notna()
+            if mask.any():
+                # Split into temporary columns
+                split_dt = attendance2.loc[mask, 'Date/Time'].str.split(' ', expand=True)
+                
+                # Assign date values where we have them
+                attendance2.loc[mask, 'match_date'] = pd.to_datetime(
+                    split_dt[0], 
+                    format='%d/%m/%Y'
+                ).dt.strftime('%Y-%m-%d')
+                
+                # Assign time values only where they exist (column 1 from split)
+                if split_dt.shape[1] > 1:
+                    time_mask = mask & split_dt[1].notna()
+                    if time_mask.any():
+                        attendance2.loc[time_mask, 'match_time'] = split_dt[1].loc[time_mask].str.zfill(5)
+            
+            # Drop the original Date/Time column
+            attendance2 = attendance2.drop('Date/Time', axis=1)
+
+        # Clean up attendance
+        if 'attendance' in attendance2.columns:
+            # Convert attendance column to strings first
+            attendance2['attendance'] = attendance2['attendance'].astype(str)
+            # Handle nulls safely using fillna() - temporarily fill nulls with empty string
+            attendance2['attendance'] = attendance2['attendance'].fillna('')
+            attendance2['attendance'] = attendance2['attendance'].str.replace('sold out', '')
+            # Restore nulls where we had empty strings
+            attendance2.loc[attendance2['attendance'] == '', 'attendance'] = pd.NA
 
         # Save the processed data
-        attendance.to_csv(output_path, index=False)
+        attendance2.to_csv(output_path, index=False)
         
-        return True, attendance
+        return True, attendance2
     
     except Exception as e:
         print(f"Error downloading/processing {url}: {e}")
@@ -297,7 +360,8 @@ def download_attendance_data() -> dict[str, pd.DataFrame]:
     filenames = [
         "20222023.csv", "20212022.csv", "20202021.csv", "20192020.csv",
         "20182019.csv", "20172018.csv", "20162017.csv", "20152016.csv",
-        "20142015.csv", "20132014.csv", "20122013.csv", "20112012.csv",
+        "20142015.csv", "20132014.csv", "20122013.csv", 
+        "20112012.csv",
         "20102011.csv", "20092010.csv", "20082009.csv", "20072008.csv",
         "20062007.csv", "20052006.csv", "20042005.csv"
     ]
