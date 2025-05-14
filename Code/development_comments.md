@@ -13,6 +13,7 @@
 | Code generation | C |
 | Code completion | A |
 | Code commenting | A     |
+| Code tidying and correcting run time errors | D |
 | PEP8 compliance | B |
 | Documentation | A     |
 | GitHub integration  | C    |
@@ -94,13 +95,17 @@ Although it's a niche topic, it's worth mentioning that code generation didn't w
 
 Excellent. Best I've come across.
 
-There were several cases where code generation didn't work very well, but code completion did.
+There were several cases where code generation didn't work very well, but code completion did. Code completion works well if the context is good, for example, if you create a clear comment, the system will offer code completion based on your comment, and almost all the time, it will do well.
 
 I found code completion to be a very compelling feature.
 
 ## Commenting code
 
 This is definitely a Cursor superpower. It's almost unbelievably good.
+
+## Code tidying and correcting run time errors
+
+Some of the time, if you ask it to tidy your code, it will do the right thing. However, most of the time I found it introduces errors. There's a similar problem correcting run-time errors, but here, most of the time, it will correct the error just fine. However, a significant fraction of the time it just makes things worse and breaks the code.
 
 ## PEP8 compliance
 
