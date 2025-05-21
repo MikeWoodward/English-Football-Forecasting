@@ -1,4 +1,3 @@
-
 # Comments on using Cursor for data science
 
 ## Cursor scorecard
@@ -7,25 +6,25 @@
 
 | Area    | Grade |
 | -------- | ------- |
-| Getting started  | D    |
-| Usability | B |
-| Debugging | C |
-| Code generation | C |
-| Code completion | A |
-| Code commenting | A     |
-| Code tidying and correcting run time errors | D |
-| PEP8 compliance | B |
-| Documentation | A     |
-| Pandas dataframe manipulation | C |
-| GitHub integration  | C    |
-| Error finding | B |
+| [Getting started](#getting-started-with-cursor)  | D    |
+| [Usability](#usability) | B |
+| [Debugging](#debugging) | C |
+| [Code generation](#code-generation) | C |
+| [Code completion](#code-completion) | A |
+| [Code commenting](#commenting-code) | A     |
+| [Code tidying and correcting run time errors](#code-tidying-and-correcting-run-time-errors) | D |
+| [PEP8 compliance](#pep8-compliance) | B |
+| [Documentation](#documentation) | A     |
+| [GitHub integration](#github-integration)  | C    |
+| [Error finding](#error-finding) | B |
 
 ### Specific tasks
 
 | Area    | Grade |
 | -------- | ------- |
-| Web scraping| D |
-| Data cleansing| In progress |
+| [Pandas dataframe manipulation](#pandas-dataframe-manipulation) | C |
+| [Web scraping](#code-generation-for-scraping-data) | D |
+| [Data cleansing](#data-cleansing) | In progress |
 
 ## Introduction
 
