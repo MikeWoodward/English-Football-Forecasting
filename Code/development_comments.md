@@ -16,6 +16,7 @@
 | Code tidying and correcting run time errors | D |
 | PEP8 compliance | B |
 | Documentation | A     |
+| Pandas dataframe manipulation | C |
 | GitHub integration  | C    |
 | Error finding | B |
 
@@ -114,6 +115,12 @@ Surprisingly, generated code/completion code isn't PEP8 'out of the box', for ex
 ## Documentation
 
 This means creating markdown files that explain what the code is doing. It did a really great job here.
+
+## Pandas dataframe manipulation
+
+This means the ability to manipulate Pandas dataframes in non-trivial ways, for example, using groupby corectly.
+
+Cursor can do it quite well for basic manipulations, but it fails for even moderately complicated tasks. For example, I asked it to find cases where a club only appeared as an away team or a home team. The generated code looked as if it might be correct, but it wasn't. In fact, the code didn't work at all and I had to write it by hand. This was by no means a one-off, Cursor consistently failed to produce correct code for dataframe manipulations.
 
 ## GitHub integration
 
