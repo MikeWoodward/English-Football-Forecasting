@@ -2,6 +2,10 @@ WORK IN PROGRESS
 
 # Recommendations for rolling out generative AI to data science and technical teams
 
+## Summary - proceed with caution
+
+There are substantial productivity gains to be had from rolling out generative AI for code generation to data science teams, but there are major issues to be managed and overcome. Without effective management, including expectation setting, roll outs will fail. 
+
 ## Introduction - why, who, and how
 
 This is a guide for rolling out generative AI, meaning code generation, for data science teams. It covers the benefits you might expect to see, the issues you'll encounter, and some suggestions for coping with them. As of June 2025, I'm referring to using Cursor for data science.
