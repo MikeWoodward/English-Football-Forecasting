@@ -81,13 +81,13 @@ It also did well on some low-level and obscure tasks that would have otherwise r
 
 ### Negatives
 
-Technical code is a different story.
-
-With very careful prompting, it got me to an acceptable solution for statistics-oriented code. But I had to check the code carefully. Several times, it produced code that was either flat-out wrong or just a really bad implementation. 
+Technical code generaytion is not a good story. With very careful prompting, it got me to an acceptable solution for statistics-oriented code. But I had to check the code carefully. Several times, it produced code that was either flat-out wrong or just a really bad implementation. 
 
 I found that code that required details instructions (e.g. specific dataframe joins) could be generated, but given how detailed the prompt needed to be, the cost savings for code generation were minimal.
 
 On occassions, code generatiom gave overly-complex solutions to simple tasks, for example, its solution for changing the text "an example" to "An Example" was a function using a loop.
+
+From a higher-level code structure persepective, code generation is not good. Persistently, it would create new functions rather than genralizing and re-using existing functions. For example, I had boiler-plate code to open a CSV and read it into a Pandas dataframe with error checking. Code generation created a new function to read in data rather than re-use the existing code. Once I told it to consolidate all the read functions, it did. Overall, it's not good at generating well-structured code.
 
 Although it's a niche topic, it's worth mentioning that code generation didn't work at all well for web scraping. 
 
