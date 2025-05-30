@@ -34,7 +34,13 @@ It's not plain sailing, there are several issue to overcome to get the productiv
 
 ### It's not a notebook
 
+On the whole, data scientists don't use IDEs, they use notebooks. Cursor, and all the other agentic IDEs, are not notebooks. This is **the** most important issue to deal with and it's probably going to be the biggest cause of roll out failure.
+
+Notebooks have features that IDEs don't, specifically the ability to do "data interactive" development and debugging. This is the key reason why data scientists use notebooks. Unfortunately, none of the agentic AI systems have anything that comes close to the power of notebooks.
+
+
 ### Expectations
+
 
 ### A realistic vew of code generation for data science
 
