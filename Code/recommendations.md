@@ -30,11 +30,15 @@ Overall, if used corectly, Cursor can give a significant productivity boost for 
 
 ## Problems
 
+It's not plain sailing, there are several issue to overcome to get the productivity benefits.
+
 ### It's not a notebook
 
 ### Expectations
 
 ### A realistic vew of code generation for data science
+
+### Data scientists are not software engineers and neither is Cursor
 
 ## Ways of working
 
