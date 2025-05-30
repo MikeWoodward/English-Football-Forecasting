@@ -4,11 +4,11 @@ WORK IN PROGRESS
 
 ## Summary - proceed with caution
 
-There are substantial productivity gains to be had from rolling out generative AI for code generation to data science teams, but there are major issues to be managed and overcome. Without effective management, including expectation setting, roll outs will fail. 
+There are substantial productivity gains to be had from rolling out generative AI for code generation to data science teams, but there are major issues to be managed and overcome. Without effective management, including expectation setting, roll-outs will fail. 
 
 ## Introduction - why, who, and how
 
-This is a guide for rolling out generative AI, meaning code generation, for data science teams. It covers the benefits you might expect to see, the issues you'll encounter, and some suggestions for coping with them. As of June 2025, I'm referring to using Cursor for data science.
+This is a guide for rolling out generative AI, meaning code generation, for data science teams. It covers the benefits you might expect to see, the issues you'll encounter, and some suggestions for coping with them. As of June 2025, I'm referring to using Cursor for data science. I'm aware that not everyone knows what Cursor and the other agentic AI-enabled IDEs are, so I've added a section at the end of this document to explain what they are and what they do.
 
 Although I'm focused on data science, all my comments apply to anyone doing technical coding, by which I mean code that's algorithmically complex or uses "advanced" statistics. This can include people with the job titles "Analyst" or "Software Engineer".
 
@@ -26,7 +26,7 @@ There are other key advantages:
 * Code completion. Given a comment or a specifc prompts, Cursor can generate code blocks, including using the correct API settings. This means less time looking up how to use APIs.
 * Code generation. Cursor can generate the outline of functions and much of the functionality, but this has to be well-managed.
 
-Overall, if used corectly, Cursor can give a significant productivity boost for data science.
+Overall, if used corectly, Cursor can give a significant productivity boost for data science teams.
 
 ## Problems
 
@@ -38,5 +38,5 @@ Overall, if used corectly, Cursor can give a significant productivity boost for 
 
 ## Ways of working
 
-## What is Cursor
+## What is Cursor - agentic AI IDE
 
