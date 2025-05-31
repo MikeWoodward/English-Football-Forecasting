@@ -53,7 +53,7 @@ Getting data scientists to abandon notebooks and move wholesale to an agentic ID
 
 ### Data scientists are not software engineers and neither is Cursor
 
-## Ways of working
+## Roll out recommendations
 
 ## What is Cursor - agentic AI IDE
 
