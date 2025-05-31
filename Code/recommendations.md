@@ -6,15 +6,23 @@ WORK IN PROGRESS
 
 There are substantial productivity gains to be had from rolling out generative AI for code generation to data science teams, but there are major issues to be managed and overcome. Without effective leadership, including expectation setting, roll-outs will fail. 
 
-Replacing notebooks with an agentic AI like Cursor will not succeed. Using 
+Replacing notebooks with an agentic AI like Cursor will not succeed. The most successful strategy is likely the combined use of notebooks and an agentic AI IDE to give data scientists an understanding of the benefits of the technology and its limitations. This is in preparation for the likely appearance of an agentic notebook product.
 
-## Introduction - why, who, and how
+For groups that use IDEs, I recommend immediate use of Cursor or one of its comoetitors.
 
-This is a guide for rolling out generative AI, meaning code generation, for data science teams. It covers the benefits you might expect to see, the issues you'll encounter, and some suggestions for coping with them. I'm writing this in June 2025, and using the Cursor IDE, along with Claude, Open AI and other code generation LLMs. I'm aware that not everyone knows what Cursor and the other agentic AI-enabled IDEs are, so I've added a section at the end of this document to explain what they are and what they do.
+## Introduction
+
+### Why, who, and how
+
+This is a guide for rolling out generative AI, meaning code generation, for data science teams. It covers the benefits you might expect to see, the issues you'll encounter, and some suggestions for coping with them. 
+
+My comments and recommendations are based on my use of Cursor (an agentic IDE) along with Claude, Open AI and other code generation LLMs. I'm using them on multiple data science projects. As of June 2025, there are no data science agentic AI notebooks on the market, however, in my opinion, that's likely to change later on in 2025. 
 
 Although I'm focused on data science, all my comments apply to anyone doing technical coding, by which I mean code that's algorithmically complex or uses "advanced" statistics. This can include people with the job titles "Analyst" or "Software Engineer".
 
-## The situation for software engineers
+I'm aware that not everyone knows what Cursor and the other agentic AI-enabled IDEs are, so I've added a section at the end of this document to explain what they are and what they do.
+
+### The situation for software engineers
 
 
 
