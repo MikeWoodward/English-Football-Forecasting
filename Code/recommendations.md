@@ -8,7 +8,7 @@ There are substantial productivity gains to be had from rolling out generative A
 
 Replacing notebooks with an agentic AI like Cursor will not succeed. The most successful strategy is likely the combined use of notebooks and an agentic AI IDE to give data scientists an understanding of the benefits of the technology and its limitations. This is in preparation for the likely appearance of an agentic notebook product.
 
-For groups that use IDEs, I recommend immediate use of Cursor or one of its comoetitors.
+For groups that use IDEs, I recommend immediate use of Cursor or one of its competitors.
 
 ## Introduction
 
