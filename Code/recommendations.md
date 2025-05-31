@@ -26,9 +26,9 @@ I'm aware that not everyone knows what Cursor and the other agentic AI-enabled I
 
 ### The situation for software engineers
 
+For more traditional software engineering roles, agentic AI IDEs offer substantial advantages and don't suffer from the "not a notebook" problem. Despite some of the limitations and drawbacks of code generation, the gains are such that I recommend an immediate managed, and thoughtful roll-out. A managed and thoughtful roll-out means setting realistic goals, having proper training, and clear communications. Realistic goals covers productivity gains; promising productivity gains of 100% or more is unrealistic. Proper training means educating the team on when to use code gen and when not to use it. Clear communications means the team must be able to share their experiences and learn from one another.
 
-
-## Benefits 
+## Benefits for data science
 
 Cursor can automate a lot of the "boring" stuff that consumes data scientist's time, but isn't core algorithm development. Here's a list:
 
@@ -44,22 +44,21 @@ There are other key advantages:
 
 Overall, if used corectly, Cursor can give a *significant* productivity boost for data science teams.
 
-## Problems
+## Problems for data science
 
 It's not plain sailing, there are several issue to overcome to get the productivity benefits.
 
 ### It's not a notebook
 
-On the whole, data scientists don't use IDEs, they use notebooks. Cursor, and all the other agentic IDEs, are not notebooks. This is **the** most important issue to deal with and it's probably going to be the biggest cause of roll out failure.
+On the whole, data scientists don't use IDEs, they use notebooks. Cursor, and all the other agentic IDEs, are not notebooks. This is **the** most important issue to deal with and it's probably going to be the biggest cause of roll-out failure.
 
 Notebooks have features that IDEs don't, specifically the ability to do "data interactive" development and debugging; this is the key reason why data scientists use notebooks. Unfortunately, none of the agentic AI systems have anything that comes close to the power of notebooks and there are no agentic AI notebooks that have gained widespread usage. 
 
 Getting data scientists to abandon notebooks and move wholesale to an agentic IDE like Cursor is an uphill task and is unlikely to succeed. 
 
-### Expectations
-
-
 ### A realistic vew of code generation for data science
+
+
 
 ### Data scientists are not software engineers and neither is Cursor
 
