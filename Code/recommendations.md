@@ -37,6 +37,7 @@ Cursor can automate a lot of the "boring" stuff that consumes data scientist's t
 * Commenting code. This includes function commenting using, for example, the Google function documentation format.
 * Documentation. This means documenting how code works and how it's structured, e.g. create a markdown file explaining how the code base works.
 * Boilerplate code. This includes code like reading in data from a data source.
+* Test harnesses, test code, and test data. Code generation is excellent at generating regression test frameworks, including test data.
 * PEP8 compliance. Cursor can restructure code to meet PEP8 requirements.
 
 There are other key advantages too:
@@ -66,27 +67,69 @@ It's also worth pointing out that for Python code generation, code gen works ver
 
 Code completion is slightly different from code generation and suffers from fewer problems, but it can yield crazily wrong code.
 
+### Trashing code
+
+Sometimes, code needs to be refactored. This means changing variable names, removing unused code, structuring code better, etc. In my experience, asking Cursor to do this can introduce serious errors
+
 ### Rules
 
-Cursor rules are "settings" that control how code is generated. These settings are written in English prose, e.g. "Use meaningful variable names. Do not use df as the name of a dataframe variable." Rules are sent to the agentic LLM to provide context. Unfortunately, rules often have the flavor of magic spells and sometimes seem to be ignored.
+Cursor rules are "settings" that control how code is generated. These settings are written in English prose, e.g. "Use meaningful variable names. Do not use df as the name of a dataframe variable." Rules are sent to the agentic LLM to provide context. Unfortunately, rules often have the flavor of magic spells and sometimes seem to be ignored. 
+
+The failure to understand and manage rules may be a reason why roll-outs fail.
+
+## General comments
 
 ### Data scientists are not software engineers and neither is Cursor
 
 Data scientists focus on building algorithms, not on complete systems. In my experience, data scientists are bad at structuring code (e.g. functional decomposition), a situation made worse by notebooks. Neither Cursor, nor any of its competitors or LLMs, will make up for this shortcoming. 
 
-## Roll out recommendations
+### "Accept all" will lead to failure
 
-### Initial briefing and on-going communications
+I'm aware of real-world cases where junior staff have blindly accepted all generated code and it hasn't ended well. Bear in mind, generated code can sometimes be very wrong. All generated code (and code completion code) *must* be reviewed. 
+
+## Pilot and roll-out recommendations
+
+### Clear goals and measuring success
+
+All projects need clear goals and some form of success metric. For code generation for data science, goals and metrics might be:
+
+"To evaluate the productivity impact of using code generation for data science. This includes understanding the benefits, pitfalls, and best ways of working. The goal is to clearly recommend if/how code generation should be used and appropriate ways of working with it. Deliverables are 1) a written report, 2) a presentation to company executives."
+
+A good staff metric might be to measure participants engagement in the Slack channel (or other forum). Everyone involved should be communicating frequently, clearly, and valuably. 
+
+### Initial briefing and on-going communications - expectation setting
+
+Everyone in the process must have a realistic sense of the benefits of this technology and the problems, this includes the staff doing the work, their managers, and all executive and C-level staff.
+
+Here are my suggestions:
+* Written briefing on benefits and problems.
+* Briefing meetings for all stakeholders.
+* Regular feedback sessions for hands-on participants. These sessons are where people share their experiences.
+* Regular reports to executives on project progress.
+* On-going communications forum. This could be something like a Slack channel.
+
+### Clear lines of responsibility
+
+Assuming there are multiple people involved in an evaluation or roll-out, we need to define who does what. For this project, this means:
+* One person to act as the rules controller. The quality of generated code depends on rules, if everyone uses wildly differen rules the results will inconsistent. The rules controller will provide recommended rules that everyone should use. Participants can experiment with rules, but they must keep the controller informed.
+* One person to act as recommendations controller. As I've explained, there are "dos" and do not "dos" for working with code generation. One person should be responsible for continually keeping this up to date. 
+
+### Limits on ways of working and project scope
+
+There are multiple IDEs on the market and their are multiple LLMs that will generate code. Evaluating all of them will take considerable time and be expensive. My recommendation is to choose one IDE (e.g. Cursor, Windsurf, Lovable or one of the others) and one agentic AI. It's OK to have some experimentation at the boundaries, e.g. experimenting with a different agentic AIs, but this needs to be managed - as always, project discipline is important.
+
+### Training
+
+Just setting people up and telling them to get started won't work. You need to train the team how to use agentic IDEs like Cursor. You should record the training so everyone can access it later if they run into trouble. Training must include what not to do, including pointing out failure modes (e.g. blingly accepting generated code).
+
+It may also be worth re-training people partway through the project with the knowledge gained so far.
 
 ### Notebook and Cursor roll-out
 
+
 ### Rules
 
-### Explain the benefits and limits of code generation
-
-### Explain the benefits limits of code completion
-
-### Regression test
+### Regression tests
 
 ## What is Cursor - agentic AI IDE
 
