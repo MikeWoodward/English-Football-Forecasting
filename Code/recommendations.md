@@ -64,15 +64,15 @@ Cursor and LLMs in general, are bad at generating technically complex code, e.g.
 
 It's also worth pointing out that for Python code generation, code gen works very poorly for Pandas dataframe manipulation beyond simple transformations.
 
-Code generation works well in these cases:
-* Boilerplate code - e.g. reading data from a data source and associated error handling.
-* API suggestion and API arguments. Often, there are different libraries and functions that do the same thing. Code generation is sometimes very helpful pointing out a new way to solve a problem. It also helps with getting the argument for APIs right.
+Code completion is slightly different from code generation and suffers from fewer problems, but it can yield crazily wrong code.
 
-Code completion is slightly different from code generation
+### Rules
+
+Cursor rules are "settings" that control how code is generated. These settings are written in English prose, e.g. "Use meaningful variable names. Do not use df as the name of a dataframe variable." Rules are sent to the agentic LLM to provide context. Unfortunately, rules often have the flavor of magic spells and sometimes seem to be ignored.
 
 ### Data scientists are not software engineers and neither is Cursor
 
-Data scientists focus on building algorithms, not on complete systems. In my experience, data scientists are bad at structuring code (e.g. functional decomposition), a situation made worse by notebooks. Cursor, any of its competitors, or LLMs will not make up for this shortcoming. 
+Data scientists focus on building algorithms, not on complete systems. In my experience, data scientists are bad at structuring code (e.g. functional decomposition), a situation made worse by notebooks. Neither Cursor, nor any of its competitors or LLMs, will make up for this shortcoming. 
 
 ## Roll out recommendations
 
