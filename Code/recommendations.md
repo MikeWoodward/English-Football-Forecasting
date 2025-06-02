@@ -111,7 +111,7 @@ Here are my suggestions:
 ### Clear lines of responsibility
 
 Assuming there are multiple people involved in an evaluation or roll-out, we need to define who does what. For this project, this means:
-* One person to act as the rules controller. The quality of generated code depends on rules, if everyone uses wildly differen rules the results will inconsistent. The rules controller will provide recommended rules that everyone should use. Participants can experiment with rules, but they must keep the controller informed.
+* One person to act as the rules controller. The quality of generated code depends on rules, if everyone uses wildly different rules the results will inconsistent. The rules controller will provide recommended rules that everyone should use. Participants can experiment with rules, but they must keep the controller informed.
 * One person to act as recommendations controller. As I've explained, there are "dos" and "don'ts" for working with code generation. One person should be responsible for continually keeping this up to date. 
 
 ### Limits on ways of working and project scope
