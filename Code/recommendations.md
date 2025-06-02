@@ -87,13 +87,13 @@ Data scientists focus on building algorithms, not on complete systems. In my exp
 
 I'm aware of real-world cases where junior staff have blindly accepted all generated code and it hasn't ended well. Bear in mind, generated code can sometimes be very wrong. All generated code (and code completion code) *must* be reviewed. 
 
-## Pilot and roll-out recommendations
+## Code generation pilot and roll-out recommendations
 
 ### Clear goals and measuring success
 
 All projects need clear goals and some form of success metric. For code generation for data science, goals and metrics might be:
 
-"To evaluate the productivity impact of using code generation for data science. This includes understanding the benefits, pitfalls, and best ways of working. The goal is to clearly recommend if/how code generation should be used and appropriate ways of working with it. Deliverables are 1) a written report, 2) a presentation to company executives."
+"To evaluate the productivity impact of using code generation for data science. This includes understanding the benefits, pitfalls, and best ways of working. The goal is to clearly recommend if/how code generation should be used and appropriate ways of working with it. Deliverables are 1) a written report including a list of recommendations, 2) a presentation to company executives."
 
 A good staff metric might be to measure participants engagement in the Slack channel (or other forum). Everyone involved should be communicating frequently, clearly, and valuably. 
 
@@ -112,7 +112,7 @@ Here are my suggestions:
 
 Assuming there are multiple people involved in an evaluation or roll-out, we need to define who does what. For this project, this means:
 * One person to act as the rules controller. The quality of generated code depends on rules, if everyone uses wildly differen rules the results will inconsistent. The rules controller will provide recommended rules that everyone should use. Participants can experiment with rules, but they must keep the controller informed.
-* One person to act as recommendations controller. As I've explained, there are "dos" and do not "dos" for working with code generation. One person should be responsible for continually keeping this up to date. 
+* One person to act as recommendations controller. As I've explained, there are "dos" and "don'ts" for working with code generation. One person should be responsible for continually keeping this up to date. 
 
 ### Limits on ways of working and project scope
 
@@ -126,6 +126,9 @@ It may also be worth re-training people partway through the project with the kno
 
 ### Notebook and Cursor roll-out
 
+This is the core problem for data science. Figuring out a way of using an agentic IDE and a notebook will be challenging. Here are my recommendations.
+
+1. Find a way of ensuring the agentic IDE and the notebook can use the same code file. 
 
 ### Rules
 
