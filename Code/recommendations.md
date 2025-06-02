@@ -64,6 +64,8 @@ Getting data scientists to abandon notebooks and move wholesale to an agentic ID
 
 ### Data scientists are not software engineers and neither is Cursor
 
+Data scientists focus on building algorithms, not on complete systems.
+
 ## Roll out recommendations
 
 ### Initial briefing and on-going communications
