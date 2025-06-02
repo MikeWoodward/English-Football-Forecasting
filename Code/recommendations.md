@@ -128,9 +128,15 @@ It may also be worth re-training people partway through the project with the kno
 
 This is the core problem for data science. Figuring out a way of using an agentic IDE and a notebook together will be challenging. Here are my recommendations.
 
-1. Find a way of ensuring the agentic IDE and the notebook can use the same code file. 
+1. Find a way of ensuring the agentic IDE and the notebook can use the same code file. Most notebooks can read in Python files and there are sometimes ways of preserving cell boundaries in Python (e.g. using # %%).
+2. Edit the same Python file in Cursor and in the notebook (this may mean refreshing the notebook so it picks up any changes, Cursor seems to pick up changes by itself).
+3. Use Cursor for comments, code completion etc. Use the notebook for live code devlopment and debugging.
+
+Exactly how to do this will depend on the exact agentic IDE and notebook.
 
 ### Rules
+
+
 
 ### Regression tests
 
