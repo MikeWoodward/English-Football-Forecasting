@@ -6,9 +6,9 @@ WORK IN PROGRESS
 
 There are substantial productivity gains to be had from rolling out generative AI for code generation to data science teams, but there are major issues to be managed and overcome. Without effective leadership, including expectation setting, roll-outs will fail. 
 
-Replacing notebooks with an agentic AI like Cursor will not succeed. The most successful strategy is likely the combined use of notebooks and an agentic AI IDE to give data scientists an understanding of the benefits of the technology and its limitations. This is in preparation for the likely appearance of an agentic notebook product.
+Replacing notebooks with an agentic AI like Cursor will not succeed. The most successful strategy is likely the combined use of notebooks and an agentic AI IDE to give data scientists an understanding of the benefits of the technology and its limitations. This is in preparation for the probable appearance of an agentic notebook product in the near future.
 
-For groups that use IDEs, I recommend immediate use of Cursor or one of its competitors.
+For groups that use IDEs (like software develooers), I recommend immediate use of Cursor or one of its competitors.
 
 ## Introduction
 
@@ -18,7 +18,7 @@ This is a guide for rolling out generative AI, meaning code generation, for data
 
 My comments and recommendations are based on my use of Cursor (an agentic IDE) along with Claude, Open AI and other code generation LLMs. I'm using them on multiple data science projects. 
 
-As of June 2025, there are no data science agentic AI notebooks on the market, however, in my opinion, that's likely to change later on in 2025. Data science teams that understand the use of agentic AI for code generation will have an advantage over teams that do not.
+As of June 2025, there are no data science agentic AI notebooks on the market, however, in my opinion, that's likely to change later on in 2025. Data science teams that understand the use of agentic AI for code generation will have an advantage over teams that do not, so early adoption is important.
 
 Although I'm focused on data science, all my comments apply to anyone doing technical coding, by which I mean code that's algorithmically complex or uses "advanced" statistics. This can include people with the job titles "Analyst" or "Software Engineer".
 
@@ -28,25 +28,27 @@ I'm aware that not everyone knows what Cursor and the other agentic AI-enabled I
 
 For more traditional software engineering roles, agentic AI IDEs offer substantial advantages and don't suffer from the "not a notebook" problem. Despite some of the limitations and drawbacks of code generation, the gains are such that I recommend an immediate managed, and thoughtful roll-out. A managed and thoughtful roll-out means setting realistic goals, having proper training, and clear communications. Realistic goals covers productivity gains; promising productivity gains of 100% or more is unrealistic. Proper training means educating the team on when to use code gen and when not to use it. Clear communications means the team must be able to share their experiences and learn from one another.
 
+I have written separate notes for software engineering deployment.
+
 ## Benefits for data science
 
-Cursor can automate a lot of the "boring" stuff that consumes data scientist's time, but isn't core algorithm development. Here's a list:
+Cursor can automate a lot of the "boring" stuff that consumes data scientist's time, but isn't core algorithm development (the main thing they're paid to do). Here's a list:
 
-* Commenting code. This includes function commenting using, for example, the Google function documentaiton format.
-* Documentation. This means documenting how code works and how it's structured.
+* Commenting code. This includes function commenting using, for example, the Google function documentation format.
+* Documentation. This means documenting how code works and how it's structured, e.g. create a markdown file explaining how the code base works.
 * Boilerplate code. This includes code like reading in data from a data source.
-* PEP8 compliance. It can restructure code to meet PEP8 requirements.
+* PEP8 compliance. Cursor can restructure code to meet PEP8 requirements.
 
-There are other key advantages:
+There are other key advantages too:
 
 * Code completion. Given a comment or a specifc prompts, Cursor can generate code blocks, including using the correct API parameters. This means less time looking up how to use APIs.
-* Code generation. Cursor can generate the outline of functions and much of the functionality, but this has to be well-managed.
+* Code generation. Cursor can generate the outline of functions and much of the functionality, *but this has to be well-managed*.
 
 Overall, if used corectly, Cursor can give a *significant* productivity boost for data science teams.
 
 ## Problems for data science
 
-It's not plain sailing, there are several issue to overcome to get the productivity benefits.
+It's not plain sailing, there are several issue to overcome to get these productivity benefits.
 
 ### It's not a notebook
 
@@ -63,6 +65,16 @@ Getting data scientists to abandon notebooks and move wholesale to an agentic ID
 ### Data scientists are not software engineers and neither is Cursor
 
 ## Roll out recommendations
+
+### Initial briefing and on-going communications
+
+### Notebook and Cursor roll-out
+
+### Rules
+
+### Explain the limits of code generation
+
+### Explain the limits of code completion
 
 ## What is Cursor - agentic AI IDE
 
