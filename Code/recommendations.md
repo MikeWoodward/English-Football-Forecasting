@@ -126,7 +126,7 @@ It may also be worth re-training people partway through the project with the kno
 
 ### Notebook and Cursor roll-out
 
-This is the core problem for data science. Figuring out a way of using an agentic IDE and a notebook will be challenging. Here are my recommendations.
+This is the core problem for data science. Figuring out a way of using an agentic IDE and a notebook together will be challenging. Here are my recommendations.
 
 1. Find a way of ensuring the agentic IDE and the notebook can use the same code file. 
 
