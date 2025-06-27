@@ -1,5 +1,5 @@
 # English Football Forecasting
-Project to forecast English football results. This is a work in progress.
+Project to forecast English football results for league matches only (excluding cup matches, international games, friendlies etc.). This is a work in progress.
 
 This work is based on an earlier project I did in R. I had several goals here:
 1. Use the project as a demo vehicle for using Cursor on a large machine learning project.
