@@ -21,9 +21,11 @@ I did two forms of quality checking:
 
 # ENFA
 
-This is the best data. I only found three errors in the entire data set.
+This is the best data. I only found three errors in the entire data set: https://enfa.co.uk/. The data has been purchased by the English Football League and may be commercially available in late 2025.
 
 # Football league web pages
+
+This data looks very similar to the ENFA data set but it makes venue and attendance data freely available. https://www.englishfootballleaguetables.co.uk/
 
 # Football club history
 
