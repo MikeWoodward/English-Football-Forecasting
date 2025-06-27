@@ -1,6 +1,6 @@
 # Points
 
-The clubs in the leagues are ranked by their number of points. At the end of each season, the top teams in the league are eligible for promotion to the next league up, and the bottom teams might be relegated to the league below. Bear in mind, money is not equally divided, so promotion can have a massive financial boost and relagation a financial penalty.
+The clubs in the leagues are ranked by their number of points. At the end of each season, the top teams in the league are eligible for promotion to the next league up, and the bottom teams might be relegated to the league below. Bear in mind, money is not equally divided, so promotion can have a massive financial boost and relegation has a massive financial penalty.
 
 Up until the 1981 season, match points were awarded as follows:
 * Loss: 0 points
