@@ -34,9 +34,9 @@ The table below is a simplified version of the league structure over time.
 
 # Oddities
 
-Matches were suspended during most of the First and Second World War.
+Matches were suspended during most of the First and Second World War. During the Second World War, matches were played, but with significant changes: players changed teams (or went off to war), and matches were limited to a 50 mile radius. The league proper wasn't resumed until 1946.
 
-A number of teams have gone bankrupt which is a breach of Football Association rules. In most cases, these teams have been resurrected under new names (so-called phoenix clubs), and again in most cases, these teams have reclaimed their old names after a few years.
+A number of teams have gone bankrupt which is a breach of Football Association rules. In most cases, these teams have been resurrected under new names (so-called phoenix clubs), and again in most cases, these teams have reclaimed their old names after a few years. There have been mergers between teams, though this was largely restricted to the lower leagues.
 
 The Football Association (FA) has penalized clubs for breach of its financial rules and several other issues. These penalties have been fines and/or points deductions. In a few cases (most notably, Dover Athletic), the FA has "canceled" match results, and in a few cases, the FA has awarded the match points to a club even though the match wasn't played.
 
