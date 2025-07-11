@@ -1,0 +1,553 @@
+﻿season,league_tier,match_date,match_time,home_club,away_club,home_goals,away_goals
+2024-2025,5,2024-08-10,15:00(10:00),Altrincham,Woking,1,0
+2024-2025,5,2024-08-10,15:00(10:00),Tamworth,Sutton United,1,1
+2024-2025,5,2024-08-10,15:00(10:00),Boston United,Rochdale,0,3
+2024-2025,5,2024-08-10,15:00(10:00),Fylde,Solihull Moors,3,2
+2024-2025,5,2024-08-10,15:00(10:00),Yeovil Town,Hartlepool Utd,0,1
+2024-2025,5,2024-08-10,15:00(10:00),Aldershot Town,FG Rovers,3,3
+2024-2025,5,2024-08-10,15:00(10:00),Maidenhead Utd,Eastleigh,0,2
+2024-2025,5,2024-08-10,15:00(10:00),Southend United,York City,1,1
+2024-2025,5,2024-08-10,15:00(10:00),Gateshead,Ebbsfleet Utd,5,1
+2024-2025,5,2024-08-10,15:00(10:00),Dag & Red,Wealdstone,2,1
+2024-2025,5,2024-08-10,15:00(10:00),Oldham Athletic,Braintree Town,3,0
+2024-2025,5,2024-08-10,15:00(10:00),FC Halifax Town,Barnet,2,1
+2024-2025,5,2024-08-17,15:00(10:00),Ebbsfleet Utd,Barnet,1,2
+2024-2025,5,2024-08-17,15:00(10:00),Solihull Moors,Maidenhead Utd,2,1
+2024-2025,5,2024-08-17,15:00(10:00),Sutton United,Altrincham,5,0
+2024-2025,5,2024-08-17,15:00(10:00),Eastleigh,Fylde,4,2
+2024-2025,5,2024-08-17,15:00(10:00),FC Halifax Town,Aldershot Town,0,1
+2024-2025,5,2024-08-17,15:00(10:00),Braintree Town,Yeovil Town,0,1
+2024-2025,5,2024-08-17,15:00(10:00),Boston United,FG Rovers,0,4
+2024-2025,5,2024-08-17,15:00(10:00),York City,Tamworth,2,0
+2024-2025,5,2024-08-17,15:00(10:00),Rochdale,Dag & Red,1,1
+2024-2025,5,2024-08-17,15:00(10:00),Woking,Gateshead,0,2
+2024-2025,5,2024-08-17,15:00(10:00),Hartlepool Utd,Southend United,0,0
+2024-2025,5,2024-08-17,15:00(10:00),Wealdstone,Oldham Athletic,0,1
+2024-2025,5,2024-08-20,19:45(14:45),Barnet,FG Rovers,1,0
+2024-2025,5,2024-08-20,19:45(14:45),Wealdstone,Sutton United,0,1
+2024-2025,5,2024-08-20,19:45(14:45),York City,Rochdale,1,0
+2024-2025,5,2024-08-20,19:45(14:45),Yeovil Town,Ebbsfleet Utd,3,2
+2024-2025,5,2024-08-20,19:45(14:45),Woking,Dag & Red,1,0
+2024-2025,5,2024-08-20,19:45(14:45),Oldham Athletic,Fylde,1,1
+2024-2025,5,2024-08-20,19:45(14:45),Braintree Town,Aldershot Town,2,1
+2024-2025,5,2024-08-20,19:45(14:45),FC Halifax Town,Gateshead,1,1
+2024-2025,5,2024-08-20,19:45(14:45),Tamworth,Hartlepool Utd,0,1
+2024-2025,5,2024-08-20,19:45(14:45),Maidenhead Utd,Altrincham,0,1
+2024-2025,5,2024-08-20,19:45(14:45),Eastleigh,Solihull Moors,2,1
+2024-2025,5,2024-08-20,19:45(14:45),Southend United,Boston United,2,0
+2024-2025,5,2024-08-23,19:45(14:45),Dag & Red,FC Halifax Town,1,1
+2024-2025,5,2024-08-24,12:30(07:30),Gateshead,Yeovil Town,3,1
+2024-2025,5,2024-08-24,15:00(10:00),Fylde,Maidenhead Utd,0,0
+2024-2025,5,2024-08-24,15:00(10:00),Aldershot Town,Oldham Athletic,4,1
+2024-2025,5,2024-08-24,15:00(10:00),Hartlepool Utd,Wealdstone,1,1
+2024-2025,5,2024-08-24,15:00(10:00),Altrincham,Eastleigh,0,1
+2024-2025,5,2024-08-24,15:00(10:00),Ebbsfleet Utd,Woking,0,3
+2024-2025,5,2024-08-24,15:00(10:00),Solihull Moors,Braintree Town,1,1
+2024-2025,5,2024-08-24,15:00(10:00),Barnet,Southend United,2,1
+2024-2025,5,2024-08-24,15:00(10:00),Rochdale,FG Rovers,0,0
+2024-2025,5,2024-08-24,15:00(10:00),Boston United,Tamworth,1,1
+2024-2025,5,2024-08-24,15:00(10:00),Sutton United,York City,2,2
+2024-2025,5,2024-08-26,15:00(10:00),Oldham Athletic,Gateshead,1,1
+2024-2025,5,2024-08-26,15:00(10:00),Yeovil Town,Rochdale,0,1
+2024-2025,5,2024-08-26,15:00(10:00),FG Rovers,Altrincham,2,1
+2024-2025,5,2024-08-26,15:00(10:00),Braintree Town,Ebbsfleet Utd,0,0
+2024-2025,5,2024-08-26,15:00(10:00),Eastleigh,Sutton United,1,1
+2024-2025,5,2024-08-26,15:00(10:00),Maidenhead Utd,Barnet,3,1
+2024-2025,5,2024-08-26,15:00(10:00),FC Halifax Town,Solihull Moors,0,1
+2024-2025,5,2024-08-26,15:00(10:00),Woking,Hartlepool Utd,3,2
+2024-2025,5,2024-08-26,15:00(10:00),Tamworth,Aldershot Town,3,2
+2024-2025,5,2024-08-26,15:00(10:00),Southend United,Dag & Red,2,2
+2024-2025,5,2024-08-26,15:00(10:00),York City,Boston United,0,2
+2024-2025,5,2024-08-26,15:00(10:00),Wealdstone,Fylde,1,0
+2024-2025,5,2024-08-31,15:00(10:00),Altrincham,Oldham Athletic,1,1
+2024-2025,5,2024-08-31,15:00(10:00),Ebbsfleet Utd,FC Halifax Town,0,1
+2024-2025,5,2024-08-31,15:00(10:00),Aldershot Town,Maidenhead Utd,4,3
+2024-2025,5,2024-08-31,15:00(10:00),Boston United,Yeovil Town,1,3
+2024-2025,5,2024-08-31,15:00(10:00),Rochdale,Woking,3,0
+2024-2025,5,2024-08-31,15:00(10:00),Barnet,Tamworth,7,0
+2024-2025,5,2024-08-31,15:00(10:00),Solihull Moors,Wealdstone,1,1
+2024-2025,5,2024-08-31,15:00(10:00),Gateshead,Eastleigh,2,1
+2024-2025,5,2024-08-31,15:00(10:00),Hartlepool Utd,Braintree Town,0,0
+2024-2025,5,2024-08-31,15:00(10:00),Dag & Red,York City,0,2
+2024-2025,5,2024-08-31,17:30(12:30),Sutton United,FG Rovers,1,2
+2024-2025,5,2024-09-07,15:00(10:00),Sutton United,Boston United,0,3
+2024-2025,5,2024-09-07,15:00(10:00),Braintree Town,Woking,0,0
+2024-2025,5,2024-09-07,15:00(10:00),Maidenhead Utd,Dag & Red,1,1
+2024-2025,5,2024-09-07,15:00(10:00),Oldham Athletic,Southend United,1,1
+2024-2025,5,2024-09-07,15:00(10:00),Wealdstone,York City,0,2
+2024-2025,5,2024-09-07,15:00(10:00),Solihull Moors,FG Rovers,0,1
+2024-2025,5,2024-09-07,15:00(10:00),Altrincham,Ebbsfleet Utd,4,0
+2024-2025,5,2024-09-07,15:00(10:00),Eastleigh,Tamworth,1,0
+2024-2025,5,2024-09-07,15:00(10:00),Hartlepool Utd,FC Halifax Town,0,0
+2024-2025,5,2024-09-07,15:00(10:00),Fylde,Yeovil Town,3,4
+2024-2025,5,2024-09-07,15:00(10:00),Gateshead,Barnet,2,0
+2024-2025,5,2024-09-07,17:30(12:30),Aldershot Town,Rochdale,0,2
+2024-2025,5,2024-09-10,19:45(14:45),Yeovil Town,Solihull Moors,0,1
+2024-2025,5,2024-09-10,19:45(14:45),Woking,Wealdstone,1,0
+2024-2025,5,2024-09-10,19:45(14:45),Boston United,Hartlepool Utd,1,2
+2024-2025,5,2024-09-10,19:45(14:45),Rochdale,Maidenhead Utd,3,1
+2024-2025,5,2024-09-10,19:45(14:45),Barnet,Altrincham,2,1
+2024-2025,5,2024-09-10,19:45(14:45),Dag & Red,Sutton United,3,0
+2024-2025,5,2024-09-10,19:45(14:45),Ebbsfleet Utd,Aldershot Town,0,0
+2024-2025,5,2024-09-10,19:45(14:45),York City,Braintree Town,2,1
+2024-2025,5,2024-09-10,19:45(14:45),Southend United,Eastleigh,2,0
+2024-2025,5,2024-09-10,19:45(14:45),FC Halifax Town,Oldham Athletic,1,1
+2024-2025,5,2024-09-10,19:45(14:45),FG Rovers,Fylde,3,0
+2024-2025,5,2024-09-14,15:00(10:00),Barnet,Braintree Town,3,1
+2024-2025,5,2024-09-14,15:00(10:00),Yeovil Town,Altrincham,0,0
+2024-2025,5,2024-09-14,15:00(10:00),York City,Fylde,3,0
+2024-2025,5,2024-09-14,15:00(10:00),Ebbsfleet Utd,Hartlepool Utd,1,0
+2024-2025,5,2024-09-14,15:00(10:00),FC Halifax Town,Eastleigh,3,1
+2024-2025,5,2024-09-14,15:00(10:00),Rochdale,Solihull Moors,1,2
+2024-2025,5,2024-09-14,15:00(10:00),Southend United,Sutton United,1,3
+2024-2025,5,2024-09-14,15:00(10:00),FG Rovers,Wealdstone,2,2
+2024-2025,5,2024-09-14,15:00(10:00),Boston United,Aldershot Town,1,1
+2024-2025,5,2024-09-14,15:00(10:00),Woking,Oldham Athletic,1,3
+2024-2025,5,2024-09-14,15:00(10:00),Tamworth,Maidenhead Utd,3,1
+2024-2025,5,2024-09-14,17:30(12:30),Dag & Red,Gateshead,7,1
+2024-2025,5,2024-09-17,19:45(14:45),Fylde,Southend United,2,1
+2024-2025,5,2024-09-21,15:00(10:00),Aldershot Town,York City,0,0
+2024-2025,5,2024-09-21,15:00(10:00),Altrincham,Boston United,2,2
+2024-2025,5,2024-09-21,15:00(10:00),Maidenhead Utd,FC Halifax Town,0,1
+2024-2025,5,2024-09-21,15:00(10:00),Oldham Athletic,Yeovil Town,1,0
+2024-2025,5,2024-09-21,15:00(10:00),Hartlepool Utd,Dag & Red,0,1
+2024-2025,5,2024-09-21,15:00(10:00),Sutton United,Ebbsfleet Utd,3,2
+2024-2025,5,2024-09-21,15:00(10:00),Eastleigh,Rochdale,4,2
+2024-2025,5,2024-09-21,15:00(10:00),Braintree Town,Tamworth,0,1
+2024-2025,5,2024-09-21,15:00(10:00),Solihull Moors,Southend United,2,4
+2024-2025,5,2024-09-21,15:00(10:00),Fylde,Woking,1,1
+2024-2025,5,2024-09-21,15:00(10:00),Gateshead,FG Rovers,0,2
+2024-2025,5,2024-09-21,17:30(12:30),Wealdstone,Barnet,0,3
+2024-2025,5,2024-09-24,19:45(14:45),Fylde,Tamworth,1,2
+2024-2025,5,2024-09-24,19:45(14:45),Hartlepool Utd,Rochdale,0,3
+2024-2025,5,2024-09-24,19:45(14:45),Eastleigh,Woking,2,2
+2024-2025,5,2024-09-24,19:45(14:45),Aldershot Town,Barnet,0,1
+2024-2025,5,2024-09-24,19:45(14:45),Wealdstone,Southend United,1,1
+2024-2025,5,2024-09-24,19:45(14:45),Sutton United,Yeovil Town,0,0
+2024-2025,5,2024-09-24,19:45(14:45),Maidenhead Utd,Ebbsfleet Utd,2,1
+2024-2025,5,2024-09-24,19:45(14:45),Oldham Athletic,FG Rovers,1,0
+2024-2025,5,2024-09-24,19:45(14:45),Altrincham,Dag & Red,2,1
+2024-2025,5,2024-09-24,19:45(14:45),Gateshead,Boston United,2,0
+2024-2025,5,2024-09-24,19:45(14:45),Braintree Town,FC Halifax Town,1,0
+2024-2025,5,2024-09-24,19:45(14:45),Solihull Moors,York City,0,3
+2024-2025,5,2024-09-28,15:00(10:00),FG Rovers,Hartlepool Utd,1,0
+2024-2025,5,2024-09-28,15:00(10:00),FC Halifax Town,Wealdstone,2,2
+2024-2025,5,2024-09-28,15:00(10:00),Tamworth,Altrincham,1,2
+2024-2025,5,2024-09-28,15:00(10:00),Woking,Sutton United,1,2
+2024-2025,5,2024-09-28,15:00(10:00),Barnet,Fylde,2,0
+2024-2025,5,2024-09-28,15:00(10:00),Southend United,Gateshead,1,3
+2024-2025,5,2024-09-28,15:00(10:00),Rochdale,Braintree Town,1,0
+2024-2025,5,2024-09-28,15:00(10:00),Yeovil Town,Aldershot Town,1,1
+2024-2025,5,2024-09-28,15:00(10:00),York City,Eastleigh,0,0
+2024-2025,5,2024-09-28,15:00(10:00),Dag & Red,Solihull Moors,1,1
+2024-2025,5,2024-09-28,15:00(10:00),Boston United,Maidenhead Utd,1,2
+2024-2025,5,2024-09-28,17:30(12:30),Ebbsfleet Utd,Oldham Athletic,1,2
+2024-2025,5,2024-10-05,15:00(10:00),Fylde,Aldershot Town,5,2
+2024-2025,5,2024-10-05,15:00(10:00),Hartlepool Utd,Sutton United,4,3
+2024-2025,5,2024-10-05,15:00(10:00),Braintree Town,Altrincham,2,0
+2024-2025,5,2024-10-05,15:00(10:00),Oldham Athletic,Solihull Moors,2,3
+2024-2025,5,2024-10-05,15:00(10:00),Ebbsfleet Utd,Rochdale,2,2
+2024-2025,5,2024-10-05,15:00(10:00),Southend United,Maidenhead Utd,0,2
+2024-2025,5,2024-10-05,15:00(10:00),Gateshead,Wealdstone,1,0
+2024-2025,5,2024-10-05,15:00(10:00),Barnet,Boston United,3,1
+2024-2025,5,2024-10-05,15:00(10:00),Eastleigh,FG Rovers,1,3
+2024-2025,5,2024-10-05,15:00(10:00),FC Halifax Town,Tamworth,3,2
+2024-2025,5,2024-10-05,15:00(10:00),Yeovil Town,Dag & Red,1,0
+2024-2025,5,2024-10-05,17:30(12:30),Woking,York City,1,1
+2024-2025,5,2024-10-08,19:45(14:45),Tamworth,Gateshead,2,1
+2024-2025,5,2024-10-19,15:00(10:00),Maidenhead Utd,Hartlepool Utd,1,1
+2024-2025,5,2024-10-19,15:00(10:00),Boston United,FC Halifax Town,0,1
+2024-2025,5,2024-10-19,15:00(10:00),FG Rovers,Braintree Town,2,1
+2024-2025,5,2024-10-19,15:00(10:00),Solihull Moors,Barnet,4,3
+2024-2025,5,2024-10-19,15:00(10:00),Aldershot Town,Eastleigh,2,1
+2024-2025,5,2024-10-19,15:00(10:00),Wealdstone,Yeovil Town,0,3
+2024-2025,5,2024-10-19,15:00(10:00),York City,Ebbsfleet Utd,4,0
+2024-2025,5,2024-10-19,15:00(10:00),Sutton United,Oldham Athletic,1,3
+2024-2025,5,2024-10-19,15:00(10:00),Tamworth,Woking,3,2
+2024-2025,5,2024-10-19,15:00(10:00),Altrincham,Gateshead,2,2
+2024-2025,5,2024-10-19,15:00(10:00),Dag & Red,Fylde,4,0
+2024-2025,5,2024-10-19,17:30(12:30),Rochdale,Southend United,0,1
+2024-2025,5,2024-10-22,19:45(14:45),Dag & Red,Eastleigh,2,2
+2024-2025,5,2024-10-22,19:45(14:45),York City,Barnet,3,1
+2024-2025,5,2024-10-22,19:45(14:45),Rochdale,FC Halifax Town,2,1
+2024-2025,5,2024-10-22,19:45(14:45),Maidenhead Utd,Oldham Athletic,2,2
+2024-2025,5,2024-10-22,19:45(14:45),Tamworth,Yeovil Town,0,0
+2024-2025,5,2024-10-22,19:45(14:45),FG Rovers,Ebbsfleet Utd,3,1
+2024-2025,5,2024-10-23,19:45(14:45),Wealdstone,Braintree Town,3,2
+2024-2025,5,2024-10-23,19:45(14:45),Solihull Moors,Woking,2,1
+2024-2025,5,2024-10-23,19:45(14:45),Aldershot Town,Southend United,0,0
+2024-2025,5,2024-10-23,19:45(14:45),Altrincham,Hartlepool Utd,1,1
+2024-2025,5,2024-10-23,19:45(14:45),Sutton United,Gateshead,0,1
+2024-2025,5,2024-10-23,19:45(14:45),Boston United,Fylde,1,2
+2024-2025,5,2024-10-26,15:00(10:00),Southend United,Tamworth,2,0
+2024-2025,5,2024-10-26,15:00(10:00),Braintree Town,Sutton United,0,1
+2024-2025,5,2024-10-26,15:00(10:00),Woking,FG Rovers,1,1
+2024-2025,5,2024-10-26,15:00(10:00),FC Halifax Town,York City,1,2
+2024-2025,5,2024-10-26,15:00(10:00),Gateshead,Solihull Moors,1,0
+2024-2025,5,2024-10-26,15:00(10:00),Yeovil Town,Maidenhead Utd,3,1
+2024-2025,5,2024-10-26,15:00(10:00),Hartlepool Utd,Aldershot Town,2,0
+2024-2025,5,2024-10-26,15:00(10:00),Eastleigh,Boston United,1,1
+2024-2025,5,2024-10-26,15:00(10:00),Barnet,Rochdale,2,1
+2024-2025,5,2024-10-26,15:00(10:00),Ebbsfleet Utd,Wealdstone,2,2
+2024-2025,5,2024-10-26,15:00(10:00),Oldham Athletic,Dag & Red,1,0
+2024-2025,5,2024-10-26,17:30(12:30),Fylde,Altrincham,0,5
+2024-2025,5,2024-11-09,12:30(07:30),York City,Hartlepool Utd,5,3
+2024-2025,5,2024-11-09,12:30(07:30),Aldershot Town,Wealdstone,0,2
+2024-2025,5,2024-11-09,15:00(10:00),Eastleigh,Braintree Town,1,2
+2024-2025,5,2024-11-09,15:00(10:00),Boston United,Dag & Red,1,1
+2024-2025,5,2024-11-09,15:00(10:00),Southend United,Yeovil Town,0,1
+2024-2025,5,2024-11-09,15:00(10:00),Rochdale,Sutton United,2,1
+2024-2025,5,2024-11-09,15:00(10:00),Solihull Moors,Altrincham,3,3
+2024-2025,5,2024-11-09,15:00(10:00),FC Halifax Town,Woking,1,0
+2024-2025,5,2024-11-09,15:00(10:00),Maidenhead Utd,FG Rovers,1,4
+2024-2025,5,2024-11-09,15:00(10:00),Fylde,Gateshead,3,0
+2024-2025,5,2024-11-09,15:00(10:00),Tamworth,Ebbsfleet Utd,1,1
+2024-2025,5,2024-11-09,17:30(12:30),Barnet,Oldham Athletic,0,0
+2024-2025,5,2024-11-16,15:00(10:00),Ebbsfleet Utd,Solihull Moors,0,6
+2024-2025,5,2024-11-16,15:00(10:00),Woking,Boston United,1,0
+2024-2025,5,2024-11-16,15:00(10:00),Wealdstone,Rochdale,2,0
+2024-2025,5,2024-11-16,15:00(10:00),Hartlepool Utd,Eastleigh,0,0
+2024-2025,5,2024-11-16,15:00(10:00),Altrincham,Southend United,2,0
+2024-2025,5,2024-11-16,15:00(10:00),Braintree Town,Fylde,1,0
+2024-2025,5,2024-11-16,15:00(10:00),Sutton United,Maidenhead Utd,1,0
+2024-2025,5,2024-11-16,15:00(10:00),Gateshead,Aldershot Town,2,2
+2024-2025,5,2024-11-16,15:00(10:00),Oldham Athletic,Tamworth,4,0
+2024-2025,5,2024-11-16,15:00(10:00),Yeovil Town,FC Halifax Town,0,1
+2024-2025,5,2024-11-16,15:00(10:00),Dag & Red,Barnet,3,4
+2024-2025,5,2024-11-16,17:30(12:30),FG Rovers,York City,2,0
+2024-2025,5,2024-11-23,15:00(10:00),York City,Yeovil Town,4,0
+2024-2025,5,2024-11-23,15:00(10:00),Tamworth,Dag & Red,2,1
+2024-2025,5,2024-11-23,15:00(10:00),Maidenhead Utd,Gateshead,0,5
+2024-2025,5,2024-11-23,15:00(10:00),Solihull Moors,Hartlepool Utd,3,4
+2024-2025,5,2024-11-23,15:00(10:00),Barnet,Woking,2,0
+2024-2025,5,2024-11-23,15:00(10:00),Aldershot Town,Altrincham,2,1
+2024-2025,5,2024-11-23,15:00(10:00),Eastleigh,Wealdstone,1,1
+2024-2025,5,2024-11-23,15:00(10:00),Boston United,Braintree Town,3,1
+2024-2025,5,2024-11-23,15:00(10:00),Southend United,FG Rovers,2,2
+2024-2025,5,2024-11-26,19:45(14:45),Woking,Southend United,0,0
+2024-2025,5,2024-11-26,19:45(14:45),Altrincham,York City,3,0
+2024-2025,5,2024-11-26,19:45(14:45),Braintree Town,Maidenhead Utd,1,3
+2024-2025,5,2024-11-26,19:45(14:45),Dag & Red,Aldershot Town,3,2
+2024-2025,5,2024-11-26,19:45(14:45),Hartlepool Utd,Fylde,2,0
+2024-2025,5,2024-11-26,19:45(14:45),Oldham Athletic,Boston United,4,0
+2024-2025,5,2024-11-26,19:45(14:45),Gateshead,Rochdale,0,1
+2024-2025,5,2024-11-26,19:45(14:45),Sutton United,Solihull Moors,1,0
+2024-2025,5,2024-11-27,19:45(14:45),Ebbsfleet Utd,Eastleigh,0,1
+2024-2025,5,2024-11-27,19:45(14:45),FG Rovers,FC Halifax Town,1,1
+2024-2025,5,2024-11-27,19:45(14:45),Yeovil Town,Barnet,1,2
+2024-2025,5,2024-11-30,15:00(10:00),Woking,Yeovil Town,0,2
+2024-2025,5,2024-11-30,15:00(10:00),Braintree Town,Gateshead,2,2
+2024-2025,5,2024-11-30,15:00(10:00),Sutton United,Fylde,2,0
+2024-2025,5,2024-11-30,15:00(10:00),FC Halifax Town,Southend United,0,2
+2024-2025,5,2024-11-30,15:00(10:00),York City,Maidenhead Utd,6,2
+2024-2025,5,2024-11-30,15:00(10:00),Ebbsfleet Utd,Boston United,0,0
+2024-2025,5,2024-11-30,15:00(10:00),Hartlepool Utd,Barnet,0,0
+2024-2025,5,2024-12-10,19:45(14:45),FC Halifax Town,Sutton United,0,0
+2024-2025,5,2024-12-10,19:45(14:45),Fylde,Ebbsfleet Utd,2,0
+2024-2025,5,2024-12-10,19:45(14:45),Wealdstone,Altrincham,3,3
+2024-2025,5,2024-12-10,19:45(14:45),Solihull Moors,Aldershot Town,2,1
+2024-2025,5,2024-12-14,15:00(10:00),Barnet,Ebbsfleet Utd,4,1
+2024-2025,5,2024-12-14,15:00(10:00),Tamworth,York City,1,1
+2024-2025,5,2024-12-14,15:00(10:00),Aldershot Town,FC Halifax Town,3,4
+2024-2025,5,2024-12-14,15:00(10:00),Dag & Red,Rochdale,1,0
+2024-2025,5,2024-12-14,15:00(10:00),Gateshead,Woking,4,0
+2024-2025,5,2024-12-14,15:00(10:00),Southend United,Hartlepool Utd,0,0
+2024-2025,5,2024-12-14,15:00(10:00),Yeovil Town,Braintree Town,3,1
+2024-2025,5,2024-12-14,15:00(10:00),Fylde,Eastleigh,2,2
+2024-2025,5,2024-12-14,15:00(10:00),Maidenhead Utd,Solihull Moors,1,1
+2024-2025,5,2024-12-14,15:00(10:00),Oldham Athletic,Wealdstone,3,2
+2024-2025,5,2024-12-14,15:00(10:00),Altrincham,Sutton United,1,0
+2024-2025,5,2024-12-14,17:30(12:30),FG Rovers,Boston United,1,0
+2024-2025,5,2024-12-17,19:45(14:45),Rochdale,Tamworth,3,0
+2024-2025,5,2024-12-21,15:00(10:00),Barnet,FC Halifax Town,1,1
+2024-2025,5,2024-12-21,15:00(10:00),Ebbsfleet Utd,Gateshead,1,4
+2024-2025,5,2024-12-21,15:00(10:00),York City,Southend United,3,0
+2024-2025,5,2024-12-21,15:00(10:00),Braintree Town,Oldham Athletic,0,2
+2024-2025,5,2024-12-21,15:00(10:00),Eastleigh,Maidenhead Utd,1,0
+2024-2025,5,2024-12-21,15:00(10:00),Solihull Moors,Fylde,4,1
+2024-2025,5,2024-12-21,15:00(10:00),Hartlepool Utd,Yeovil Town,2,1
+2024-2025,5,2024-12-21,15:00(10:00),Woking,Altrincham,2,1
+2024-2025,5,2024-12-21,15:00(10:00),FG Rovers,Aldershot Town,1,1
+2024-2025,5,2024-12-21,15:00(10:00),Sutton United,Tamworth,1,2
+2024-2025,5,2024-12-21,15:00(10:00),Wealdstone,Dag & Red,3,0
+2024-2025,5,2024-12-26,15:00(10:00),Gateshead,Hartlepool Utd,4,3
+2024-2025,5,2024-12-26,15:00(10:00),Yeovil Town,Eastleigh,2,2
+2024-2025,5,2024-12-26,15:00(10:00),Southend United,Ebbsfleet Utd,4,0
+2024-2025,5,2024-12-26,15:00(10:00),Maidenhead Utd,Wealdstone,3,1
+2024-2025,5,2024-12-26,15:00(10:00),Boston United,Solihull Moors,0,1
+2024-2025,5,2024-12-26,15:00(10:00),Altrincham,FC Halifax Town,0,0
+2024-2025,5,2024-12-26,15:00(10:00),Barnet,Sutton United,3,3
+2024-2025,5,2024-12-26,15:00(10:00),Dag & Red,Braintree Town,2,4
+2024-2025,5,2024-12-26,15:00(10:00),Aldershot Town,Woking,2,2
+2024-2025,5,2024-12-26,15:00(10:00),Fylde,Rochdale,1,3
+2024-2025,5,2024-12-26,15:00(10:00),Tamworth,FG Rovers,1,1
+2024-2025,5,2024-12-31,15:00(10:00),Solihull Moors,Tamworth,2,0
+2024-2025,5,2025-01-01,15:00(10:00),Woking,Maidenhead Utd,3,1
+2024-2025,5,2025-01-01,15:00(10:00),Ebbsfleet Utd,Dag & Red,0,2
+2024-2025,5,2025-01-01,15:00(10:00),Sutton United,Aldershot Town,1,1
+2024-2025,5,2025-01-01,15:00(10:00),Hartlepool Utd,Oldham Athletic,2,1
+2024-2025,5,2025-01-01,15:00(10:00),Eastleigh,Barnet,1,1
+2024-2025,5,2025-01-01,15:00(10:00),FG Rovers,Yeovil Town,2,1
+2024-2025,5,2025-01-01,15:00(10:00),York City,Gateshead,1,0
+2024-2025,5,2025-01-01,17:30(12:30),Braintree Town,Southend United,0,1
+2024-2025,5,2025-01-07,19:45(14:45),Eastleigh,Oldham Athletic,2,2
+2024-2025,5,2025-01-08,19:45(14:45),FG Rovers,Dag & Red,1,1
+2024-2025,5,2025-01-11,15:00(10:00),Boston United,Ebbsfleet Utd,2,2
+2024-2025,5,2025-01-11,15:00(10:00),Yeovil Town,Woking,1,1
+2024-2025,5,2025-01-14,19:45(14:45),FG Rovers,Barnet,0,0
+2024-2025,5,2025-01-14,19:45(14:45),Aldershot Town,Braintree Town,2,2
+2024-2025,5,2025-01-14,19:45(14:45),Gateshead,FC Halifax Town,1,3
+2024-2025,5,2025-01-14,19:45(14:45),Solihull Moors,Eastleigh,0,1
+2024-2025,5,2025-01-14,19:45(14:45),Altrincham,Maidenhead Utd,4,0
+2024-2025,5,2025-01-14,19:45(14:45),Ebbsfleet Utd,Yeovil Town,1,1
+2024-2025,5,2025-01-15,19:45(14:45),Sutton United,Wealdstone,2,2
+2024-2025,5,2025-01-17,19:30(14:30),Yeovil Town,Gateshead,0,0
+2024-2025,5,2025-01-18,15:00(10:00),Eastleigh,Altrincham,1,2
+2024-2025,5,2025-01-18,15:00(10:00),York City,Sutton United,1,2
+2024-2025,5,2025-01-18,15:00(10:00),Southend United,Barnet,0,3
+2024-2025,5,2025-01-18,15:00(10:00),FG Rovers,Rochdale,1,0
+2024-2025,5,2025-01-18,15:00(10:00),Braintree Town,Solihull Moors,1,0
+2024-2025,5,2025-01-18,15:00(10:00),Woking,Ebbsfleet Utd,1,1
+2024-2025,5,2025-01-18,15:00(10:00),Tamworth,Boston United,3,0
+2024-2025,5,2025-01-18,15:00(10:00),Oldham Athletic,Aldershot Town,1,3
+2024-2025,5,2025-01-18,15:00(10:00),Wealdstone,Hartlepool Utd,1,1
+2024-2025,5,2025-01-18,17:30(12:30),Maidenhead Utd,Fylde,4,1
+2024-2025,5,2025-01-21,19:45(14:45),Oldham Athletic,York City,0,2
+2024-2025,5,2025-01-25,15:00(10:00),Solihull Moors,FC Halifax Town,0,2
+2024-2025,5,2025-01-25,15:00(10:00),Barnet,Maidenhead Utd,3,0
+2024-2025,5,2025-01-25,15:00(10:00),Altrincham,FG Rovers,1,1
+2024-2025,5,2025-01-25,15:00(10:00),Sutton United,Eastleigh,1,0
+2024-2025,5,2025-01-25,15:00(10:00),Aldershot Town,Tamworth,2,2
+2024-2025,5,2025-01-25,15:00(10:00),Hartlepool Utd,Woking,1,1
+2024-2025,5,2025-01-25,15:00(10:00),Fylde,Wealdstone,2,0
+2024-2025,5,2025-01-25,15:00(10:00),Ebbsfleet Utd,Braintree Town,0,1
+2024-2025,5,2025-01-25,15:00(10:00),Dag & Red,Southend United,0,2
+2024-2025,5,2025-01-25,15:00(10:00),Rochdale,Yeovil Town,4,0
+2024-2025,5,2025-01-25,15:00(10:00),Boston United,York City,3,1
+2024-2025,5,2025-01-25,15:00(10:00),Gateshead,Oldham Athletic,1,1
+2024-2025,5,2025-01-28,19:45(14:45),Barnet,Hartlepool Utd,2,0
+2024-2025,5,2025-01-28,19:45(14:45),Southend United,Fylde,2,0
+2024-2025,5,2025-02-01,15:00(10:00),Fylde,Oldham Athletic,1,2
+2024-2025,5,2025-02-01,15:00(10:00),Tamworth,Barnet,0,1
+2024-2025,5,2025-02-01,15:00(10:00),Wealdstone,Solihull Moors,1,1
+2024-2025,5,2025-02-01,15:00(10:00),FC Halifax Town,Ebbsfleet Utd,2,0
+2024-2025,5,2025-02-01,15:00(10:00),York City,Dag & Red,2,1
+2024-2025,5,2025-02-01,15:00(10:00),Braintree Town,Hartlepool Utd,1,1
+2024-2025,5,2025-02-04,19:45(14:45),Rochdale,Oldham Athletic,0,1
+2024-2025,5,2025-02-04,19:45(14:45),Wealdstone,Tamworth,0,1
+2024-2025,5,2025-02-04,19:45(14:45),FC Halifax Town,Fylde,1,2
+2024-2025,5,2025-02-04,19:45(14:45),Dag & Red,FG Rovers,0,2
+2024-2025,5,2025-02-08,15:00(10:00),FG Rovers,Eastleigh,2,1
+2024-2025,5,2025-02-08,15:00(10:00),Altrincham,Braintree Town,3,1
+2024-2025,5,2025-02-08,15:00(10:00),Rochdale,Ebbsfleet Utd,0,0
+2024-2025,5,2025-02-08,15:00(10:00),Maidenhead Utd,Southend United,1,0
+2024-2025,5,2025-02-08,15:00(10:00),Dag & Red,Yeovil Town,1,1
+2024-2025,5,2025-02-08,15:00(10:00),Wealdstone,Gateshead,0,4
+2024-2025,5,2025-02-08,15:00(10:00),Solihull Moors,Oldham Athletic,0,1
+2024-2025,5,2025-02-08,15:00(10:00),Boston United,Barnet,0,0
+2024-2025,5,2025-02-08,15:00(10:00),York City,Woking,3,0
+2024-2025,5,2025-02-08,15:00(10:00),Sutton United,Hartlepool Utd,1,2
+2024-2025,5,2025-02-08,17:30(12:30),Tamworth,FC Halifax Town,1,2
+2024-2025,5,2025-02-11,19:45(14:45),Southend United,FC Halifax Town,3,1
+2024-2025,5,2025-02-11,19:45(14:45),Hartlepool Utd,Tamworth,2,2
+2024-2025,5,2025-02-11,19:45(14:45),Dag & Red,Woking,1,2
+2024-2025,5,2025-02-11,19:45(14:45),Oldham Athletic,Altrincham,2,2
+2024-2025,5,2025-02-15,15:00(10:00),Eastleigh,Aldershot Town,2,0
+2024-2025,5,2025-02-15,15:00(10:00),Barnet,Solihull Moors,3,1
+2024-2025,5,2025-02-15,15:00(10:00),Yeovil Town,Wealdstone,1,2
+2024-2025,5,2025-02-15,15:00(10:00),Hartlepool Utd,Maidenhead Utd,0,0
+2024-2025,5,2025-02-15,15:00(10:00),FC Halifax Town,Boston United,1,0
+2024-2025,5,2025-02-15,15:00(10:00),Oldham Athletic,Sutton United,0,0
+2024-2025,5,2025-02-15,15:00(10:00),Woking,Tamworth,1,1
+2024-2025,5,2025-02-15,15:00(10:00),Southend United,Rochdale,1,1
+2024-2025,5,2025-02-15,15:00(10:00),Gateshead,Altrincham,0,1
+2024-2025,5,2025-02-15,15:00(10:00),Braintree Town,FG Rovers,2,0
+2024-2025,5,2025-02-15,15:00(10:00),Fylde,Dag & Red,1,1
+2024-2025,5,2025-02-15,15:00(10:00),Ebbsfleet Utd,York City,0,2
+2024-2025,5,2025-02-18,19:45(14:45),Barnet,York City,3,1
+2024-2025,5,2025-02-18,19:45(14:45),Oldham Athletic,Maidenhead Utd,0,1
+2024-2025,5,2025-02-18,19:45(14:45),Yeovil Town,Tamworth,2,1
+2024-2025,5,2025-02-18,19:45(14:45),Ebbsfleet Utd,FG Rovers,0,0
+2024-2025,5,2025-02-18,19:45(14:45),Gateshead,Sutton United,4,3
+2024-2025,5,2025-02-18,19:45(14:45),Fylde,Boston United,1,2
+2024-2025,5,2025-02-18,19:45(14:45),Hartlepool Utd,Altrincham,1,2
+2024-2025,5,2025-02-18,19:45(14:45),Southend United,Aldershot Town,2,1
+2024-2025,5,2025-02-19,19:45(14:45),Woking,Solihull Moors,1,0
+2024-2025,5,2025-02-19,19:45(14:45),FC Halifax Town,Rochdale,0,0
+2024-2025,5,2025-02-19,19:45(14:45),Eastleigh,Dag & Red,3,0
+2024-2025,5,2025-02-19,19:45(14:45),Braintree Town,Wealdstone,1,2
+2024-2025,5,2025-02-22,15:00(10:00),Maidenhead Utd,Yeovil Town,0,2
+2024-2025,5,2025-02-22,15:00(10:00),York City,FC Halifax Town,2,2
+2024-2025,5,2025-02-22,15:00(10:00),Tamworth,Southend United,1,1
+2024-2025,5,2025-02-22,15:00(10:00),Rochdale,Barnet,0,4
+2024-2025,5,2025-02-22,15:00(10:00),FG Rovers,Woking,1,1
+2024-2025,5,2025-02-22,15:00(10:00),Boston United,Eastleigh,1,2
+2024-2025,5,2025-02-22,15:00(10:00),Dag & Red,Oldham Athletic,2,2
+2024-2025,5,2025-02-22,15:00(10:00),Aldershot Town,Hartlepool Utd,3,2
+2024-2025,5,2025-02-22,15:00(10:00),Sutton United,Braintree Town,1,1
+2024-2025,5,2025-02-22,15:00(10:00),Solihull Moors,Gateshead,1,3
+2024-2025,5,2025-02-22,15:00(10:00),Wealdstone,Ebbsfleet Utd,4,2
+2024-2025,5,2025-02-22,15:00(10:00),Altrincham,Fylde,1,2
+2024-2025,5,2025-02-25,19:45(14:45),Tamworth,Rochdale,1,1
+2024-2025,5,2025-02-25,19:45(14:45),Aldershot Town,Solihull Moors,3,1
+2024-2025,5,2025-02-25,19:45(14:45),Maidenhead Utd,York City,1,3
+2024-2025,5,2025-02-25,19:45(14:45),Eastleigh,Gateshead,1,1
+2024-2025,5,2025-03-01,15:00(10:00),Ebbsfleet Utd,Tamworth,2,3
+2024-2025,5,2025-03-01,15:00(10:00),Hartlepool Utd,York City,0,1
+2024-2025,5,2025-03-01,15:00(10:00),Braintree Town,Eastleigh,1,0
+2024-2025,5,2025-03-01,15:00(10:00),FG Rovers,Maidenhead Utd,2,0
+2024-2025,5,2025-03-01,15:00(10:00),Oldham Athletic,Barnet,0,3
+2024-2025,5,2025-03-01,15:00(10:00),Yeovil Town,Southend United,2,2
+2024-2025,5,2025-03-01,15:00(10:00),Dag & Red,Boston United,1,3
+2024-2025,5,2025-03-01,17:30(12:30),Gateshead,Fylde,1,1
+2024-2025,5,2025-03-04,19:45(14:45),York City,Altrincham,1,2
+2024-2025,5,2025-03-04,19:45(14:45),Aldershot Town,Dag & Red,0,0
+2024-2025,5,2025-03-04,19:45(14:45),Tamworth,Wealdstone,4,1
+2024-2025,5,2025-03-04,19:45(14:45),Barnet,Yeovil Town,5,0
+2024-2025,5,2025-03-04,19:45(14:45),Rochdale,Gateshead,1,0
+2024-2025,5,2025-03-04,19:45(14:45),Southend United,Woking,2,2
+2024-2025,5,2025-03-04,19:45(14:45),Fylde,Hartlepool Utd,2,1
+2024-2025,5,2025-03-04,19:45(14:45),FC Halifax Town,FG Rovers,2,1
+2024-2025,5,2025-03-04,19:45(14:45),Solihull Moors,Sutton United,1,1
+2024-2025,5,2025-03-04,19:45(14:45),Eastleigh,Ebbsfleet Utd,2,0
+2024-2025,5,2025-03-04,19:45(14:45),Boston United,Oldham Athletic,0,0
+2024-2025,5,2025-03-04,19:45(14:45),Maidenhead Utd,Braintree Town,3,3
+2024-2025,5,2025-03-08,12:30(07:30),Barnet,Dag & Red,1,0
+2024-2025,5,2025-03-08,15:00(10:00),Maidenhead Utd,Sutton United,0,1
+2024-2025,5,2025-03-08,15:00(10:00),Fylde,Braintree Town,0,2
+2024-2025,5,2025-03-08,15:00(10:00),Solihull Moors,Ebbsfleet Utd,2,1
+2024-2025,5,2025-03-08,15:00(10:00),Southend United,Altrincham,2,1
+2024-2025,5,2025-03-08,15:00(10:00),FC Halifax Town,Yeovil Town,1,0
+2024-2025,5,2025-03-08,15:00(10:00),Boston United,Woking,2,2
+2024-2025,5,2025-03-08,15:00(10:00),Aldershot Town,Gateshead,3,1
+2024-2025,5,2025-03-08,15:00(10:00),Rochdale,Wealdstone,4,1
+2024-2025,5,2025-03-08,15:00(10:00),Eastleigh,Hartlepool Utd,1,1
+2024-2025,5,2025-03-08,15:00(10:00),Tamworth,Oldham Athletic,1,1
+2024-2025,5,2025-03-08,17:30(12:30),York City,FG Rovers,1,1
+2024-2025,5,2025-03-11,19:45(15:45),Rochdale,Altrincham,3,0
+2024-2025,5,2025-03-11,19:45(15:45),Oldham Athletic,Eastleigh,2,0
+2024-2025,5,2025-03-11,19:45(15:45),Yeovil Town,Boston United,0,3
+2024-2025,5,2025-03-11,19:45(15:45),FG Rovers,Sutton United,2,1
+2024-2025,5,2025-03-15,12:30(08:30),Oldham Athletic,Rochdale,1,1
+2024-2025,5,2025-03-15,15:00(11:00),Braintree Town,Boston United,0,1
+2024-2025,5,2025-03-15,15:00(11:00),Dag & Red,Tamworth,1,3
+2024-2025,5,2025-03-15,15:00(11:00),Gateshead,Maidenhead Utd,0,2
+2024-2025,5,2025-03-15,15:00(11:00),Yeovil Town,York City,0,1
+2024-2025,5,2025-03-15,15:00(11:00),Ebbsfleet Utd,Fylde,1,0
+2024-2025,5,2025-03-15,15:00(11:00),Woking,Barnet,0,1
+2024-2025,5,2025-03-15,15:00(11:00),Altrincham,Aldershot Town,1,2
+2024-2025,5,2025-03-15,15:00(11:00),FG Rovers,Southend United,2,2
+2024-2025,5,2025-03-15,15:00(11:00),Sutton United,FC Halifax Town,0,3
+2024-2025,5,2025-03-15,15:00(11:00),Wealdstone,Eastleigh,3,3
+2024-2025,5,2025-03-15,17:30(13:30),Hartlepool Utd,Solihull Moors,1,1
+2024-2025,5,2025-03-18,19:45(15:45),Rochdale,Boston United,2,3
+2024-2025,5,2025-03-18,19:45(15:45),Fylde,Sutton United,1,2
+2024-2025,5,2025-03-18,19:45(15:45),Gateshead,Braintree Town,1,3
+2024-2025,5,2025-03-18,19:45(15:45),Altrincham,Wealdstone,0,1
+2024-2025,5,2025-03-18,19:45(15:45),FC Halifax Town,Dag & Red,0,1
+2024-2025,5,2025-03-18,19:45(15:45),Maidenhead Utd,Aldershot Town,0,1
+2024-2025,5,2025-03-22,12:30(08:30),Sutton United,Dag & Red,1,1
+2024-2025,5,2025-03-22,15:00(11:00),Hartlepool Utd,Boston United,4,1
+2024-2025,5,2025-03-22,15:00(11:00),Solihull Moors,Yeovil Town,0,3
+2024-2025,5,2025-03-22,15:00(11:00),Eastleigh,Southend United,1,2
+2024-2025,5,2025-03-22,15:00(11:00),Maidenhead Utd,Rochdale,1,1
+2024-2025,5,2025-03-22,15:00(11:00),Oldham Athletic,FC Halifax Town,2,0
+2024-2025,5,2025-03-22,15:00(11:00),Gateshead,Tamworth,0,2
+2024-2025,5,2025-03-22,15:00(11:00),Aldershot Town,Ebbsfleet Utd,3,3
+2024-2025,5,2025-03-22,15:00(11:00),Fylde,FG Rovers,3,0
+2024-2025,5,2025-03-22,15:00(11:00),Wealdstone,Woking,1,0
+2024-2025,5,2025-03-22,15:00(11:00),Braintree Town,York City,2,1
+2024-2025,5,2025-03-22,17:30(13:30),Altrincham,Barnet,0,1
+2024-2025,5,2025-03-25,19:45(15:45),Boston United,Southend United,3,0
+2024-2025,5,2025-03-25,19:45(15:45),Rochdale,York City,0,4
+2024-2025,5,2025-03-25,19:45(15:45),Wealdstone,Aldershot Town,1,3
+2024-2025,5,2025-03-25,19:45(15:45),Woking,FC Halifax Town,0,0
+2024-2025,5,2025-03-25,19:45(15:45),Altrincham,Solihull Moors,1,1
+2024-2025,5,2025-03-29,12:30(08:30),FG Rovers,Solihull Moors,1,0
+2024-2025,5,2025-03-29,15:00(11:00),Ebbsfleet Utd,Altrincham,2,2
+2024-2025,5,2025-03-29,15:00(11:00),FC Halifax Town,Hartlepool Utd,0,1
+2024-2025,5,2025-03-29,15:00(11:00),Tamworth,Eastleigh,2,0
+2024-2025,5,2025-03-29,15:00(11:00),York City,Wealdstone,3,0
+2024-2025,5,2025-03-29,15:00(11:00),Woking,Braintree Town,2,1
+2024-2025,5,2025-03-29,15:00(11:00),Boston United,Sutton United,2,1
+2024-2025,5,2025-03-29,15:00(11:00),Dag & Red,Maidenhead Utd,1,0
+2024-2025,5,2025-03-29,15:00(11:00),Rochdale,Aldershot Town,4,0
+2024-2025,5,2025-03-29,15:00(11:00),Yeovil Town,Fylde,1,0
+2024-2025,5,2025-03-29,15:00(11:00),Barnet,Gateshead,3,1
+2024-2025,5,2025-03-29,17:30(13:30),Southend United,Oldham Athletic,1,0
+2024-2025,5,2025-04-01,19:45(14:45),Wealdstone,Boston United,1,0
+2024-2025,5,2025-04-01,19:45(14:45),Woking,Rochdale,1,1
+2024-2025,5,2025-04-01,19:45(14:45),Aldershot Town,Fylde,2,0
+2024-2025,5,2025-04-05,12:30(07:30),Fylde,York City,1,3
+2024-2025,5,2025-04-05,15:00(10:00),Altrincham,Yeovil Town,2,1
+2024-2025,5,2025-04-05,15:00(10:00),Braintree Town,Barnet,2,1
+2024-2025,5,2025-04-05,15:00(10:00),Gateshead,Dag & Red,2,1
+2024-2025,5,2025-04-05,15:00(10:00),Wealdstone,FG Rovers,2,1
+2024-2025,5,2025-04-05,15:00(10:00),Sutton United,Southend United,1,1
+2024-2025,5,2025-04-05,15:00(10:00),Maidenhead Utd,Tamworth,3,1
+2024-2025,5,2025-04-05,15:00(10:00),Hartlepool Utd,Ebbsfleet Utd,3,2
+2024-2025,5,2025-04-05,17:30(12:30),Eastleigh,FC Halifax Town,1,1
+2024-2025,5,2025-04-08,19:45(14:45),Sutton United,Rochdale,1,0
+2024-2025,5,2025-04-08,19:45(14:45),Aldershot Town,Boston United,1,2
+2024-2025,5,2025-04-08,19:45(14:45),Oldham Athletic,Woking,1,2
+2024-2025,5,2025-04-12,12:30(07:30),Barnet,Wealdstone,1,1
+2024-2025,5,2025-04-12,15:00(10:00),York City,Aldershot Town,7,2
+2024-2025,5,2025-04-12,15:00(10:00),Boston United,Altrincham,1,0
+2024-2025,5,2025-04-12,15:00(10:00),Tamworth,Braintree Town,4,2
+2024-2025,5,2025-04-12,15:00(10:00),Southend United,Solihull Moors,0,1
+2024-2025,5,2025-04-12,15:00(10:00),Rochdale,Eastleigh,4,0
+2024-2025,5,2025-04-12,15:00(10:00),FC Halifax Town,Maidenhead Utd,0,2
+2024-2025,5,2025-04-12,15:00(10:00),Dag & Red,Hartlepool Utd,1,1
+2024-2025,5,2025-04-12,15:00(10:00),Woking,Fylde,1,0
+2024-2025,5,2025-04-12,15:00(10:00),Ebbsfleet Utd,Sutton United,4,1
+2024-2025,5,2025-04-12,15:00(10:00),Yeovil Town,Oldham Athletic,2,1
+2024-2025,5,2025-04-12,17:30(12:30),FG Rovers,Gateshead,2,3
+2024-2025,5,2025-04-18,12:30(07:30),Gateshead,York City,1,3
+2024-2025,5,2025-04-18,15:00(10:00),Boston United,Wealdstone,2,0
+2024-2025,5,2025-04-18,15:00(10:00),Southend United,Braintree Town,0,0
+2024-2025,5,2025-04-18,15:00(10:00),Aldershot Town,Sutton United,1,1
+2024-2025,5,2025-04-18,15:00(10:00),Yeovil Town,FG Rovers,1,1
+2024-2025,5,2025-04-18,15:00(10:00),Dag & Red,Ebbsfleet Utd,1,0
+2024-2025,5,2025-04-18,15:00(10:00),Oldham Athletic,Hartlepool Utd,2,1
+2024-2025,5,2025-04-18,15:00(10:00),Maidenhead Utd,Woking,2,2
+2024-2025,5,2025-04-18,15:00(10:00),Altrincham,Rochdale,1,2
+2024-2025,5,2025-04-18,15:00(10:00),Fylde,FC Halifax Town,0,1
+2024-2025,5,2025-04-18,15:00(10:00),Tamworth,Solihull Moors,1,2
+2024-2025,5,2025-04-18,17:30(12:30),Barnet,Eastleigh,1,1
+2024-2025,5,2025-04-21,12:30(07:30),Woking,Aldershot Town,3,0
+2024-2025,5,2025-04-21,15:00(10:00),Hartlepool Utd,Gateshead,3,2
+2024-2025,5,2025-04-21,15:00(10:00),Eastleigh,Yeovil Town,1,0
+2024-2025,5,2025-04-21,15:00(10:00),Ebbsfleet Utd,Southend United,0,4
+2024-2025,5,2025-04-21,15:00(10:00),Braintree Town,Dag & Red,0,0
+2024-2025,5,2025-04-21,15:00(10:00),Wealdstone,Maidenhead Utd,1,1
+2024-2025,5,2025-04-21,15:00(10:00),FG Rovers,Tamworth,3,0
+2024-2025,5,2025-04-21,15:00(10:00),Solihull Moors,Boston United,3,2
+2024-2025,5,2025-04-21,15:00(10:00),York City,Oldham Athletic,1,1
+2024-2025,5,2025-04-21,15:00(10:00),FC Halifax Town,Altrincham,0,3
+2024-2025,5,2025-04-21,15:00(10:00),Rochdale,Fylde,0,0
+2024-2025,5,2025-04-21,15:00(10:00),Sutton United,Barnet,1,3
+2024-2025,5,2025-04-26,12:30(07:30),Woking,Eastleigh,2,2
+2024-2025,5,2025-04-26,15:00(10:00),Yeovil Town,Sutton United,1,2
+2024-2025,5,2025-04-26,15:00(10:00),Tamworth,Fylde,4,3
+2024-2025,5,2025-04-26,15:00(10:00),Rochdale,Hartlepool Utd,5,1
+2024-2025,5,2025-04-26,15:00(10:00),Dag & Red,Altrincham,6,1
+2024-2025,5,2025-04-26,15:00(10:00),FC Halifax Town,Braintree Town,1,0
+2024-2025,5,2025-04-26,15:00(10:00),Boston United,Gateshead,2,1
+2024-2025,5,2025-04-26,15:00(10:00),FG Rovers,Oldham Athletic,1,0
+2024-2025,5,2025-04-26,15:00(10:00),Barnet,Aldershot Town,4,0
+2024-2025,5,2025-04-26,15:00(10:00),Ebbsfleet Utd,Maidenhead Utd,0,2
+2024-2025,5,2025-04-26,15:00(10:00),York City,Solihull Moors,2,0
+2024-2025,5,2025-04-26,17:30(12:30),Southend United,Wealdstone,3,0
+2024-2025,5,2025-04-29,19:45(14:45),Solihull Moors,Rochdale,0,1
+2024-2025,5,2025-05-05,15:00(10:00),Sutton United,Woking,1,1
+2024-2025,5,2025-05-05,15:00(10:00),Fylde,Barnet,0,3
+2024-2025,5,2025-05-05,15:00(10:00),Gateshead,Southend United,0,0
+2024-2025,5,2025-05-05,15:00(10:00),Braintree Town,Rochdale,2,0
+2024-2025,5,2025-05-05,15:00(10:00),Wealdstone,FC Halifax Town,3,1
+2024-2025,5,2025-05-05,15:00(10:00),Hartlepool Utd,FG Rovers,1,1
+2024-2025,5,2025-05-05,15:00(10:00),Aldershot Town,Yeovil Town,2,1
+2024-2025,5,2025-05-05,15:00(10:00),Maidenhead Utd,Boston United,3,0
+2024-2025,5,2025-05-05,15:00(10:00),Eastleigh,York City,0,2
+2024-2025,5,2025-05-05,15:00(10:00),Altrincham,Tamworth,1,1
+2024-2025,5,2025-05-05,15:00(10:00),Solihull Moors,Dag & Red,1,1
+2024-2025,5,2025-05-05,15:00(10:00),Oldham Athletic,Ebbsfleet Utd,2,0
