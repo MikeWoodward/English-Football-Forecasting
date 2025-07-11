@@ -22,7 +22,7 @@ English football has undergone a number of organizational changes over the years
 
 At the time of writing (mid-2025), there are five national professional leagues. Below these leagues are semi-professional regional leagues. The top league (the EPL) takes the lion's share of the available money and the money falls off the lower down the league system you go.
 
-The table below is a simplified version of the league structure over time.
+The table below is a simplified version of the league structure over time. Over the years, some teams have "resigned" or been expelled from the league mid-season, this means the number of teams per league per season changes. 
 
 | Tier    | League name | Number of clubs | 
 | -------- | ------- | ------- |
@@ -33,6 +33,8 @@ The table below is a simplified version of the league structure over time.
 | 5 | 1979-1984: Alliance Premier League</br>1984-1987: Gola League</br>1987-1997: Vauxhall Conference</br>1997-2002: Football Conference</br>2002-2006: Nationwide Conference</br>2006-2007: Conference National</br>2007-2011: Blue Square Premier</br>2011-2013: Blue Square Bet Premier</br>2013-2014: Skrill Premier</br>2014-2015: Vanarama Conference</br>2015-2024: Vanarama National League| 1979-2006 22</br>2006-2009 24</br>2009-2010 23</br>2010-onwards 24| 
 
 # Oddities
+
+In the 1919-1920 season, Leeds City were expelled from the second division mid-season and replaced by Port Vale. Port Vale "inherited" Leeds City's results. Because I'm training a model, I'm going to treat this as a league of 23 teams and treat Port Vale and Leeds City seprately. 
 
 Matches were suspended during most of the First and Second World War. During the Second World War, matches were played, but with significant changes: players changed teams (or went off to war), and matches were limited to a 50 mile radius. The league proper wasn't resumed until 1946.
 
