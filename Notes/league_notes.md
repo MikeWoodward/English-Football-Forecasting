@@ -22,7 +22,7 @@ English football has undergone a number of organizational changes over the years
 
 At the time of writing (mid-2025), there are five national professional leagues. Below these leagues are semi-professional regional leagues. The top league (the EPL) takes the lion's share of the available money and the money falls off the lower down the league system you go.
 
-The table below is a simplified version of the league structure over time. Over the years, some teams have "resigned" or been expelled from the league mid-season, this means the number of teams per league per season changes. 
+The table below is a simplified version of the league structure over time. Over the years, some teams have "resigned" or been expelled from the league mid-season, this means the number of teams per league per season changes. The number of clubs per season in the table isn't 100% correct.
 
 | Tier    | League name | Number of clubs | 
 | -------- | ------- | ------- |
