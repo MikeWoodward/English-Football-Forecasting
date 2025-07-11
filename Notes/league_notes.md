@@ -34,15 +34,17 @@ The table below is a simplified version of the league structure over time. Over 
 
 # Oddities
 
-In the 1919-1920 season, Leeds City were expelled from the second division mid-season and replaced by Port Vale. Port Vale "inherited" Leeds City's results. Because I'm training a model, I'm going to treat this as a league of 23 teams and treat Port Vale and Leeds City seprately. 
+In the 1919-1920 season, Leeds City were expelled from the second division mid-season and replaced by Port Vale. Port Vale "inherited" Leeds City's results. Because I'm training a model, I'm going to treat this as a league of 23 teams and treat Port Vale and Leeds City seperately. 
 
 Matches were suspended during most of the First and Second World War. During the Second World War, matches were played, but with significant changes: players changed teams (or went off to war), and matches were limited to a 50 mile radius. The league proper wasn't resumed until 1946.
 
-The 2019-2020 season was badly affected by COVID. Games were suspended for most of March 2020 and resumed behind closed doors. As a consequence, the season went on much longer than usual. The EPL and Championship (tiers 1 and 2) played out a full season, but League One and Two (tiers 3 and 4) ended their season early, which meant some games were not played. Promotion and relegation rules were a little diffeernt for this season.
+The 2019-2020 season was badly affected by COVID. Games were suspended for most of March 2020 and resumed behind closed doors. As a consequence, the season went on much longer than usual. The EPL and Championship (tiers 1 and 2) played out a full season, but League One, Two, and National (tiers 3, 4 and 5) ended their season early, which meant some games were not played. Promotion and relegation rules were a little diffeernt for this season.
 
 A number of teams have gone bankrupt which is a breach of Football Association rules. In most cases, these teams have been resurrected under new names (so-called phoenix clubs), and again in most cases, these teams have reclaimed their old names after a few years. There have been mergers between teams, though this was largely restricted to the lower leagues.
 
-The Football Association (FA) has penalized clubs for breach of its financial rules and several other issues. These penalties have been fines and/or points deductions. In a few cases (most notably, Dover Athletic), the FA has "canceled" match results, and in a few cases, the FA has awarded the match points to a club even though the match wasn't played.
+The Football Association (FA) has penalized clubs for breach of its financial rules and several other issues. These penalties have been fines and/or points deductions. In a few cases (most notably, Dover Athletic), the FA has "canceled" match results, and in a few cases, the FA has awarded the match points to a club even though the match wasn't played. This has resulted in lower than usual numbers of clubs in leagues.
+
+There are one or two cases of matches being cancelled, usually due to some financial problems. The Football authorities have often awarded the match to the "innocent" party, but the game was never played. This leads to an unusual number of matched played per season, e.g. 551 instead of 552.
 
 # Notes
 
