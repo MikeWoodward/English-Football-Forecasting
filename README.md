@@ -8,6 +8,8 @@ I have several goals here:
 4. More in-depth investigation of neural nets and other machine learning approaches.
 
 Here's how the project is structured:
-* Data downloads - most of the code that deals with getting the data. There are a number of data sources I used and some I stopped using. The unused data sources are in the Deprecated folder. The active dtaa sources are in teh Active folder.
+* Data downloads - most of the code that deals with getting the data. There are a number of data sources I used and some I stopped using. The unused data sources are in the Deprecated folder. The active dtaa sources are in the Active folder.
+* Analysis - this is the analysis I did. Some of it I used in the machine learning stage and some I didn't.
+* Notes - project notes.
 
 This work is based on an earlier project I did in R.
