@@ -33,31 +33,31 @@ This data looks very similar to the ENFA data set but it makes venue and attenda
 
 Clubs have merged, renamed themselves, gone bankrupt etc. etc. This site has helped me keep the naming straight: https://www.fchd.info/indexs.htm. I used this site extensively for hand checking of data.
 
-# Engsoccerdata
+## Engsoccerdata
 
 This is a set of data that James Curley has made available on GitHub: https://github.com/jalapic/engsoccerdata/tree/master/data-raw. It has fifth tier data. On the downside, I found a number of errors in the data.
 
-# FBRef
+## FBRef
 
 This site is here: https://fbref.com/en/. Has data for the top four tiers. It has a number of date and result errors.
 
-# Football-data
+## Football-data
 
 Located here: https://www.football-data.co.uk. This site has gambling data. It includes the fifth tier.
 
-# Football web pages
+## Football web pages
 
 Located here: https://www.footballwebpages.co.uk. Limited data, but handily presented in CSV files. Data is incomplete, it misses matches and teams.
 
-# todor66
+## todor66
 
 Located here: http://todor66.com/football/England/. Limited time-scope, but includes the fifth tier.
 
-# Transfermarkt
+## Transfermarkt
 
 Located here: https://www.transfermarkt.com. Has match attendance figures etc. but suffers from correctness issues (results, dates), mostly for older matches, but some recentish issues too. It also has transfer values and hence estimates of the team values.
 
-# World football
+## World football
 
 Located here: https://www.worldfootball.net. A mostly complete set of data but has the same date and score reliability issues.
 
