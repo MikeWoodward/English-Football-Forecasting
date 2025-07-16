@@ -2,7 +2,7 @@
 
 ## No (free) golden source
 
-There's been a tremendous interest in modeling football data for some time now, so it's surprising how bad the free data sources are. 
+There's been a tremendous interest in modeling football data for some time now, so it's surprising how bad most of the free data sources are. 
 
 * Many sources have incorrect data (date of match, goals scored) for historic matches (meaning, pre-WWII) and some even have incorrect match dates and results for matches since 2010.
 
@@ -23,15 +23,15 @@ I did two forms of quality checking:
 
 ## ENFA
 
-This is the best data. I only found three errors in the entire data set: https://enfa.co.uk/. The data has been purchased by the English Football League and may be commercially available in late 2025.
+This is the best data. I only found one error in the entire data set: https://enfa.co.uk/. The data has been purchased by the English Football League and may be commercially available in late 2025.
 
 ## Football league web pages
 
-This data looks very similar to the ENFA data set but it makes venue and attendance data freely available. https://www.englishfootballleaguetables.co.uk/
+This data looks very similar to the ENFA data set but it makes venue and attendance data freely available. https://www.englishfootballleaguetables.co.uk/. I found the data to be not as good as ENFA.
 
 ## Football club names and history
 
-Clubs have merged, renamed themselves, gone bankrupt etc. etc. This site has helped me keep the naming straight: https://www.fchd.info/indexs.htm 
+Clubs have merged, renamed themselves, gone bankrupt etc. etc. This site has helped me keep the naming straight: https://www.fchd.info/indexs.htm. I used this site extensively for hand checking of data.
 
 # Engsoccerdata
 
@@ -39,7 +39,7 @@ This is a set of data that James Curley has made available on GitHub: https://gi
 
 # FBRef
 
-This site is here: https://fbref.com/en/. Has data for the top four tiers. Has a number of date and result errors.
+This site is here: https://fbref.com/en/. Has data for the top four tiers. It has a number of date and result errors.
 
 # Football-data
 
