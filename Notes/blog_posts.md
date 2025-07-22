@@ -4,4 +4,6 @@ I'm writing a number of blog posts on analysis derived from this data. You can s
 
 * Win, lose, or draw: trends in English football match results - https://blog.engora.com/2025/06/english-football-data.html
 * G-O-A-L! Goals in English football - https://blog.engora.com/2025/07/g-o-l-goals-in-english-football.html
+* Vanishing home field advantage in English football - https://blog.engora.com/2025/07/vanishing-home-field-advantage-in.html
+* Visualizing multi-dimensional data: score distributions in English football - https://blog.engora.com/2025/07/visualizing-multi-dimensional-data.html
 * COVID and soccer home team advantage - winning less often - https://blog.engora.com/2021/01/covid-and-soccer-home-team-advantage.html - an old post based on older data.
