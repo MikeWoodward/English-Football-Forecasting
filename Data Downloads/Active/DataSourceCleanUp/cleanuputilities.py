@@ -40,7 +40,8 @@ def transform_club_names(*,
     try:
         club_normalization = pd.read_csv(club_normalization_name)
         # Strip whitespace from club names
-        club_normalization['club_name_normalized'] = club_normalization['club_name'].str.strip()
+        for column in club_normalization.columns:
+            club_normalization[column] = club_normalization[column].str.strip()
     except FileNotFoundError:
         logger.error(f"File not found: {club_normalization_name}")
         return df
