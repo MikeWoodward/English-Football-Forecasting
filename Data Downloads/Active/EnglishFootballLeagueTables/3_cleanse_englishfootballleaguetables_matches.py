@@ -77,7 +77,7 @@ LEAGUE_TIER_MAP = pd.DataFrame([
     {
         'league_name': 'First Division',
         'season': [
-            '1898-1899', '1977-1978', '1978-1979'
+            '1898-1899', '1903-1904', '1977-1978', '1978-1979'
         ],
         'tier': 1
     },
@@ -452,6 +452,14 @@ def cleanse_data(*, matches_dataframe: pd.DataFrame) -> pd.DataFrame:
         # Remove league_name column
         matches_dataframe = matches_dataframe.drop(columns=['league_name'])
 
+        # Set attendance to zero for matches that happened during COVID-19
+        covid_mask = (
+            (matches_dataframe['match_date'] > '2020-03-01') &
+            (matches_dataframe['match_date'] < '2021-05-24') &
+            (matches_dataframe['attendance'].isnull())
+        )
+        matches_dataframe.loc[covid_mask, 'attendance'] = 0
+
         # Remove "Aldershot Town" for the season "1991-1992" - they were
         # removed by football authorities
         matches_dataframe = matches_dataframe[
@@ -471,6 +479,11 @@ def cleanse_data(*, matches_dataframe: pd.DataFrame) -> pd.DataFrame:
             ~((matches_dataframe['away_club'] == 'Accrington Stanley') &
               (matches_dataframe['season'] == '1961-1962'))
         ]
+
+        # Replaces the 'BCD' string in the attendance column with 0 and cast column to int
+        matches_dataframe['attendance'] = matches_dataframe['attendance'].replace(
+            'BCD', 0
+        )
 
         # Sort by season, league_tier, match_date, and home_club
         matches_dataframe = matches_dataframe.sort_values(
@@ -537,7 +550,7 @@ if __name__ == "__main__":
         )
 
         # Define input and output paths
-        data_in_folder = "Data"
+        data_in_folder = "Data rough"
         data_out_folder = "Data"
 
         # Execute the pipeline

@@ -153,7 +153,7 @@ def process_day_urls(*, day_urls_df: pd.DataFrame,
             date = row['date']  # Date of the matches
             season = row['season']  # Football season (e.g., 1888-89)
             day_url = row['match_url']  # URL to the day's matches page
-            
+
             # Check if HTML file already exists to avoid re-downloading
             file_name = os.path.join('HTML', f'{date}.html')
             if os.path.exists(file_name):
@@ -215,13 +215,26 @@ def process_day_urls(*, day_urls_df: pd.DataFrame,
                 html_date = datetime.strptime(
                     html_date, '%A %Y-%m-%d'
                 ).strftime('%Y-%m-%d')
+
+            # Correct for known and checked errors in the HTML date
+            if url_date in ['1894-03-05', '1923-10-15', '1957-11-20', 
+                            '1978-09-01',
+                            '1999-12-11', '2000-04-09',
+                            '2002-08-10', '2004-12-14',
+                            '2008-03-28',
+                            '2008-04-08', '2013-01-05']:
+                html_date = url_date
+
             # Raise a warning for inconsistent dates between URL, HTML, and CSV
             # This helps identify data quality issues
             if not (url_date == html_date == date):
                 logging.warning(
                     f"Date mismatch: url_date: {url_date}, "
-                    f"html_date: {html_date}, date: {date}"
+                    f"html_date: {html_date}, date: {date}, "
+                    f"URL: {day_url}"
                 )
+                # Delete the HTML file to avoid re-downloading
+                #os.remove(file_name)
                 continue  # Skip this day if dates don't match
 
             # Find all tables on the page that might contain match data
@@ -234,8 +247,63 @@ def process_day_urls(*, day_urls_df: pd.DataFrame,
                 matches = table.find_all(
                     "tr", {"class": ["pink", "blue", "turq", "lblue"]}
                 )
+                # Sadly, not all league tables have the right classes, so we
+                # have to look more carefully
                 if len(matches) == 0:
-                    continue  # Skip tables without match data
+                    # Get all the headings
+                    headings = [x.text for x in table.find_all("th")]
+                    # If the headings match a pattern, add the rows
+                    if (len(headings) in [4, 5] and 
+                        headings[0].strip() in ['Football League', 
+                                                'First Division', 
+                                                'Second Division',
+                                                'Third Division',
+                                                'Fourth Division',
+                                                'Premier League',
+                                                'Championship',
+                                                'League One',
+                                                'League Two'] and 
+                        headings[1] == "Venue" and 
+                        headings[2] == "Gate" and 
+                        headings[3] == "Notes"):
+                        for row in table.find_all("tr"):
+                            columns = row.find_all("td")
+                            # If all columns are empty,
+                            if all(column.text.strip() == "" for column in columns):
+                                continue
+                            # Make sure we're adding things correctly
+                            if len(columns) == 7:
+                                matches.append(row)
+                            elif len(columns) in [0, 1]:
+                                continue
+                            else:
+                                logging.warning(f"Strange number of columns ({len(columns)}) when looking for match data.")
+                    else:
+                        # Report on any oddities before we skip, but only oddities we don't already know about
+                        if len(headings) in [0, 1, 19, 22]:
+                            continue
+                        # If the first heading is empty, skip
+                        if headings[0].strip() == "":
+                            continue
+                        # Look for keywords in the first heading
+                        keywords= ["test", "cup", "international", "match", "alliance", "war", 
+                                   "southern", "lancashire", "fa", "sheriff", "home", 
+                                   "friendly", "british", "notes", "ptn", "shield", "south", "north", 
+                                   "victory", "italian", "euro", "round", "trophy", "tournament", 
+                                   "leg", "play", "group", "champions league", "final",
+                                    "nations league", "anniversary", "championship", "sf"]
+                        found = [keyword in headings[0].lower() for keyword in keywords]
+                        if any(found):
+                            continue
+                        # Known edge case
+                        if len(headings) > 4 and 'cup' in headings[4].lower():
+                            continue
+                        # Print out the oddities to check
+                        print("Oddities to check:")
+                        print(html_date)
+                        print(headings[0])
+                        print(headings)
+                        continue  # Skip tables without match data
                 # Extract league name from table header
                 # Note: Web page structure can be inconsistent, requiring
                 # fallback logic
@@ -278,18 +346,55 @@ def process_day_urls(*, day_urls_df: pd.DataFrame,
                     # Only process matches with valid numeric scores
                     if not (home_score.isdigit() and away_score.isdigit()):
                         continue  # Skip matches without valid numeric scores
+
+                    home_team = ' '.join(columns[0].text.strip().split())
+                    away_team = ' '.join(columns[3].text.strip().split())
+
+                    # Some matches were abandoned, so we have to not add them manually
+                    if (season == "1898-99"
+                        and date == "1898-11-26"
+                        and home_team  == "The Wednesday"
+                        and away_team == "Aston Villa"):
+                        continue
+                    if (season == "1902-03"
+                        and date == "1903-01-10"
+                        and home_team  == "Gainsborough Trinity"
+                        and away_team == "Stockport County"):
+                        continue
+                    if (season == "1972-73"
+                        and date == "1972-12-26"
+                        and home_team  == "Blackburn Rovers"
+                        and away_team == "Chesterfield"):
+                        continue
+                    if (season == "2023-24"
+                        and date == "2023-10-03"
+                        and home_team  == "Leyton Orient"
+                        and away_team == "Lincoln City"):
+                        continue
+                    if (season == "2023-24"
+                        and date == "2023-12-16"
+                        and home_team  == "AFC Bournemouth"
+                        and away_team == "Luton Town"):
+                        continue
+                    if (season == "2023-24"
+                        and date == "2024-01-13"
+                        and home_team  == "Bolton Wanderers"
+                        and away_team == "Cheltenham Town"):
+                        continue
+                    if (season == "2023-24"
+                        and date == "2024-01-13"
+                        and home_team  == "Reading"
+                        and away_team == "Port Vale"):
+                        continue
+
                     # Create match data dictionary with all extracted
                     # information
                     all_matches.append({
                         'season': season,  # Football season (e.g., 1888-89)
                         'date': date,  # Match date in YYYY-MM-DD format
                         'league_name': league,  # League/division name
-                        'home_team': ' '.join(
-                            columns[0].text.strip().split()
-                        ),  # Home team name (clean up whitespace)
-                        'away_team': ' '.join(
-                            columns[3].text.strip().split()
-                        ),  # Away team name (clean up whitespace)
+                        'home_team': home_team,  # Home team name (clean up whitespace)
+                        'away_team': away_team,  # Away team name (clean up whitespace)
                         'home_score': home_score,  # Home team's score
                         'away_score': away_score,  # Away team's score
                         'venue': columns[4].text.strip(),  # Stadium/venue name
@@ -361,9 +466,8 @@ if __name__ == "__main__":
             flag=flag
         )
         # Save final results to CSV file, removing any duplicate matches
-        # Duplicates can occur if the same match appears in multiple tables
         matches_file_name = os.path.join(
-            'Data', f'englishfootballleaguetables_matches_{flag}.csv'
+            'Data rough', f'englishfootballleaguetables_matches_{flag}.csv'
         )
         pd.DataFrame(all_matches).drop_duplicates().to_csv(
             matches_file_name,
