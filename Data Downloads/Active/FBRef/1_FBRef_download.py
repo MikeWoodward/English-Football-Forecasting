@@ -297,13 +297,13 @@ def get_data(*,
                             line[stat_name] = None
                     case 'dayofweek':
                         try:
-                            line[stat_name] = text
+                            line['match_day_of_week'] = text
                         except ValueError:
                             logger.warning(f"Invalid date format: {text}")
                             continue
                     case 'date':
                         try:
-                            line[stat_name] = datetime.strptime(
+                            line['match_date'] = datetime.strptime(
                                 text, "%Y-%m-%d")
                         except ValueError:
                             logger.warning(f"Invalid date format: {text}")
@@ -433,7 +433,7 @@ if __name__ == "__main__":
                     )
 
                     # Ensure output directory exists
-                    output_dir = os.path.join("Data")
+                    output_dir = os.path.join("Data-league-season")
                     os.makedirs(output_dir, exist_ok=True)
 
                     # Save to disk
