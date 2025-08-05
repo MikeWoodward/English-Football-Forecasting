@@ -123,3 +123,9 @@ cython_debug/
 .pdm-python
 .pdm-build/
 __pypackages__/
+*.csv
+*.txt
+*.html
+*.xlsx
+/999 OLD - do not use
+*.gif

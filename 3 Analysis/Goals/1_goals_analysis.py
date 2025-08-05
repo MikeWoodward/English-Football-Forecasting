@@ -13,8 +13,10 @@ from bokeh.embed import file_html, components
 from bokeh.resources import CDN
 from bokeh.layouts import column
 from bokeh.palettes import Category10
-from bokeh.models import ColumnDataSource, HoverTool, BoxAnnotation
-
+from bokeh.models import ColumnDataSource, HoverTool, BoxAnnotation, LegendItem, Legend
+import os
+import webbrowser
+import bokeh
 
 # Configure logging
 logging.basicConfig(
@@ -24,7 +26,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def read_data(*, csv_path: str = "Data/merged_match_data.csv") -> pd.DataFrame:
+def read_data() -> pd.DataFrame:
     """
     Read match data from CSV file into a pandas DataFrame.
 
@@ -41,6 +43,12 @@ def read_data(*, csv_path: str = "Data/merged_match_data.csv") -> pd.DataFrame:
         pd.errors.ParserError: If there are parsing errors in the CSV.
     """
     try:
+        csv_path =os.path.join("..",
+                                   "..",
+                                   "Data preparation",
+                                   "Data",
+                                   "match_attendance_discipline.csv")
+        
         logger.info(f"Reading data from {csv_path}")
         matches = pd.read_csv(csv_path, low_memory=False)
         matches['season_start'] = (
@@ -64,7 +72,7 @@ def read_data(*, csv_path: str = "Data/merged_match_data.csv") -> pd.DataFrame:
         raise pd.errors.ParserError(f"Error parsing CSV file: {csv_path}") from e
 
 
-def plot_goals_per_game(*, matches: pd.DataFrame, std: bool = True) -> figure:
+def plot_goals_per_game(*, matches: pd.DataFrame, std: bool = True) -> tuple[str, str]:
     """
     Create a Bokeh plot showing total goals per game by league and season.
 
@@ -94,6 +102,20 @@ def plot_goals_per_game(*, matches: pd.DataFrame, std: bool = True) -> figure:
         .reset_index()
     )
 
+            # Get unique league tiers and sort them for consistent ordering
+    leagues = sorted(goals_per_game['league_tier'].unique())
+
+        # Create color palette for different league tiers
+    # Use Category10 palette with at least 3 colors, max 10
+    palette = Category10[
+        max(3, min(10, len(leagues)))
+    ]
+
+    # Map each league tier to a color from the palette
+    color_map = {
+        league: palette[i % len(palette)]
+        for i, league in enumerate(leagues)
+    }
     title = "Mean Goals Per Game by League and Season"
     if std:
         title += " with Standard Deviation"
@@ -125,83 +147,88 @@ def plot_goals_per_game(*, matches: pd.DataFrame, std: bool = True) -> figure:
     p.add_layout(wwi_band)
 
     # Get unique leagues for color coding
-    leagues = goals_per_game['league_tier'].unique()
+    leagues = sorted(goals_per_game['league_tier'].unique())
     colors = Category10[len(leagues)]
 
-    # Create legend items
-    legend_items = []
+    # Create color mapping
+    color_map = {league: colors[i] for i, league in enumerate(leagues)}
 
-    for league, color in zip(leagues, colors):
+    # Create legend items
+    legend_list = []
+    for league in leagues:
         league_data = goals_per_game[goals_per_game['league_tier'] == league]
+        # Create ColumnDataSource for the league data to enable hover
+        # tooltips
+        source = ColumnDataSource(league_data)
+        renderers = []
 
         # Create line plot for each league
         line = p.line(
             x='season_start',
             y='total_goals_mean',
-            line_color=color,
+            color=color_map[league],
             line_width=2,
-            legend_label=f"{league}",
-            source=ColumnDataSource(league_data)
+            source=source
         )
+        renderers.append(line)
 
         if std:
-            p.varea(
+            area = p.varea(
                 x=league_data['season_start'],
                 y1=(league_data['total_goals_mean'] - 
                     league_data['total_goals_std']),
                 y2=(league_data['total_goals_mean'] + 
                     league_data['total_goals_std']),
-                legend_label=f"{league}",
-                fill_color=color,
+                color=color_map[league],
                 fill_alpha=0.3
             )
+            renderers.append(area)
 
         # Add scatter points
         points = p.scatter(
             x='season_start',
             y='total_goals_mean',
-            fill_color=color,
+            fill_color=color_map[league],
+            line_color=color_map[league],
             size=8,
-            legend_label=f"{league}",
             source=ColumnDataSource(league_data)
         )
+        renderers.append(points)
 
-        legend_items.append((f"{league}", [line, points]))
+        # Add both scatter and line renderers to legend for this league
+        legend_list.append(LegendItem(
+            label=f"{league}",
+            renderers=renderers
+        ))
 
-    # Configure legend to be interactive (click to hide/show series)
-    p.legend.title = 'League\nTier'
-    p.legend.click_policy = "hide"
-    p.legend.location = "right"
-    p.legend.orientation = "vertical"
-    p.legend.spacing = 10
-    p.legend.margin = 20
-    p.legend.padding = 10
-    p.legend.border_line_color = "black"
-    p.legend.border_line_width = 1
-    p.legend.background_fill_color = "white"
-    p.legend.background_fill_alpha = 0.8
-
-    # Hack to place the legend outside the plot
-    p.add_layout(p.legend[0], 'right')
-
-    # Add hover tool
-    hover = HoverTool(
-        tooltips=[
-            ("Season", "@season_start"),
-            ("League Tier", "@league_tier"),
-            ("Mean Goals/Game", "@total_goals_mean{0.2f}")
-        ]
+    # Create and configure the legend
+    legend = Legend(
+        items=legend_list,
+        location="center",
+        border_line_color="black",
+        border_line_width=1,
+        click_policy="hide",
+        title="League\ntier",
     )
-    p.add_tools(hover)
+    p.add_layout(legend, "right")
+
+    # Add hover tooltip for all data points
+    p.add_tools(HoverTool(
+        tooltips=[
+            ("League", "@league_tier"),
+            ("Season", "@season_start"),
+            ("Mean Goals", "@total_goals_mean{0.2f}")
+        ]
+    ))
 
     # Rotate x-axis labels for better readability
     p.xaxis.major_label_orientation = 45
 
     logger.info("Goals per game plot created successfully")
-    return p
+    return components(p)
 
 
-def plot_goal_difference_per_game(*, matches: pd.DataFrame) -> figure:
+def plot_goal_difference_per_game(*, matches: pd.DataFrame) -> tuple[str, str]:
     """
     Create a Bokeh plot showing goal difference per game by league and season.
 
@@ -255,69 +282,79 @@ def plot_goal_difference_per_game(*, matches: pd.DataFrame) -> figure:
 
     # Get unique leagues for color coding
     leagues = goal_diff_per_game['league_tier'].unique()
-    colors = Category10[len(leagues)]
+    # Create color palette for different league tiers
+    # Use Category10 palette with at least 3 colors, max 10
+    palette = Category10[
+        max(3, min(10, len(leagues)))
+    ]
+
+    # Map each league tier to a color from the palette
+    color_map = {
+        league: palette[i % len(palette)]
+        for i, league in enumerate(leagues)
+    }
+
 
     # Create legend items
-    legend_items = []
+    legend_list = []
 
-    for league, color in zip(leagues, colors):
+    for league in leagues:
         league_data = goal_diff_per_game[
             goal_diff_per_game['league_tier'] == league
         ]
 
+        # Create ColumnDataSource for the league data to enable hover
+        # tooltips
+        source = ColumnDataSource(league_data)
         # Create line plot for each league
         line = p.line(
             x='season_start',
             y='goal_difference',
-            line_color=color,
+            color=color_map[league],
             line_width=2,
-            legend_label=f"{league}",
-            source=ColumnDataSource(league_data)
+            source=source
         )
 
         # Add scatter points
         points = p.scatter(
             x='season_start',
             y='goal_difference',
-            fill_color=color,
+            fill_color=color_map[league],
+            line_color=color_map[league],
             size=8,
-            legend_label=f"{league}",
-            source=ColumnDataSource(league_data)
+            source=source
         )
+        renderers = [line, points]
+        legend_list.append(LegendItem(
+            label=f"{league}",
+            renderers=renderers
+        ))
 
-        legend_items.append((f"{league}", [line, points]))
-
-    # Configure legend to be interactive (click to hide/show series)
-    p.legend.title = 'League\nTier'
-    p.legend.click_policy = "hide"
-    p.legend.location = "right"
-    p.legend.orientation = "vertical"
-    p.legend.spacing = 10
-    p.legend.margin = 20
-    p.legend.padding = 10
-    p.legend.border_line_color = "black"
-    p.legend.border_line_width = 1
-    p.legend.background_fill_color = "white"
-    p.legend.background_fill_alpha = 0.8
-
-    # Hack to place the legend outside the plot
-    p.add_layout(p.legend[0], 'right')
-
-    # Add hover tool
-    hover = HoverTool(
-        tooltips=[
-            ("Season", "@season_start"),
-            ("League Tier", "@league_tier"),
-            ("Avg Goal Difference", "@goal_difference{0.2f}")
-        ]
+    # Create and configure the legend
+    legend = Legend(
+        items=legend_list,
+        location="center",
+        border_line_color="black",
+        border_line_width=1,
+        click_policy="hide",
+        title="League\ntier",
     )
-    p.add_tools(hover)
+    p.add_layout(legend, "right")
+
+    # Add hover tooltip for all data points
+    p.add_tools(HoverTool(
+        tooltips=[
+            ("League", "@league_tier"),
+            ("Season", "@season_start"),
+            ("Goal Difference", "@goal_difference{0.2f}")
+        ]
+    ))
 
     # Rotate x-axis labels for better readability
     p.xaxis.major_label_orientation = 45
 
     logger.info("Goal difference per game plot created successfully")
-    return p
+    return components(p)
 
 
 if __name__ == "__main__":
@@ -326,28 +363,77 @@ if __name__ == "__main__":
         matches = read_data()
 
         # Create the plots
-        goals_plot_std = plot_goals_per_game(matches=matches, std=True)
-        goals_plot_no_std = plot_goals_per_game(matches=matches, std=False)
-        goal_diff_plot = plot_goal_difference_per_game(matches=matches)
+        goals_plot_std_script, goals_plot_std_div = plot_goals_per_game(matches=matches, std=True)
+        goals_plot_no_std_script, goals_plot_no_std_div = plot_goals_per_game(matches=matches, std=False)
+        goal_diff_plot_script, goal_diff_plot_div = plot_goal_difference_per_game(matches=matches)
 
-        layout = column(goals_plot_std, goals_plot_no_std, goal_diff_plot)
+        divs = [goals_plot_std_div, goals_plot_no_std_div, goal_diff_plot_div]
+        scripts = [goals_plot_std_script, goals_plot_no_std_script, goal_diff_plot_script]
 
-        html = file_html(layout, CDN, "my plot")
-        # save html to file
-        with open("Plots/plot.html", "w") as f:
-            f.write(html)
-
-        for index, plot in enumerate([
-            goals_plot_std, goals_plot_no_std, goal_diff_plot
-        ]):
-            script, div = components(plot)
+        # Save divs and scripts to files
+        for index, div in enumerate(divs):
+            with open(f"Plots/div_{index}.txt", "w") as f:
+                f.write("<div align='center'>\n")
+                f.write(div)
+                f.write("\n")
+                f.write("</div>\n")
+        for index, script in enumerate(scripts):
             with open(f"Plots/script_{index}.txt", "w") as f:
                 f.write(script)
-            with open(f"Plots/div_{index}.txt", "w") as f:
-                f.write(div)
 
-        # Display both plots together
-        show(layout)
+        # Get Bokeh version for proper script imports
+        version = bokeh.__version__
+        imported_scripts = (
+            f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+            f"""bokeh-{version}.min.js"></script>\n"""
+            f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+            f"""bokeh-widgets-{version}.min.js"></script>\n"""
+            f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+            f"""bokeh-tables-{version}.min.js"></script>\n"""
+            f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+            f"""bokeh-mathjax-{version}.min.js"></script>\n"""
+        )
+
+        # Sample text content for the HTML page
+        lorem = (
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
+            "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
+            "ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
+            "aliquip ex ea commodo consequat. Duis aute irure dolor in "
+            "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
+            "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
+            "culpa qui officia deserunt mollit anim id est laborum."
+        )
+
+        # save html to file
+        with open("Plots/goals.html", "w") as f:
+            # Header equivalent - include Bokeh script imports
+            f.write("<!-- Script imports -->\n")
+            f.write(imported_scripts)
+            # Body equivalent - add HTML content
+            f.write("<!-- HTML body -->\n")
+            # Text content
+            f.write(f"""<p>{lorem}</p>\n""")
+            for div in divs:
+                # Plot container with center alignment
+                f.write("<div align='center'>\n")
+                f.write(div)
+                f.write("\n")
+                f.write("</div>\n")
+                f.write(f"""<p>{lorem}</p>\n""")
+            # Chart scripts for interactive functionality
+            f.write("<!-- Chart scripts -->\n")
+            for script in scripts:
+                f.write(script)
+                f.write("\n")
+
+        # Open the generated plot in the default web browser
+        webbrowser.open(
+            'file:///' + os.path.abspath(
+                os.path.join("Plots", "goals.html")
+            )
+    )
+
 
         logger.info("Analysis completed successfully")
 
