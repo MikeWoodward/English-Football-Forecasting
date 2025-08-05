@@ -650,4 +650,4 @@ if __name__ == "__main__":
 
     except Exception as e:
         logger.error(f"ENFA data cleansing process failed: {str(e)}")
-        raise 
+        raise

@@ -10,7 +10,6 @@ import logging
 import os
 import time
 from datetime import datetime
-from typing import NoReturn
 
 from selenium import webdriver
 from selenium.common.exceptions import (
