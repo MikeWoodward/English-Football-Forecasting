@@ -13,9 +13,12 @@ from bokeh.palettes import Category10
 from bokeh.embed import file_html, components
 from bokeh.resources import CDN
 from typing import Dict, Any
-from bokeh.models import BoxAnnotation, Span, Div
+from bokeh.models import (BoxAnnotation, Span, Div, ColumnDataSource,
+                          Legend, LegendItem, HoverTool)
 import numpy as np
 import os
+import bokeh
+import webbrowser
 # Configure logging for tracking execution progress and debugging
 logging.basicConfig(
     level=logging.INFO,
@@ -43,6 +46,7 @@ def read_data(*, file_path: str) -> pd.DataFrame:
         logger.info(
             f"Reading data from {file_path}"
         )
+        # Read the CSV file into a DataFrame
         data = pd.read_csv(file_path, low_memory=False)
         logger.info(
             f"Successfully loaded {len(data)} rows of data"
@@ -163,7 +167,7 @@ def analyze_draws(*, data: pd.DataFrame) -> Dict[str, Any]:
             match_results['matches_played']
         )
 
-        # Calculate standard deviation band
+        # Calculate standard deviation band (lower and upper bounds)
         match_results['proportion_lower'] = (
             match_results['proportion'] -
             match_results['proportion_std']
@@ -217,7 +221,6 @@ def analyze_win_fraction(*, match_data: pd.DataFrame) -> Dict[str, Any]:
         ValueError: If required columns are missing from the data.
         KeyError: If expected data structure is not found.
     """
-
     # Extract the starting year from season format (e.g., "2020-2021" -> 2020)
     match_data['season_start'] = (
         match_data['season']
@@ -242,35 +245,36 @@ def analyze_win_fraction(*, match_data: pd.DataFrame) -> Dict[str, Any]:
         axis=1
     )
 
+    # Prepare home club results with standardized column names
     home_clubs = (
         match_data[['season_start', 'league_tier', 'home_club',
                    'home_result', 'match_date']].rename(
             columns={'home_club': 'club', 'home_result': 'result'}
         )
     )
-    # Prepare home club results with standardized column names
+    # Prepare away club results with standardized column names
     away_clubs = (
         match_data[['season_start', 'league_tier', 'away_club',
                    'away_result', 'match_date']].rename(
             columns={'away_club': 'club', 'away_result': 'result'}
         )
     )
-    # Merge and sort
+    # Merge and sort home and away club results
     clubs = pd.concat([
         home_clubs, away_clubs
     ]).sort_values(
         by=['season_start', 'league_tier', 'club', 'match_date']
     )
-    # Calculate results fraction
+    # Calculate results fraction for each club
     club_proportion = clubs[['season_start', 'league_tier', 'club',
                             'result']].groupby(
         ['season_start', 'league_tier', 'club']
     ).value_counts(normalize=True).reset_index(name='proportion')
-    # Focus on wins
+    # Focus on wins only
     club_proportion_wins = club_proportion[
         club_proportion['result'] == 'win'
     ]
-    # Work out the win standard deviation
+    # Work out the win standard deviation for each league and season
     clubs_wins_std = (
         club_proportion_wins[['season_start', 'league_tier',
                               'proportion']]
@@ -282,7 +286,9 @@ def analyze_win_fraction(*, match_data: pd.DataFrame) -> Dict[str, Any]:
     return clubs_wins_std
 
 
-def plot_draw_results(*, draw_fraction: Dict[str, Any], ci: bool = True) -> None:
+def plot_draw_results(
+    *, draw_fraction: Dict[str, Any], ci: bool = True
+) -> None:
     """
     Create and display a plot of draw fractions vs season for each league.
 
@@ -313,10 +319,12 @@ def plot_draw_results(*, draw_fraction: Dict[str, Any], ci: bool = True) -> None
         }
 
         # Set title based on whether confidence intervals are shown
-        title = (
-            "Draw Fraction vs Season for All League Tiers - with std - interactive chart"
-            if ci else "Draw Fraction vs Season for All League Tiers - no std - interactive chart"
-        )
+        if ci:
+            title = ("Draw Fraction vs Season for All League Tiers - with std -"
+                     " interactive chart")
+        else:
+            title = ("Draw Fraction vs Season for All League Tiers - no std - "
+                     "interactive chart")
 
         # Create the main figure with appropriate dimensions and labels
         p = figure(
@@ -362,60 +370,79 @@ def plot_draw_results(*, draw_fraction: Dict[str, Any], ci: bool = True) -> None
         p.add_layout(line_1992)
 
         # Plot data for each league tier
+        legend_list = []
         for league in leagues:
             # Filter data for current league tier
             league_data = draw_fraction[
                 draw_fraction['league_tier'] == league
             ]
+            # Create ColumnDataSource for the league data to enable hover
+            # tooltips
+            source = ColumnDataSource(league_data)
+
+            renderers = []
 
             # Plot the main trend line connecting draw fractions over time
-            p.line(
-                league_data['season_start'],
-                league_data['proportion'],
-                legend_label=f"{league}",
+            renderer_line = p.line(
+                x='season_start',
+                y='proportion',
                 line_width=2,
-                color=color_map[league]
+                color=color_map[league],
+                source=source
             )
+            renderers.append(renderer_line)
 
             # Add confidence interval bands if requested
             if ci:
-                p.varea(
-                    x=league_data['season_start'],
-                    y1=league_data['proportion_lower'],
-                    y2=league_data['proportion_upper'],
-                    legend_label=f"{league}",
+                renderer_area = p.varea(
+                    x='season_start',
+                    y1='proportion_lower',
+                    y2='proportion_upper',
                     fill_color=color_map[league],
-                    fill_alpha=0.3
+                    fill_alpha=0.3,
+                    source=source
                 )
+                renderers.append(renderer_area)
 
             # Add scatter points to show individual data points
-            p.scatter(
-                league_data['season_start'],
-                league_data['proportion'],
-                legend_label=f"{league}",
+            renderer_scatter = p.scatter(
+                x='season_start',
+                y='proportion',
                 size=8,
-                color=color_map[league]
+                color=color_map[league],
+                source=source
             )
+            renderers.append(renderer_scatter)
 
-        # Configure legend to be interactive (click to hide/show series)
-        p.legend.title = 'League\nTier'
-        p.legend.click_policy = "hide"
-        p.legend.location = "right"
-        p.legend.orientation = "vertical"
-        p.legend.spacing = 10
-        p.legend.margin = 20
-        p.legend.padding = 10
-        p.legend.border_line_color = "black"
-        p.legend.border_line_width = 1
-        p.legend.background_fill_color = "white"
-        p.legend.background_fill_alpha = 0.8
+            # Add both scatter and line renderers to legend for this league
+            legend_list.append(LegendItem(
+                label=f"{league}",
+                renderers=renderers
+            ))
 
-        # Hack to place the legend outside the plot
-        p.add_layout(p.legend[0], 'right')
+        # Create and configure the legend
+        legend = Legend(
+            items=legend_list,
+            location="center",
+            border_line_color="black",
+            border_line_width=1,
+            click_policy="hide",
+            title="League\ntier",
+        )
+        p.add_layout(legend, "right")
 
-        return p
+        # Add hover tooltip for all data points
+        p.add_tools(HoverTool(
+            tooltips=[
+                ("League", "@league_tier"),
+                ("Season", "@season_start"),
+                ("Draw Fraction", "@proportion")
+            ]
+        ))
 
         logger.info("Visualization completed")
+
+        return components(p)
 
     except KeyError as e:
         # Handle missing required keys in the data
@@ -441,7 +468,6 @@ def plot_win_fraction(*, win_fraction_std: Dict[str, Any]) -> None:
     """
     Create and display a plot of win fractions vs season for each league.
     """
-
     try:
         logger.info("Creating draw fraction visualization")
 
@@ -461,7 +487,8 @@ def plot_win_fraction(*, win_fraction_std: Dict[str, Any]) -> None:
         }
 
         # Set title based on whether confidence intervals are shown
-        title = "Win Fraction std vs Season for All League Tiers - interactive chart"
+        title = ("Win Fraction std vs Season for All League Tiers - "
+                 "interactive chart")
 
         # Create the main figure with appropriate dimensions and labels
         p = figure(
@@ -507,49 +534,63 @@ def plot_win_fraction(*, win_fraction_std: Dict[str, Any]) -> None:
         p.add_layout(line_1992)
 
         # Plot data for each league tier
+        legend_list = []
         for league in leagues:
             # Filter data for current league tier
             league_data = win_fraction_std[
                 win_fraction_std['league_tier'] == league
             ]
+            # Create ColumnDataSource for the league data to enable hover
+            # tooltips
+            source = ColumnDataSource(league_data)
 
             # Plot the main trend line connecting draw fractions over time
-            p.line(
-                league_data['season_start'],
-                league_data['proportion'],
-                legend_label=f"{league}",
+            renderer_line = p.line(
+                x='season_start',
+                y='proportion',
                 line_width=2,
-                color=color_map[league]
+                color=color_map[league],
+                source=source
             )
 
             # Add scatter points to show individual data points
-            p.scatter(
-                league_data['season_start'],
-                league_data['proportion'],
-                legend_label=f"{league}",
+            renderer_scatter = p.scatter(
+                x='season_start',
+                y='proportion',
                 size=8,
-                color=color_map[league]
+                color=color_map[league],
+                source=source
             )
 
-        # Configure legend to be interactive (click to hide/show series)
-        p.legend.title = 'League\nTier'
-        p.legend.click_policy = "hide"
-        p.legend.location = "right"
-        p.legend.orientation = "vertical"
-        p.legend.spacing = 10
-        p.legend.margin = 20
-        p.legend.padding = 10
-        p.legend.border_line_color = "black"
-        p.legend.border_line_width = 1
-        p.legend.background_fill_color = "white"
-        p.legend.background_fill_alpha = 0.8
+            # Add both scatter and line renderers to legend for this league
+            legend_list.append(LegendItem(
+                label=f"{league}",
+                renderers=[renderer_scatter, renderer_line]
+            ))
 
-        # Hack to place the legend outside the plot
-        p.add_layout(p.legend[0], 'right')
+        # Create and configure the legend
+        legend = Legend(
+            items=legend_list,
+            location="center",
+            border_line_color="black",
+            border_line_width=1,
+            click_policy="hide",
+            title="League\ntier",
+        )
+        p.add_layout(legend, "right")
 
-        return p
+        # Add hover tooltip for all data points
+        p.add_tools(HoverTool(
+            tooltips=[
+                ("League", "@league_tier"),
+                ("Season", "@season_start"),
+                ("Win Fraction std", "@proportion")
+            ]
+        ))
 
         logger.info("Visualization completed")
+
+        return components(p)
 
     except KeyError as e:
         # Handle missing required keys in the data
@@ -576,54 +617,100 @@ if __name__ == "__main__":
     try:
         # Read the match data from CSV file
         match_data = read_data(
-            file_path=os.path.join("Data", "merged_match_data.csv")
+            file_path=os.path.join("..",
+                                   "..",
+                                   "Data preparation",
+                                   "Data",
+                                   "match_attendance_discipline.csv")
         )
 
         # Perform statistical analysis of draw fractions
         draw_fraction = analyze_draws(data=match_data)
 
         # Create visualizations with confidence intervals
-        draw_plot_ci = plot_draw_results(draw_fraction=draw_fraction)
+        script_draw_plot_ci, div_draw_plot_ci = plot_draw_results(draw_fraction=draw_fraction)
 
         # Create visualizations without confidence intervals
-        draw_plot_no_ci = plot_draw_results(
+        script_draw_plot_no_ci, div_draw_plot_no_ci = plot_draw_results(
             draw_fraction=draw_fraction, ci=False
         )
 
         # Analyze win fraction standard deviation by teams
         win_fraction_std = analyze_win_fraction(match_data=match_data)
-        win_fraction_plot = plot_win_fraction(
+        script_win_fraction_plot, div_win_fraction_plot = plot_win_fraction(
             win_fraction_std=win_fraction_std
         )
 
-        # Chart layout as columns
-        layout = column(
-            Div(text="Placeholder"),
-            draw_plot_ci,
-            Div(text="Placeholder"),
-            draw_plot_no_ci,
-            Div(text="Placeholder"),
-            win_fraction_plot,
-            Div(text="Placeholder"),
-        )
+        divs = [div_draw_plot_ci, div_draw_plot_no_ci, div_win_fraction_plot]
+        scripts = [script_draw_plot_ci, script_draw_plot_no_ci, script_win_fraction_plot]
 
-        html = file_html(layout, CDN, "my plot")
-        # save html to file
-        with open("Plots/plot.html", "w") as f:
-            f.write(html)
-
-        for index, plot in enumerate([draw_plot_ci, draw_plot_no_ci, win_fraction_plot]):
-            script, div = components(plot)
+        # Save divs and scripts to files
+        for index, div in enumerate(divs):
+            with open(f"Plots/div_{index}.txt", "w") as f:
+                f.write("<div align='center'>\n")
+                f.write(div)
+                f.write("\n")
+                f.write("</div>\n")
+        for index, script in enumerate(scripts):
             with open(f"Plots/script_{index}.txt", "w") as f:
                 f.write(script)
-            with open(f"Plots/div_{index}.txt", "w") as f:
-                f.write(div)
 
-        show(layout)
+        # Get Bokeh version for proper script imports
+        version = bokeh.__version__
+        imported_scripts = (
+            f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+            f"""bokeh-{version}.min.js"></script>\n"""
+            f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+            f"""bokeh-widgets-{version}.min.js"></script>\n"""
+            f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+            f"""bokeh-tables-{version}.min.js"></script>\n"""
+            f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+            f"""bokeh-mathjax-{version}.min.js"></script>\n"""
+        )
+
+        # Sample text content for the HTML page
+        lorem = (
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
+            "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
+            "ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
+            "aliquip ex ea commodo consequat. Duis aute irure dolor in "
+            "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
+            "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
+            "culpa qui officia deserunt mollit anim id est laborum."
+        )
+
+        # save html to file
+        with open("Plots/draws.html", "w") as f:
+            # Header equivalent - include Bokeh script imports
+            f.write("<!-- Script imports -->\n")
+            f.write(imported_scripts)
+            # Body equivalent - add HTML content
+            f.write("<!-- HTML body -->\n")
+            # Text content
+            f.write(f"""<p>{lorem}</p>\n""")
+            for div in divs:
+                # Plot container with center alignment
+                f.write("<div align='center'>\n")
+                f.write(div)
+                f.write("\n")
+                f.write("</div>\n")
+                f.write(f"""<p>{lorem}</p>\n""")
+            # Chart scripts for interactive functionality
+            f.write("<!-- Chart scripts -->\n")
+            for script in scripts:
+                f.write(script)
+                f.write("\n")
+
+        # Open the generated plot in the default web browser
+        webbrowser.open(
+            'file:///' + os.path.abspath(
+                os.path.join("Plots", "draws.html")
+            )
+    )
 
     except Exception as e:
         # Log any errors that occur during main execution
         logger.error(
             f"Error in main execution: {e}"
         )
-        raise 
+        raise

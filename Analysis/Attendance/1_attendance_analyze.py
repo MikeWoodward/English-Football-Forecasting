@@ -690,7 +690,7 @@ if __name__ == "__main__":
 
     # Define path to raw data file
     raw_data_file: str = os.path.join(
-        "..", "Data Preparation", 'Data', 'match_attendance.csv'
+        "..", "..", "Data Preparation", 'Data', 'match_attendance.csv'
     )
     raw_data: Optional[pd.DataFrame] = read_data(file_name=raw_data_file)
 
@@ -706,6 +706,9 @@ if __name__ == "__main__":
     script1, div1 = plot_attendance_time(raw_data=raw_data, plot_width=plot_width, plot_height=plot_height)
     script2, div2 = plot_attendance_violin(raw_data=raw_data, plot_width=plot_width, plot_height=150)
     script3, div3 = plot_attendance_stadium_capacity(stadium_capacity=stadium_capacity, plot_width=plot_width, plot_height=plot_height)
+
+    scripts = [script1, script2, script3]
+    divs = [div1, div2, div3]
 
     # Get Bokeh version for proper script imports
     version = bokeh.__version__
@@ -740,28 +743,32 @@ if __name__ == "__main__":
         f.write("<!-- HTML body -->\n")
         # Text content
         f.write(f"""<p>{lorem}</p>\n""")
-        # Plot container with center alignment
-        f.write("<div align='center'>\n")
-        f.write(div1)
-        f.write("\n")
-        f.write("</div>\n")
-        f.write(f"""<p>{lorem}</p>\n""")
-        f.write("<div align='center'>\n")
-        f.write(div2)
-        f.write("\n")
-        f.write("</div>\n")
-        f.write(f"""<p>{lorem}</p>\n""")
-        f.write("<div align='center'>\n")
-        f.write(div3)
-        f.write("\n")
-        f.write("</div>\n")
-        # Additional text content
-        f.write(f"""<p>{lorem}</p>\n""")
-        # Chart scripts for interactive functionality
+
+        for index, div in enumerate(divs):
+            f.write(f"<!--Chart div {index+1}-->\n")
+            f.write("<div align='center'>\n")
+            f.write(div)
+            f.write("\n")
+            f.write("</div>\n")
+            f.write(f"""<p>{lorem}</p>\n""")
+
         f.write("<!-- Chart scripts -->\n")
-        f.write(script1)
-        f.write(script2)
-        f.write(script3)
+        for index, script in enumerate(scripts):
+            f.write(f"<!--Chart script {index+1}-->\n")
+            f.write(script)
+            f.write("\n")
+
+
+    # Write each of the scripts and divs to a separate file
+    for index, script in enumerate(scripts):
+        with open(os.path.join("Plots", f"script_{index+1}.txt"), "w") as f:
+            f.write(script)
+    for index, div in enumerate(divs):
+        with open(os.path.join("Plots", f"div_{index+1}.txt"), "w") as f:
+            f.write("<div align='center'>\n")
+            f.write("  " + div)
+            f.write("\n")
+            f.write("</div>\n")
 
     # Open the generated plot in the default web browser
     webbrowser.open('file:///'
