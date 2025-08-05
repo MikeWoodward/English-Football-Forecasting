@@ -18,6 +18,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 # Configure logging with timestamp, level, and message format
+# This provides detailed logging for the consolidation process
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -26,6 +27,8 @@ logger = logging.getLogger(__name__)
 
 # List of special matches that should be excluded from processing
 # These matches have different formats or are not part of regular league play
+# This includes cup competitions, international matches, and other non-league
+# fixtures
 EXCLUDED_MATCHES = [
     "Anglo-Italian Cup",
     "Anglo-Italian Cup (1st Leg)",
@@ -462,10 +465,11 @@ def read_enfa_matches(*, folder_path: str) -> List[str]:
         if not folder.exists():
             raise FileNotFoundError(f"Folder not found: {folder_path}")
 
-        # Get all HTML files in the directory
+        # Get all HTML files in the directory using glob pattern matching
         html_files = [str(file) for file in folder.glob("*.html")]
 
         # Sort files by date (extracted from filename) in descending order
+        # This ensures we process the most recent data first
         html_files.sort(
             key=lambda x: x.split("/")[-1].split(".")[0],
             reverse=True
@@ -477,6 +481,7 @@ def read_enfa_matches(*, folder_path: str) -> List[str]:
     except Exception as e:
         logger.error(f"Error reading ENFA matches: {str(e)}")
         raise
+
 
 def parse_enfa_file(*, file_path: str) -> Dict:
     """
@@ -509,16 +514,17 @@ def parse_enfa_file(*, file_path: str) -> Dict:
     try:
         parsed_data = []
 
-        # Read the HTML file with UTF-8 encoding
+        # Read the HTML file with UTF-8 encoding to handle special characters
         with open(file_path, 'r', encoding='utf-8') as file:
             data_html = file.read()
 
         # Extract match day and date from the HTML header
+        # The header format is typically "Day<br>YYYY-MM-DD"
         index_pos = data_html.find("<br>")
         match_day = data_html[0:index_pos]
         match_date = data_html[index_pos + 4:index_pos + 14]
 
-        # Parse HTML using BeautifulSoup
+        # Parse HTML using BeautifulSoup for robust HTML parsing
         soup = BeautifulSoup(data_html, 'html.parser')
         tables = soup.find_all("table")
 
@@ -526,33 +532,43 @@ def parse_enfa_file(*, file_path: str) -> Dict:
         for table in tables[1:]:
             rows = table.find("tbody").find_all("tr")
 
+            # Skip tables that don't contain match data (e.g., league tables)
             columns = rows[1].find_all("td")
             if len(columns) > 1 and columns[1].text == "Table":
                 continue
 
+            # Extract the table title (league/competition name)
             table_title = rows[1].text.strip()
-            # Remove multiple spaces
+            # Remove multiple spaces and normalize whitespace
             table_title = " ".join(table_title.split())
 
             # Skip special matches that are not part of regular league play
+            # These include cup competitions, international matches, etc.
             if table_title in EXCLUDED_MATCHES:
                 continue
 
             # Process each match in the table
-            # Start from index 4 to skip header rows
+            # Start from index 4 to skip header rows (title, column headers,
+            # etc.)
             for row in rows[4:]:
                 columns = row.find_all("td")
-                # If there's are images in the first column, skip the row
+
+                # Skip rows that contain images (usually headers or navigation)
                 if len(columns[0].find_all("img")) > 0:
                     continue
+
                 # Extract the home and away clubs and their scores
+                # Use stripped_strings to handle nested HTML elements
                 home_club = ' '.join(columns[0].stripped_strings)
                 away_club = ' '.join(columns[2].stripped_strings)
+
+                # Parse the score (format: "X-Y")
                 score = columns[1].text.strip().split("-")
                 home_goals = int(score[0])
                 away_goals = int(score[1])
 
-                # Create a dictionary for each match
+                # Create a dictionary for each match with all relevant
+                # information
                 parsed_data.append({
                     "table_title": table_title,
                     "match_day": match_day,
@@ -579,10 +595,11 @@ if __name__ == "__main__":
         # Path to the folder containing ENFA match HTML files
         folder_path = "HTML"  # Use the local HTML folder
 
-        # Read all match files
+        # Read all match files from the HTML directory
         matches = read_enfa_matches(folder_path=folder_path)
 
         # Parse each file and collect the data, note we don't add nulls
+        # This processes all HTML files and extracts match data
         parsed_data = []
         for match_file in matches:
             parsed_matches = parse_enfa_file(file_path=match_file)
@@ -590,6 +607,7 @@ if __name__ == "__main__":
                 parsed_data += parsed_matches
 
         # Convert the parsed data to a DataFrame and save as CSV
+        # Remove duplicates and sort by match date for consistency
         file_name = os.path.join("Data", "enfa_baseline.csv")
         pd.DataFrame(parsed_data).drop_duplicates().sort_values(
             by=['match_date'],
