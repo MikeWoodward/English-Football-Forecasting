@@ -56,7 +56,7 @@ def read_matches(*,
         
         # Read CSV file with low_memory=False to avoid dtype warnings
         # This is important for large datasets with mixed data types
-        matches_df = pd.read_csv(filename, low_memory=False)
+        matches_df = pd.read_csv(filepath_or_buffer=filename, low_memory=False)
         
         # Log successful completion with record count
         logger.info(f"Successfully read {len(matches_df)} matches")
@@ -110,7 +110,7 @@ def read_attendance(*,
         
         # Read CSV file with low_memory=False to avoid dtype warnings
         # This ensures consistent data type handling across different file sizes
-        attendance_df = pd.read_csv(filename, low_memory=False)
+        attendance_df = pd.read_csv(filepath_or_buffer=filename, low_memory=False)
         
         # Log successful completion with record count
         logger.info(
@@ -217,10 +217,10 @@ def build_attendance(*,
             on=['season', 'league_tier', 'home_club', 'away_club'])
 
         # Combine the original attendance data with the corrected data
-        match_attendance = pd.concat([attendance, attendance_null_fixes])
+        match_attendance = pd.concat(objs=[attendance, attendance_null_fixes])
 
         # Convert attendance to integer type
-        match_attendance['attendance'] = match_attendance['attendance'].astype(int)
+        match_attendance['attendance'] = match_attendance['attendance'].astype(dtype=int)
 
         # Then sort the combined dataset for consistent ordering
         match_attendance = match_attendance.sort_values(
@@ -351,7 +351,7 @@ def save_data(*, data: pd.DataFrame, output_path: str) -> None:
         # This prevents file writing errors due to missing directories
         output_dir = os.path.dirname(output_path)
         if output_dir and not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+            os.makedirs(name=output_dir)
             logger.info(f"Created output directory: {output_dir}")
 
         # Validate data before saving to prevent empty file creation
@@ -363,7 +363,7 @@ def save_data(*, data: pd.DataFrame, output_path: str) -> None:
 
         # Save the validated data to CSV format without index
         # index=False prevents adding an extra index column to the output
-        data.to_csv(output_path, index=False)
+        data.to_csv(path_or_buf=output_path, index=False)
         logger.info(
             f"Successfully saved {len(data)} rows to {output_path}"
         )
@@ -411,7 +411,7 @@ def save_data(*,
 
         # Save DataFrame to CSV format without index column
         # This creates a clean CSV file without extra index data
-        dataframe.to_csv(filename, index=False)
+        dataframe.to_csv(path_or_buf=filename, index=False)
         logger.info(
             f"Successfully saved {len(dataframe)} records to {filename}"
         )
@@ -455,9 +455,7 @@ if __name__ == "__main__":
         attendance_main = read_attendance(
             filename=os.path.join(
                 "..",
-                "..",
-                "Data downloads",
-                "Active",
+                "1 Data downloads",
                 "EnglishFootballLeagueTables",
                 "Data",
                 "englishfootballleaguetables_matches.csv"
@@ -490,6 +488,12 @@ if __name__ == "__main__":
             filename="Data/match_attendance.csv",
             dataframe=match_attendance
         )
+
+        # Print out some check results
+        print("Columns in merged data:")
+        print(match_attendance.columns)
+        print("League tiers in merged data:")
+        print(match_attendance['league_tier'].unique())
 
         # Log successful completion of the entire data processing pipeline
         logger.info("Data processing completed successfully")

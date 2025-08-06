@@ -54,7 +54,7 @@ def get_data(*, todor_path: str, enfa_path: Optional[str] = None) -> pd.DataFram
             logger.error(error_msg)
             raise FileNotFoundError(error_msg)
 
-        todor_data = pd.read_csv(todor_path, low_memory=False)
+        todor_data = pd.read_csv(filepath_or_buffer=todor_path, low_memory=False)
         logger.info(f"Loaded {len(todor_data)} rows from todor data")
 
         # Read enfa data if provided
@@ -65,7 +65,7 @@ def get_data(*, todor_path: str, enfa_path: Optional[str] = None) -> pd.DataFram
                 logger.error(error_msg)
                 raise FileNotFoundError(error_msg)
 
-            efl_data = pd.read_csv(enfa_path, low_memory=False)
+            efl_data = pd.read_csv(filepath_or_buffer=enfa_path, low_memory=False)
             logger.info(
                 f"Loaded {len(efl_data)} rows from EFL data"
             )
@@ -74,7 +74,7 @@ def get_data(*, todor_path: str, enfa_path: Optional[str] = None) -> pd.DataFram
 
         # Merge the datasets
         logger.info("Merging datasets")
-        merged_data = pd.concat([todor_data, efl_data], ignore_index=True)
+        merged_data = pd.concat(objs=[todor_data, efl_data], ignore_index=True)
         logger.info(
             f"Merged data contains {len(merged_data)} rows"
         )
@@ -87,7 +87,7 @@ def get_data(*, todor_path: str, enfa_path: Optional[str] = None) -> pd.DataFram
         duplicates_removed = initial_count - final_count
 
         # Ensure league_tier is integer
-        merged_data['league_tier'] = merged_data['league_tier'].astype(int)
+        merged_data['league_tier'] = merged_data['league_tier'].astype(dtype=int)
 
         logger.info(
             f"Removed {duplicates_removed} duplicate records. "
@@ -154,19 +154,19 @@ def check_data(*, data: pd.DataFrame) -> bool:
         season_data = SeasonData(logger=logger)
 
         # Check each season has the correct leagues
-        if not season_data.check_leagues_seasons(matches=data):
+        if not season_data.check_leagues_seasons(matches=data, ignore_tiers=None):
             error_msg = "League seasons validation failed"
             logger.error(error_msg)
             raise ValueError(error_msg)
         
         # Check each season has the correct number of clubs
-        if not season_data.check_leagues_seasons_clubs(matches=data):
+        if not season_data.check_leagues_seasons_clubs(matches=data, ignore_tiers=None):
             error_msg = "League seasons clubs validation failed"
             logger.error(error_msg)
             raise ValueError(error_msg)
         
         # Check each season has the correct number of matches
-        if not season_data.check_leagues_seasons_matches(matches=data):
+        if not season_data.check_leagues_seasons_matches(matches=data, ignore_tiers=None):
             error_msg = "League seasons matches validation failed"
             logger.error(error_msg)
             raise ValueError(error_msg)
@@ -198,7 +198,7 @@ def save_data(*, data: pd.DataFrame, output_path: str) -> None:
         # Ensure the output directory exists
         output_dir = os.path.dirname(output_path)
         if output_dir and not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+            os.makedirs(name=output_dir)
             logger.info(f"Created output directory: {output_dir}")
 
         # Validate data before saving
@@ -208,7 +208,7 @@ def save_data(*, data: pd.DataFrame, output_path: str) -> None:
             raise ValueError(error_msg)
 
         # Save the data to CSV
-        data.to_csv(output_path, index=False)
+        data.to_csv(path_or_buf=output_path, index=False)
         logger.info(
             f"Successfully saved {len(data)} rows to {output_path}"
         )
@@ -228,12 +228,12 @@ if __name__ == "__main__":
     try:
         # Define file paths
         todor_file = (
-            "../../Data downloads/Active/Todor/Data/todor_cleansed.csv"
+            "../1 Data downloads/Todor/Data/todor_cleansed.csv"
         )
         enfa_file = (
-            "../../Data downloads/Active/ENFA/Data/enfa_cleansed.csv"
+            "../1 Data downloads/ENFA/Data/enfa_cleansed.csv"
         )
-        output_file = "data/matches.csv"
+        output_file = "Data/matches.csv"
 
         # Get and merge data
         logger.info("Starting data preparation process - Stage 1: Match Data Consolidation")
@@ -247,6 +247,13 @@ if __name__ == "__main__":
             # Save validated data
             merged_data = merged_data.sort_values(by=['season', 'league_tier', 'match_date', 'home_club'])
             save_data(data=merged_data, output_path=output_file)
+
+            # Print out some check results
+            print("Columns in merged data:")
+            print(merged_data.columns)
+            print("League tiers in merged data:")
+            print(merged_data['league_tier'].unique())
+
             logger.info("Data preparation process - Stage 1 completed successfully")
         else:
             logger.error("Data validation failed - process stopped")
