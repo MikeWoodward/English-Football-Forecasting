@@ -40,6 +40,7 @@ import time
 import random
 from datetime import datetime
 import numpy as np
+import logging
 
 def get_headers():
     """
@@ -66,7 +67,92 @@ def get_headers():
         'Connection': 'keep-alive',
     }
 
-def get_team_values(season='2023') -> None:
+def log_503_error(
+    *,
+    url: str,
+    season: str,
+    league_name: str,
+    error_details: str
+) -> None:
+    """
+    Log 503 errors to a dedicated file for tracking and analysis.
+    
+    This function appends 503 error details to a file in the Log folder.
+    Each entry includes timestamp, URL, season, league, and error details.
+    
+    Args:
+        url: The URL that caused the 503 error
+        season: The season being processed
+        league_name: The name of the league being processed
+        error_details: Additional error details or context
+    
+    Returns:
+        None
+    """
+    log_dir = 'Log'
+    os.makedirs(log_dir, exist_ok=True)
+    
+    error_file = os.path.join(log_dir, '503_errors.txt')
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    error_entry = (
+        f"[{timestamp}] 503 Error\n"
+        f"URL: {url}\n"
+        f"Season: {season}\n"
+        f"League: {league_name}\n"
+        f"Details: {error_details}\n"
+        f"{'='*50}\n"
+    )
+    
+    try:
+        with open(error_file, 'a', encoding='utf-8') as f:
+            f.write(error_entry)
+        logging.warning(f"503 error logged to {error_file}")
+    except Exception as e:
+        logging.error(f"Failed to write to 503 error file at line {e.__traceback__.tb_lineno}: {e}")
+
+
+def setup_logging(
+    *,
+    log_level=logging.INFO
+) -> None:
+    """
+    Set up logging configuration for the application.
+    
+    This function configures logging to write to both console and file.
+    Logs are saved to a 'Log' folder with timestamped filenames.
+    
+    Args:
+        log_level: The logging level to use. Defaults to logging.INFO.
+    
+    Returns:
+        None
+    """
+    # Create Log directory if it doesn't exist
+    log_dir = 'Log'
+    os.makedirs(log_dir, exist_ok=True)
+    
+    # Create timestamped log filename
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_filename = os.path.join(log_dir, f'transfer_value_download_{timestamp}.log')
+    
+    # Configure logging
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_filename),
+            logging.StreamHandler()
+        ]
+    )
+    
+    logging.info(f"Logging initialized. Log file: {log_filename}")
+
+
+def get_team_values(
+    *,
+    season='2023'
+) -> pd.DataFrame:
     """
     Scrape and process team market values from Transfermarkt for a specified season.
     
@@ -115,16 +201,42 @@ def get_team_values(season='2023') -> None:
         }
     ]
     
+    all_data = []
+    
     for league in leagues:
         # Format the URL with the season
         url = league['url'].format(season=season)
         
-        # Add a random delay between 2-4 seconds to be polite
-        time.sleep(random.uniform(2, 4))
+        filename = os.path.join(
+            'Data',
+            f"transfer_values_tier{league['tier']}_{season}.csv"
+        )
+
+        if os.path.exists(filename):
+            logging.info(f"Skipping {league['name']} for season {season} because it already exists")
+            continue
+
+        # Add a random delay between 20-40 seconds to be polite
+        time.sleep(random.uniform(20, 40))
+
+        logging.info(f"Processing {league['name']} for season {season}")
             
         try:
             # Make HTTP request with proper headers
             response = requests.get(url, headers=get_headers())
+            
+            # Check for 503 errors specifically
+            if response.status_code == 503:
+                error_msg = f"503 Service Unavailable for {league['name']}"
+                log_503_error(
+                    url=url,
+                    season=season,
+                    league_name=league['name'],
+                    error_details=error_msg
+                )
+                logging.error(f"503 error for {league['name']} - service temporarily unavailable")
+                continue
+            
             response.raise_for_status()
 
             # Parse HTML content
@@ -132,7 +244,7 @@ def get_team_values(season='2023') -> None:
             table = soup.find('table', {'class': 'items'})
             
             if not table:
-                print(f"Could not find table for {league['name']}")
+                logging.warning(f"Could not find table for {league['name']}")
                 continue
 
             # Extract table headers
@@ -166,46 +278,67 @@ def get_team_values(season='2023') -> None:
             # 3. Add season and league information
             df['season'] = f'{season}-{int(season) + 1}'
             df['league'] = league['name']
-            df['tier'] = league['tier']
+            df['league_tier'] = league['tier']
 
             # Save data for each league separately
             filename = os.path.join(
-                '../../RawData/Matches/TransferValues',
+                'Data',
                 f"transfer_values_tier{league['tier']}_{season}.csv"
             )
             # Ensure the directory exists
             os.makedirs(os.path.dirname(filename), exist_ok=True)
             df.to_csv(filename, index=False)
             
-        except Exception as e:
-            print(f"Error scraping {league['name']}: {e}")
+            logging.info(f"Saved {len(df)} records for {league['name']} to {filename}")
+            
+            # Add to collection for return
+            all_data.append(df)
+            
+        except requests.exceptions.HTTPError as e:
+            if hasattr(e, 'response') and e.response.status_code == 503:
+                error_msg = f"HTTP 503 Error: {e}"
+                log_503_error(
+                    url=url,
+                    season=season,
+                    league_name=league['name'],
+                    error_details=error_msg
+                )
+                logging.error(f"503 error for {league['name']} at line {e.__traceback__.tb_lineno}: {e}")
+            else:
+                logging.error(f"HTTP error for {league['name']} at line {e.__traceback__.tb_lineno}: {e}")
             continue
-        
+        except Exception as e:
+            logging.error(f"Error scraping {league['name']} at line {e.__traceback__.tb_lineno}: {e}")
+            continue
+    
+    # Combine all league data and return
+    if all_data:
+        combined_df = pd.concat(all_data, ignore_index=True)
+        logging.info(f"Combined {len(combined_df)} total records from {len(all_data)} leagues")
+        return combined_df
+    else:
+        logging.warning("No data collected from any leagues")
+        return pd.DataFrame()
 
-def main():
-    """
-    Main execution function for the transfer value scraping process.
+
+if __name__ == "__main__":
+    # Set up logging
+    setup_logging()
     
-    This function:
-    1. Initiates the scraping process for historical Premier League seasons
-    2. Handles the results and error cases
-    3. Triggers the save process for successful scrapes
-    
-    Historical Data Collection:
-    - Starts from 1992 (Premier League formation)
-    - Ends at 2023 (current season)
-    - Processes each season sequentially with appropriate delays
-    
-    Note: Data availability and quality may vary for older seasons.
-    Transfermarkt's historical data might be incomplete or less detailed
-    for seasons before certain dates.
-    """
-    print("Starting transfer value download...")
+    logging.info("Starting transfer value download...")
     
     # Iterate through all Premier League seasons
     # Starting from 1992 (Premier League formation) to 2023 (current)
     for current_season in range(1992, 2023):
-        df = get_team_values(current_season)
-
-if __name__ == "__main__":
-    main() 
+        try:
+            logging.info(f"Processing season {current_season}")
+            season_data = get_team_values(season=str(current_season))
+            if not season_data.empty:
+                logging.info(f"Successfully processed season {current_season} with {len(season_data)} records")
+            else:
+                logging.warning(f"No data found for season {current_season}")
+        except Exception as e:
+            logging.error(f"Error processing season {current_season} at line {e.__traceback__.tb_lineno}: {e}")
+            continue
+    
+    logging.info("Transfer value download process completed") 
