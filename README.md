@@ -4,7 +4,7 @@ This is a project to forecast English football league results (excluding cup mat
 I have several prject goals:
 1. Use the project as a demo vehicle for using Cursor on a large machine learning project.
 2. Add new data to the existing model.
-3. More sophisticated data analysis than before looking for features.
+3. More sophisticated data analysis than before - looking for features.
 4. More in-depth investigation of neural nets and other machine learning approaches.
 
 Here's how the project is structured:
