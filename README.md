@@ -10,5 +10,5 @@ I have several prject goals:
 Here's how the project is structured:
 * Data downloads - most of the code that deals with getting the data. There are a number of data sources I used and some I stopped using.
 * Data preperation - extracts data from the data sources, combines it, and cleans it up.
-* Analysis - data anlsysis.
+* Analysis - data analysis.
 * Notes - project notes.
