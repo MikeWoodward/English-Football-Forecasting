@@ -43,7 +43,7 @@ This site is here: https://fbref.com/en/. Has data for the top four tiers. Has a
 
 ## Football-data
 
-Located here: https://www.football-data.co.uk. This site has gambling data. It includes the fifth tier.
+Located here: https://www.football-data.co.uk. This site has gambling data and red card, yellow card, and foul data. It includes the fifth tier.
 
 ## Football web pages
 
