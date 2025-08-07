@@ -10,7 +10,7 @@ There's been a tremendous interest in modeling football data for some time now, 
 
 * Most sources exclude the National League (the fifth tier). This is still a professional league and matches can have attendances of several thousand. 
 
-* Club names are inconsistently abbreviated.
+* Club names are inconsistently abbreviated or shortened.
 
 * The same errors appear in multiple sources, suggesting a large amount of cutting-and-pasting. In other words, different sources are not always different.
 
