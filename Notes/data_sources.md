@@ -55,7 +55,7 @@ Located here: http://todor66.com/football/England/. Limited time-scope, but incl
 
 ## Transfermarkt
 
-Located here: https://www.transfermarkt.com. Has match attendance figures etc. but suffers from correctness issues (results, dates), mostly for older matches, but some recentish issues too. It also has transfer values and hence estimates of the team values.
+Located here: https://www.transfermarkt.com. Has match attendance figures etc. but suffers from correctness issues (results, dates), mostly for older matches, but some recentish issues too. It also has transfer values and hence estimates of the team values plus the fractikon of foreign-born players.
 
 ## World football
 
