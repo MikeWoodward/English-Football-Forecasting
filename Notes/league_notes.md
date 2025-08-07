@@ -8,7 +8,7 @@ The Premier League was created in 1993, splitting off from the previous league s
 
 The third tier league (the Third Division at the time) was created in 1920, but from 1920-1958, the third tier was split into a northern and southern league. In 1958, these were merged into a new national Third Division and Fourth Division (1958-1959 season onwards). For this project, I only considered national leagues.
 
-The table below is a simplified version of the league structure over time. Over the years, some teams have "resigned" or been expelled from the league mid-season (usually due to financial issues), this means the number of teams per league per season changes. The number of clubs per season in the table isn't 100% correct, I've missed off some exprelled clubs. The correct data is in teh cross checking data file in this project.
+The table below is a simplified version of the league structure over time. Over the years, some teams have "resigned" or been expelled from the league mid-season (usually due to financial issues), this means the number of teams per league per season changes. The number of clubs per season in the table isn't 100% correct, I've missed off some exprelled clubs. The correct data is in the cross checking data file in this project.
 
 | Tier    | League name | Number of clubs | 
 | -------- | ------- | ------- |
