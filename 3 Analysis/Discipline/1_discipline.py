@@ -15,7 +15,8 @@ from bokeh.embed import components
 from bokeh.palettes import Category10
 import bokeh
 import webbrowser
-from bokeh.models import HoverTool, ColumnDataSource  # For interactive tooltips
+# For interactive tooltips
+from bokeh.models import HoverTool, ColumnDataSource
 
 # Configure logging
 logging.basicConfig(
@@ -23,6 +24,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
 
 def _create_color_palette(*, leagues: list) -> Dict[str, str]:
     """
@@ -51,15 +53,17 @@ def plot_total_discipline(*, discipline_data, plot_width, plot_height):
         "Mean yellow cards": ('yellow_cards', 'mean'),
         "Mean fouls": ('fouls', 'mean')
     }).reset_index()
-    #
+
     leagues = discipline_totals['league_tier'].unique()
     color_palette = _create_color_palette(leagues=leagues)
 
     divs = []
     scripts = []
+    titles = []
     for discipline in ['Mean red cards', 'Mean yellow cards', 'Mean fouls']:
+        title = f"{discipline} per match per league per season"
         plot = figure(
-            title=f"{discipline} per league per season",
+            title=title,
             x_axis_label="Season start",
             y_axis_label=f"{discipline}",
             width=plot_width,
@@ -68,7 +72,9 @@ def plot_total_discipline(*, discipline_data, plot_width, plot_height):
         legend_list = []
         for league in leagues:
             # Filter data for current league tier
-            league_data = discipline_totals[discipline_totals['league_tier'] == league]
+            league_data = discipline_totals[
+                discipline_totals['league_tier'] == league
+            ]
             # Create ColumnDataSource for the league data to enable hover tooltips
             source = ColumnDataSource(league_data)
             # Create scatter plot points for the current league
@@ -107,7 +113,7 @@ def plot_total_discipline(*, discipline_data, plot_width, plot_height):
             location="center",
             border_line_color="black",
             border_line_width=1,
-            click_policy = "hide",
+            click_policy="hide",
             title="League\ntier",
         )
         plot.add_layout(legend, "right")
@@ -116,8 +122,10 @@ def plot_total_discipline(*, discipline_data, plot_width, plot_height):
         script, div = components(plot)
         divs.append(div)
         scripts.append(script)
+        titles.append(title)
 
-    return divs, scripts
+    return divs, scripts, titles
+
 
 def plot_away_bias(*, discipline_data, plot_width, plot_height):
     """Plot the away bias data."""
@@ -131,19 +139,29 @@ def plot_away_bias(*, discipline_data, plot_width, plot_height):
         "Away yellow cards": ('away_yellow_cards', 'sum'),
         "Away fouls": ('away_fouls', 'sum'),
     }).reset_index()
-    discipline_totals['Away red cards fraction'] = discipline_totals['Away red cards'] / discipline_totals['Total red cards']
-    discipline_totals['Away yellow cards fraction'] = discipline_totals['Away yellow cards'] / discipline_totals['Total yellow cards']
-    discipline_totals['Away fouls fraction'] = discipline_totals['Away fouls'] / discipline_totals['Total fouls']
-    
-    #
+    discipline_totals['Away red cards fraction'] = (
+        discipline_totals['Away red cards'] /
+        discipline_totals['Total red cards']
+    )
+    discipline_totals['Away yellow cards fraction'] = (
+        discipline_totals['Away yellow cards'] /
+        discipline_totals['Total yellow cards']
+    )
+    discipline_totals['Away fouls fraction'] = (
+        discipline_totals['Away fouls'] / discipline_totals['Total fouls']
+    )
+
     leagues = discipline_totals['league_tier'].unique()
     color_palette = _create_color_palette(leagues=leagues)
 
     divs = []
     scripts = []
-    for discipline in ['Away red cards fraction', 'Away yellow cards fraction', 'Away fouls fraction']:
+    titles = []
+    for discipline in ['Away red cards fraction', 'Away yellow cards fraction',
+                      'Away fouls fraction']:
+        title = f"{discipline} per league per season"
         plot = figure(
-            title=f"{discipline} per league per season",
+            title=title,
             x_axis_label="Season start",
             y_axis_label=f"{discipline}",
             width=plot_width,
@@ -152,7 +170,9 @@ def plot_away_bias(*, discipline_data, plot_width, plot_height):
         legend_list = []
         for league in leagues:
             # Filter data for current league tier
-            league_data = discipline_totals[discipline_totals['league_tier'] == league]
+            league_data = discipline_totals[
+                discipline_totals['league_tier'] == league
+            ]
             # Create ColumnDataSource for the league data to enable hover tooltips
             source = ColumnDataSource(league_data)
             # Create scatter plot points for the current league
@@ -191,7 +211,7 @@ def plot_away_bias(*, discipline_data, plot_width, plot_height):
             location="center",
             border_line_color="black",
             border_line_width=1,
-            click_policy = "hide",
+            click_policy="hide",
             title="League\ntier",
         )
         plot.add_layout(legend, "right")
@@ -200,11 +220,12 @@ def plot_away_bias(*, discipline_data, plot_width, plot_height):
         script, div = components(plot)
         divs.append(div)
         scripts.append(script)
+        titles.append(title)
 
-    return divs, scripts
+    return divs, scripts, titles
 
 
-def save_plots(*, divs, scripts):
+def save_plots(*, divs, scripts, titles):
     """Save the plots to the HTML folder."""
     # Get Bokeh version for proper script imports
     version = bokeh.__version__
@@ -240,8 +261,9 @@ def save_plots(*, divs, scripts):
         # Text content
         f.write(f"""<p>{lorem}</p>\n""")
 
-        for div in divs:
+        for index, div in enumerate(divs):
             # Plot container with center alignment
+            f.write(f"<!-- Plot {titles[index]} -->\n")
             f.write("<div align='center'>\n")
             f.write(div)
             f.write("\n")
@@ -251,20 +273,30 @@ def save_plots(*, divs, scripts):
         # Chart scripts for interactive functionality
         f.write("<!-- Chart scripts -->\n")
         for index, script in enumerate(scripts):
-            f.write(f"<!--Chart script {index+1}-->\n")
+            f.write(f"<!-- Plot {titles[index]} -->\n")
             f.write(script)
             f.write("\n")
 
-
-    # Write each of the scripts and divs to a separate file
+    # Write each of the scripts to a separate file
     for index, script in enumerate(scripts):
         with open(os.path.join("Plots", f"script_{index+1}.txt"), "w") as f:
-            f.write(f"<!--Chart script {index+1}-->\n")
+            f.write(f"<!--Chart script {titles[index]}-->\n")
             f.write(script)
+    # Write all scripts to a combo file
+    with open(os.path.join("Plots", "scripts.txt"), "w") as f:  
+        f.write("<!-- Discipline scripts -->\n")
+        f.write("<!------------------------>\n")
+        for index, script in enumerate(scripts):
+            f.write(f"<!--Chart script {titles[index]}-->\n")
+            f.write(script)
+            f.write("\n")
+
+    # Write each of the divs to a separate file
     for index, div in enumerate(divs):
         with open(os.path.join("Plots", f"div_{index+1}.txt"), "w") as f:
+            f.write(f"<!-- Plot {titles[index]} -->\n")
             f.write("<div align='center'>\n")
-            f.write("  " + div)
+            f.write("    " + div)
             f.write("\n")
             f.write("</div>\n")
 
@@ -275,51 +307,57 @@ def save_plots(*, divs, scripts):
         )
     )
 
+
 if __name__ == "__main__":
     """Main execution block."""
     logger.info("Starting discipline analysis")
 
     # Read in the discipline data
     discipline_file_name = os.path.join(
-        "..", "..", "Data preparation", "Data", 
+        "..", "..", "2 Data preparation", "Data",
         "match_attendance_discipline.csv"
     )
     discipline_data = pd.read_csv(discipline_file_name, low_memory=False)
 
     # Select the subset we're going to analyze.
     # League_tiers 1 to 4 only.
-    discipline_data = discipline_data[discipline_data['league_tier'].isin([1, 2, 3, 4])]
+    discipline_data = discipline_data[
+        discipline_data['league_tier'].isin([1, 2, 3, 4])
+    ]
 
     # Add extra fields we need
-    discipline_data['season_start'] = discipline_data['season'].apply(lambda x: x.split('-')[0]).astype(int)
-    discipline_data['red_cards'] = discipline_data['home_red_cards'] + discipline_data['away_red_cards']
-    discipline_data['yellow_cards'] = discipline_data['home_yellow_cards'] + discipline_data['away_yellow_cards']
-    discipline_data['fouls'] = discipline_data['home_fouls'] + discipline_data['away_fouls']
-
-    # Filter on the data having red_cards, yellow_cards, fouls
-    discipline_data = discipline_data[
-        (discipline_data['red_cards'] > 0) & 
-        (discipline_data['yellow_cards'] > 0) & 
-        (discipline_data['fouls'] > 0)
-    ]
+    discipline_data['season_start'] = discipline_data['season'].apply(
+        lambda x: x.split('-')[0]
+    ).astype(int)
+    discipline_data['red_cards'] = (
+        discipline_data['home_red_cards'] + discipline_data['away_red_cards']
+    )
+    discipline_data['yellow_cards'] = (
+        discipline_data['home_yellow_cards'] +
+        discipline_data['away_yellow_cards']
+    )
+    discipline_data['fouls'] = (
+        discipline_data['home_fouls'] + discipline_data['away_fouls']
+    )
 
     # Plot total discipline charts
     plot_width = 600
-    plot_height = 400   
-    divs1, scripts1 = plot_total_discipline(
-        discipline_data=discipline_data, 
-        plot_width=plot_width, 
+    plot_height = 400
+    divs1, scripts1, titles1 = plot_total_discipline(
+        discipline_data=discipline_data,
+        plot_width=plot_width,
         plot_height=plot_height
     )
-    divs2, scripts2 = plot_away_bias(
-        discipline_data=discipline_data, 
-        plot_width=plot_width, 
+    divs2, scripts2, titles2 = plot_away_bias(
+        discipline_data=discipline_data,
+        plot_width=plot_width,
         plot_height=plot_height
     )
     divs = divs1 + divs2
     scripts = scripts1 + scripts2
+    titles = titles1 + titles2
 
     # Save to folder
-    save_plots(divs=divs, scripts=scripts)
-    
-    logger.info("Discipline analysis completed") 
+    save_plots(divs=divs, scripts=scripts, titles=titles)
+
+    logger.info("Discipline analysis completed")

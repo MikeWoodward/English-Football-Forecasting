@@ -74,7 +74,7 @@ def read_match_attendance_data(
 
 def read_football_discipline_data(
     *,
-    file_path: str = ("../Data downloads/Active/FootballData/Data/"
+    file_path: str = ("../1 Data downloads/FootballData/Data/"
                       "football-data.csv")
 ) -> pd.DataFrame:
     """
