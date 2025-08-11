@@ -208,9 +208,12 @@ def get_team_values(
         url = league['url'].format(season=season)
         
         filename = os.path.join(
-            'Data',
+            'Data-Download',
             f"transfer_values_tier{league['tier']}_{season}.csv"
         )
+
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
 
         if os.path.exists(filename):
             logging.info(f"Skipping {league['name']} for season {season} because it already exists")
@@ -281,12 +284,6 @@ def get_team_values(
             df['league_tier'] = league['tier']
 
             # Save data for each league separately
-            filename = os.path.join(
-                'Data-Download',
-                f"transfer_values_tier{league['tier']}_{season}.csv"
-            )
-            # Ensure the directory exists
-            os.makedirs(os.path.dirname(filename), exist_ok=True)
             df.to_csv(filename, index=False)
             
             logging.info(f"Saved {len(df)} records for {league['name']} to {filename}")
