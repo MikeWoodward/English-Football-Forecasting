@@ -282,7 +282,7 @@ def get_team_values(
 
             # Save data for each league separately
             filename = os.path.join(
-                'Data',
+                'Data-Download',
                 f"transfer_values_tier{league['tier']}_{season}.csv"
             )
             # Ensure the directory exists
@@ -328,8 +328,8 @@ if __name__ == "__main__":
     logging.info("Starting transfer value download...")
     
     # Iterate through all Premier League seasons
-    # Starting from 1992 (Premier League formation) to 2023 (current)
-    for current_season in range(1992, 2023):
+    # Starting from 1992 (Premier League formation) to 2025 (current)
+    for current_season in range(1992, 2025):
         try:
             logging.info(f"Processing season {current_season}")
             season_data = get_team_values(season=str(current_season))
