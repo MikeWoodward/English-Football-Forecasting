@@ -36,7 +36,7 @@ def setup_logging() -> None:
 
 def read_match_attendance_data(
     *,
-    file_path: str = "Data/match_attendance.csv"
+    file_path: str = "Data/matches_attendance.csv"
 ) -> pd.DataFrame:
     """
     Read the match attendance data from CSV file.
@@ -144,6 +144,16 @@ def merge_datasets(
     if discipline_missing:
         logging.error(f"Missing columns in discipline data: {discipline_missing}")
         raise ValueError(f"Missing columns in discipline data: {discipline_missing}")
+
+    # Add check that merge keys are unique in attandance_data and print out the duplicates
+    if attendance_data[merge_columns].duplicated().any():
+        logging.error("Merge keys are not unique in attendance data")
+        raise ValueError("Merge keys are not unique in attendance data")
+
+    # Add check that merge keys are unique in discipline_data and print out the duplicates
+    if discipline_data[merge_columns].duplicated().any():
+        logging.error("Merge keys are not unique in discipline data")
+        raise ValueError("Merge keys are not unique in discipline data")
 
     # Perform the merge
     merged_data = pd.merge(
@@ -268,10 +278,16 @@ if __name__ == "__main__":
             logging.error("Data validation failed")
             raise ValueError("Data validation failed")
         
+        # Print out some check results
+        print("Columns in merged data:")
+        print(merged_data.columns)
+        print("League tiers in merged data:")
+        print(merged_data['league_tier'].unique())
+
         # Save the merged data to a CSV file
         # Sort by key fields for consistent output and save to CSV
         merged_data.sort_values(by=['season', 'league_tier', 'home_club', 
-                                   'away_club']).to_csv("Data/match_attendance_discipline.csv", 
+                                   'away_club']).to_csv("Data/matches_attendance_discipline.csv", 
                                                         index=False)
 
         logging.info("Discipline data processing completed successfully")

@@ -27,9 +27,21 @@ from datatests import (
 
 # Configure logging for the entire module
 # Sets up logging format and level for tracking data processing operations
+# Create Logs directory if it doesn't exist
+logs_dir = Path("Logs")
+logs_dir.mkdir(exist_ok=True)
+
+# Configure logging to both file and console
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(
+            filename=logs_dir / "2_attendance.log",
+            mode='w'
+        ),
+        logging.StreamHandler(sys.stdout)
+    ]
 )
 logger = logging.getLogger(__name__)
 
@@ -186,12 +198,6 @@ def build_attendance(*,
                 'home_club', 'away_club']
         ).drop_duplicates()
 
-        # Temporary code to remove National League (tier 5 and above)
-        # TODO: Remove this filter when National League data is properly handled
-        match_attendance = match_attendance[
-            match_attendance['league_tier'] < 5
-        ]
-
         # Separate matches with attendance data from those without
         # Get the matches that have attendance data (not null)
         attendance = match_attendance[
@@ -220,7 +226,7 @@ def build_attendance(*,
         match_attendance = pd.concat(objs=[attendance, attendance_null_fixes])
 
         # Convert attendance to integer type
-        match_attendance['attendance'] = match_attendance['attendance'].astype(dtype=int)
+        match_attendance['attendance'] = match_attendance['attendance'].astype(dtype=float)
 
         # Then sort the combined dataset for consistent ordering
         match_attendance = match_attendance.sort_values(
@@ -278,7 +284,7 @@ def check_data(*, data: pd.DataFrame) -> bool:
         logger.info("Starting comprehensive data validation")
 
         # Check that key columns do not contain null values
-        for column in ['season', 'league_tier', 'home_club', 'away_club', 'match_date', 'home_goals', 'away_goals', 'attendance']:
+        for column in ['season', 'league_tier', 'home_club', 'away_club', 'match_date', 'home_goals', 'away_goals']:
             if data[column].isnull().any():
                 raise ValueError(f"{column} column contains null values")
 
@@ -485,7 +491,7 @@ if __name__ == "__main__":
         # Step 4: Save the final validated dataset
         # This creates the output file for downstream analysis
         save_data(
-            filename="Data/match_attendance.csv",
+            filename="Data/matches_attendance.csv",
             dataframe=match_attendance
         )
 

@@ -100,6 +100,14 @@ def cleanse_data(*, baseline_data: pd.DataFrame) -> pd.DataFrame:
         # Create a copy to avoid modifying the original data
         cleansed_data = baseline_data.copy()
 
+        # Correct the 18-10-2023 Margate Scarborough match. Change the home_club to Scarborough, and the away club to Margate
+        # The home_goals should be 0, and the away_goals should be 1
+        selection = (cleansed_data['match_date'] == '2003-10-18') & (cleansed_data['home_club'] == "Margate")
+        cleansed_data.loc[selection, 'home_club'] = 'Scarborough'
+        cleansed_data.loc[selection, 'away_club'] = 'Margate'
+        cleansed_data.loc[selection, 'home_goals'] = 0
+        cleansed_data.loc[selection, 'away_goals'] = 1
+
         # The 2021-2022 season is wrong, so remove it and replace it with some corrections
         cleansed_data = cleansed_data[cleansed_data['season'] != '2021-2022']
         # The 2024-2025 season is wrong, so remove it and replace it with some corrections
@@ -136,6 +144,16 @@ def cleanse_data(*, baseline_data: pd.DataFrame) -> pd.DataFrame:
                 if cleansed_data[column].isnull().any():
                     logger.error(f"Null values found in column: {column}")
                     raise ValueError(f"Null values found in column: {column}")
+                
+        # Check that merge keys are unique in data
+        merge_columns = ['league_tier', 'season', 'home_club', 'away_club']
+        if cleansed_data[merge_columns].duplicated().any():
+            error_data_1 = cleansed_data[cleansed_data[merge_columns].duplicated(keep='first')].sort_values(by=merge_columns)
+            error_data_2 = cleansed_data[cleansed_data[merge_columns].duplicated(keep='last')].sort_values(by=merge_columns)
+            error_data = pd.concat([error_data_1, error_data_2]).sort_values(by=merge_columns)
+            error_msg = "Merge keys are not unique in data" + "\n" + str(error_data) + "\n"
+            logger.error(error_msg)
+            raise ValueError(error_msg)
 
         # Sort the data
         cleansed_data = cleansed_data.sort_values(by=['season', 'match_date', 'home_club'])

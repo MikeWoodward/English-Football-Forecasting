@@ -19,11 +19,40 @@ from datatests import (
 )
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+def setup_logging(*, log_filename: str = "1_matches.log") -> logging.Logger:
+    """
+    Set up logging configuration to output to both console and file.
+    
+    Args:
+        log_filename: Name of the log file to create in the Logs folder.
+        
+    Returns:
+        logging.Logger: Configured logger instance.
+    """
+    # Ensure Logs directory exists
+    logs_dir = "Logs"
+    if not os.path.exists(logs_dir):
+        os.makedirs(name=logs_dir)
+    
+    # Create log file path
+    log_file_path = os.path.join(logs_dir, log_filename)
+    
+    # Configure logging to output to both console and file
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(filename=log_file_path, mode='w'),
+            logging.StreamHandler(stream=sys.stdout)
+        ]
+    )
+    
+    logger = logging.getLogger(__name__)
+    logger.info(f"Logging initialized. Log file: {log_file_path}")
+    return logger
+
+# Initialize logger
+logger = setup_logging()
 
 
 def get_data(*, todor_path: str, enfa_path: Optional[str] = None) -> pd.DataFrame:
@@ -170,6 +199,14 @@ def check_data(*, data: pd.DataFrame) -> bool:
             error_msg = "League seasons matches validation failed"
             logger.error(error_msg)
             raise ValueError(error_msg)
+        
+        # Check that merge keys are unique in data
+        merge_columns = ['league_tier', 'season', 'home_club', 'away_club']
+        if data[merge_columns].duplicated().any():
+            error_data = data[data[merge_columns].duplicated()]
+            error_msg = "Merge keys are not unique in data" + "\n" + str(error_data)
+            logger.error(error_msg)
+            raise ValueError(error_msg)
 
         logger.info("All data validation checks passed successfully")
         return True
@@ -224,7 +261,7 @@ def save_data(*, data: pd.DataFrame, output_path: str) -> None:
 
 
 if __name__ == "__main__":
-            # Example usage of the data preparation functions
+    # Example usage of the data preparation functions
     try:
         # Define file paths
         todor_file = (
