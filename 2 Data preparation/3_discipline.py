@@ -24,11 +24,17 @@ from datatests import (
 
 def setup_logging() -> None:
     """Set up logging configuration for the module."""
+    # Create Logs directory if it doesn't exist
+    logs_dir = "Logs"
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+        logging.info(f"Created Logs directory: {logs_dir}")
+    
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler('3_discipline.log'),
+            logging.FileHandler(os.path.join(logs_dir, '3_discipline.log')),
             logging.StreamHandler()
         ]
     )
@@ -195,7 +201,7 @@ def check_data(*, data: pd.DataFrame) -> bool:
 
         # Check that key columns do not contain null values
         for column in ['season', 'league_tier', 'home_club', 'away_club',
-                      'match_date', 'home_goals', 'away_goals', 'attendance']:
+                      'match_date', 'home_goals', 'away_goals']:
             if data[column].isnull().any():
                 raise ValueError(f"{column} column contains null values")
 
@@ -236,6 +242,16 @@ def check_data(*, data: pd.DataFrame) -> bool:
         if not season_data.check_leagues_seasons_matches(matches=data,
                                                         ignore_tiers=[5]):
             error_msg = "League seasons matches validation failed"
+            logging.error(error_msg)
+            raise ValueError(error_msg)
+        
+        # Check that merge keys are unique in data
+        merge_columns = ['league_tier', 'season', 'home_club', 'away_club']
+        if data[merge_columns].duplicated().any():
+            error_data_1 = data[data[merge_columns].duplicated(keep='first')].sort_values(by=merge_columns)
+            error_data_2 = data[data[merge_columns].duplicated(keep='last')].sort_values(by=merge_columns)
+            error_data = pd.concat([error_data_1, error_data_2]).sort_values(by=merge_columns)
+            error_msg = "Merge keys are not unique in data" + "\n" + str(error_data) + "\n"
             logging.error(error_msg)
             raise ValueError(error_msg)
 

@@ -203,8 +203,10 @@ def check_data(*, data: pd.DataFrame) -> bool:
         # Check that merge keys are unique in data
         merge_columns = ['league_tier', 'season', 'home_club', 'away_club']
         if data[merge_columns].duplicated().any():
-            error_data = data[data[merge_columns].duplicated()]
-            error_msg = "Merge keys are not unique in data" + "\n" + str(error_data)
+            error_data_1 = data[data[merge_columns].duplicated(keep='first')].sort_values(by=merge_columns)
+            error_data_2 = data[data[merge_columns].duplicated(keep='last')].sort_values(by=merge_columns)
+            error_data = pd.concat([error_data_1, error_data_2]).sort_values(by=merge_columns)
+            error_msg = "Merge keys are not unique in data" + "\n" + str(error_data) + "\n"
             logger.error(error_msg)
             raise ValueError(error_msg)
 
