@@ -198,6 +198,11 @@ def get_team_values(
             'name': 'League Two',
             'url': 'https://www.transfermarkt.com/league-two/startseite/wettbewerb/GB4/saison_id/{season}',
             'tier': 4
+        },
+        {
+            'name': 'National League',
+            'url': 'https://www.transfermarkt.com/national-league/startseite/wettbewerb/CNAT/plus/?saison_id={season}',
+            'tier': 5
         }
     ]
     
@@ -267,7 +272,10 @@ def get_team_values(
             # Clean and transform the DataFrame
             # --------------------------------
             # 1. Remove unnecessary columns that don't provide value for analysis
-            df = df.drop(['Club', 'ø market value'], axis=1)
+            df = df.drop(['Club', 'ø market value'], errors='ignore', axis=1)
+
+            if 'Total market value' not in df.columns:
+                df['Total market value'] = None
             
             # 2. Rename columns to more Python-friendly names and add descriptive labels
             df = df.rename(columns={
@@ -324,7 +332,6 @@ if __name__ == "__main__":
     
     logging.info("Starting transfer value download...")
     
-    # Iterate through all Premier League seasons
     # Starting from 1992 (Premier League formation) to 2025 (current)
     for current_season in range(1992, 2025):
         try:

@@ -10,6 +10,7 @@ relegation events.
 # Import required libraries for data manipulation and system operations
 import pandas as pd
 import os
+import sys
 import logging
 from bokeh.plotting import figure, show
 import numpy as np
@@ -17,6 +18,11 @@ from bokeh.models import (HoverTool, ColumnDataSource, RadioButtonGroup,
                           Slider, Div, Legend, LegendItem, Spacer, CustomJS)
 from bokeh.layouts import column
 from scipy.optimize import curve_fit
+from bokeh.embed import components
+
+# Add parent directory to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from Utility_code.analysis_utilities import (save_plots)
 
 # Create Logs directory if it doesn't exist
 # This ensures we have a place to store log files for debugging and
@@ -516,8 +522,9 @@ def plot_data(*,
     year_slider.js_on_change('value', callback_charts_update)
     radio_button_group.js_on_change('active', callback_charts_update)
 
-    # Display the interactive plot
-    show(column(*plots))
+    script, div = components(column(*plots))
+    return [script], [div], ["goals_vs_years_in_league"]
+
 
 
 if __name__ == "__main__":
@@ -555,4 +562,11 @@ if __name__ == "__main__":
     tenure, tenure_fitted = process_data(matches=matches)
 
     # Create and display the interactive visualization
-    plot_data(tenure=tenure, tenure_fitted=tenure_fitted)
+    scripts, divs, titles = plot_data(tenure=tenure, tenure_fitted=tenure_fitted)
+
+    # Save the plots
+    save_plots(scripts=scripts, 
+               divs=divs, 
+               titles=titles, 
+               file_name="goals_vs_years_in_league.html")
+
