@@ -7,5 +7,5 @@ On another page (https://github.com/MikeWoodward/English-Football-Forecasting/bl
 * FBREf. More restricted data set but good for filling in the gaps.
 * Football-data. More restricted data set but good for filling in the gaps.
 * Todor. Nice set of data for the National League but missing some recent results and missing attendance data.
-* TransferMarkt-vales. Club values, foreign players, etc. This data set only goes back to the early 2000s.
+* TransferMarkt-values. Club values, foreign players, etc. This data set only goes back to the early 2000s.
 * The DataSourceCleanUp folder contains utilities used to check and clean up data.
