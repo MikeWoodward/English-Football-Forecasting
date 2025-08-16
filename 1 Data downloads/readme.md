@@ -12,8 +12,12 @@ On another page (https://github.com/MikeWoodward/English-Football-Forecasting/bl
 
 The Python files in each folder are numbered in order of execution, so run file 1_ followed by file 2_ etc. The Python files are broken down into steps:
 
-* Download. This is often scraping different web pages and can be a time costly process.
+* Download. This is often scraping different web pages and can be a time costly process. For some sources, it can take several days to downlaod all the data.
 * Process. Consolidates any downloaded data.
 * Cleanse. Cleans data ready for use in teh Data Preparation step.
 
 The exact steps and numbering will depend on the data sources.
+
+# Batch processing
+
+I've consolidated the processing and cleaning steps into a batch file called process.sh. The download steps are too time intenive for this process to work.
