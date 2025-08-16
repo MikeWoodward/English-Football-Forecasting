@@ -9,3 +9,11 @@ On another page (https://github.com/MikeWoodward/English-Football-Forecasting/bl
 * Todor. Nice set of data for the National League but missing some recent results and missing attendance data.
 * TransferMarkt-values. Club values, foreign players, etc. This data set only goes back to the early 2000s.
 * The DataSourceCleanUp folder contains utilities used to check and clean up data.
+
+The Python files in each folder are numbered in order of execution, so run file 1_ followed by file 2_ etc. The Python files are broken down into steps:
+
+* Download. This is often scraping different web pages and can be a time costly process.
+* Process. Consolidates any downloaded data.
+* Cleanse. Cleans data ready for use in teh Data Preparation step.
+
+The exact steps and numbering will depend on the data sources.
