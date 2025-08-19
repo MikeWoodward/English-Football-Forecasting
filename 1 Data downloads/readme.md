@@ -20,4 +20,6 @@ The exact steps and numbering will depend on the data sources.
 
 # Batch processing
 
-I've consolidated the processing and cleaning steps into a batch file called process.sh. The download steps are too time intenive for this process to work.
+I've consolidated the processing and cleaning steps into a batch file called process.sh. 
+
+The data download steps are too time-intenive for batch file processing to make sense.
