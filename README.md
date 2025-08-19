@@ -1,7 +1,7 @@
 # English Football Forecasting
 This is a project to forecast English football league results (excluding cup matches, international games, friendlies etc.). It's a work in progress. It's based on a project I did some time ago in R.
 
-I have several prject goals:
+I have several project goals:
 1. Use the project as a demo vehicle for using Cursor on a large machine learning project.
 2. Add new data to the existing model.
 3. More sophisticated data analysis than before - looking for features.
