@@ -194,17 +194,28 @@ echo "-------------------------------------"
 # Change to the TransferMarkt-values directory
 cd TransferMarkt-values
 
-
-# Step 1: Process and standardize the TransferMarkt data
+# Step 1: Process age and foreigner data from TransferMarkt
 # This step processes raw market value data into structured team valuations
-echo "Step 1: Processing TransferMarkt market value data..."
-python3 2_transfermarkt_process.py
+echo "Step 1: Processing TransferMarkt age and foreigner data..."
+python3 3_transfermarkt_process_age_foreigners.py
 if [ $? -ne 0 ]; then
-    echo "Error: TransferMarkt processing script failed with exit code $?"
+    echo "Error: TransferMarkt age and foreigner processing script failed with exit code $?"
     read -p "Press Enter to continue..."
     exit $?
 fi
-echo "TransferMarkt processing completed successfully."
+echo "TransferMarkt age and foreigner processing completed successfully."
+echo
+
+# Step 2: Process biweekly values data from TransferMarkt
+# This step processes raw market value data into structured team valuations
+echo "Step 2: Processing TransferMarkt biweekly values data..."
+python3 4_transfermarkt_process_biweekly_values.py
+if [ $? -ne 0 ]; then
+    echo "Error: TransferMarkt biweekly values processing script failed with exit code $?"
+    read -p "Press Enter to continue..."
+    exit $?
+fi
+echo "TransferMarkt biweekly values processing completed successfully."
 echo
 
 # Return to the parent directory

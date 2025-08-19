@@ -18,7 +18,6 @@ Usage:
 
 Dependencies:
     - pandas: For data manipulation
-    - numpy: For numerical operations
     - os: For file operations
     - logging: For logging operations
 
@@ -27,19 +26,22 @@ Date: March 2024
 Version: 1.0
 """
 
-import pandas as pd
-import numpy as np
+# Standard library imports for data manipulation and file operations
 import os
+import sys
 import logging
 from datetime import datetime
-from pathlib import Path
-import sys
+
+# Third-party imports
+import pandas as pd
 
 # Add parent directory to path to import cleanup utilities
+# This allows access to the cleanuputilities module from a different directory
 sys.path.append(
     os.path.join(os.path.dirname(__file__), '..', 'DataSourceCleanUp')
 )
 
+# Import the club name transformation utility
 from cleanuputilities import transform_club_names
 
 
@@ -60,23 +62,23 @@ def setup_logging(
         None
     """
     # Create Log directory if it doesn't exist
-    log_dir = 'Log'
+    log_dir = 'Logs'
     os.makedirs(log_dir, exist_ok=True)
 
-    # Create timestamped log filename
+    # Create timestamped log filename to avoid overwriting previous logs
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     log_filename = os.path.join(
         log_dir,
         f'transfermarkt_process_{timestamp}.log'
     )
 
-    # Configure logging
+    # Configure logging with both file and console handlers
     logging.basicConfig(
         level=log_level,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(log_filename),
-            logging.StreamHandler()
+            logging.FileHandler(log_filename),  # Write to file
+            logging.StreamHandler()  # Write to console
         ]
     )
 
@@ -85,7 +87,7 @@ def setup_logging(
 
 def get_data(
     *,
-    data_folder: str = 'Data-Download'
+    data_folder: str = 'Data-Download-age-foreign'
 ) -> pd.DataFrame:
     """
     Read all CSV files from the specified data folder and merge them into a
@@ -97,7 +99,7 @@ def get_data(
 
     Args:
         data_folder: Path to the folder containing CSV files.
-                    Defaults to 'Data-Download'.
+                    Defaults to 'Data-Download-age-foreign'.
 
     Returns:
         pd.DataFrame: Combined DataFrame containing all CSV data.
@@ -106,19 +108,21 @@ def get_data(
         FileNotFoundError: If the data folder doesn't exist.
         ValueError: If no CSV files are found in the folder.
     """
-    # Check if data folder exists
+    # Check if data folder exists before attempting to read files
     if not os.path.exists(data_folder):
         raise FileNotFoundError(
             f"Data folder '{data_folder}' not found at line "
             f"{get_data.__code__.co_firstlineno + 15}"
         )
 
-    # Get all CSV files in the folder
+    # Get all CSV files in the folder, excluding hidden files
+    # This filters for files ending with .csv and not starting with a dot
     csv_files = [
         f for f in os.listdir(data_folder)
         if f.endswith('.csv') and not f.startswith('.')
     ]
 
+    # Check if any CSV files were found
     if not csv_files:
         raise ValueError(
             f"No CSV files found in '{data_folder}' at line "
@@ -127,52 +131,58 @@ def get_data(
 
     logging.info(f"Found {len(csv_files)} CSV files in {data_folder}")
 
-    # List to store all dataframes
+    # List to store all dataframes for later concatenation
     dataframes = []
 
-    # Read each CSV file
+    # Read each CSV file individually
     for csv_file in csv_files:
         try:
+            # Construct the full file path
             file_path = os.path.join(data_folder, csv_file)
             logging.info(f"Reading file: {csv_file}")
 
-            # Read CSV with error handling for encoding. squad_size,
-            # foreigner_count are ints. mean_age is a float so we need to
-            # convert it to int. total_market_value is a string for now,
-            # so we need to convert it to float.
+            # Read CSV with error handling for encoding issues
+            # Specify data types for known columns to improve performance
+            # squad_size and foreigner_count are integers
+            # mean_age is a float that needs conversion to int
+            # total_market_value is a string that needs conversion to float
             df = pd.read_csv(
                 file_path,
                 encoding='utf-8',
-                on_bad_lines='warn',
+                on_bad_lines='warn',  # Warn about problematic lines instead of failing
                 dtype={
                     'squad_size': int,
                     'foreigner_count': int,
                     'mean_age': float
                 },
-                na_values=['-', '']
+                na_values=['-', '']  # Treat these values as missing data
             )
 
+            # Add the dataframe to our collection
             dataframes.append(df)
             logging.info(
                 f"Successfully read {csv_file} with {len(df)} rows"
             )
 
         except Exception as e:
+            # Log any errors that occur during file reading
             logging.error(
                 f"Failed to read {csv_file} at line "
                 f"{e.__traceback__.tb_lineno}: {e}"
             )
             raise
 
-    # Concatenate all dataframes
+    # Concatenate all dataframes into a single dataset
     if dataframes:
+        # Combine all dataframes, ignoring the original index
         combined_df = pd.concat(
             dataframes,
             ignore_index=True,
-            sort=False
+            sort=False  # Don't sort columns to maintain original order
         )
 
-        # Sort the dataframe by season, league_tier, and club_name
+        # Sort the dataframe by season, league_tier, and club_name for consistency
+        # This makes the data easier to analyze and compare
         combined_df = combined_df.sort_values(
             by=['season', 'league_tier', 'club_name'],
             ascending=[True, True, True]
@@ -187,12 +197,11 @@ def get_data(
         )
         return combined_df
     else:
+        # Handle case where no valid CSV files could be read
         raise ValueError(
             f"No valid CSV files could be read from '{data_folder}' at line "
             f"{get_data.__code__.co_firstlineno + 85}"
         )
-
-
 
 
 def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
@@ -213,10 +222,11 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
     """
     try:
         # Create a copy of market values to avoid modifying original data
+        # This prevents unintended side effects on the original dataframe
         market_values = combined_data['total_market_value'].copy()
 
         # Remove currency symbols ($, €) and commas from market value strings
-        # This prepares the data for numeric conversion
+        # This prepares the data for numeric conversion by cleaning up formatting
         market_values = market_values.replace(
             {'\\$': '', '€': '', ',': ''},
             regex=True
@@ -224,7 +234,9 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
 
         # Convert billions (bn) to actual numeric values
         # Example: "1.5bn" becomes 1500000000
+        # First, identify rows containing 'bn' in any case
         billions_mask = market_values.str.contains('bn', case=False, na=False)
+        # Then convert those values by removing 'bn' and multiplying by 1 billion
         market_values[billions_mask] = (
             market_values[billions_mask]
             .str.replace('bn', '', case=False, regex=False)
@@ -233,7 +245,9 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
 
         # Convert millions (m) to actual numeric values
         # Example: "50m" becomes 50000000
+        # First, identify rows containing 'm' in any case
         millions_mask = market_values.str.contains('m', case=False, na=False)
+        # Then convert those values by removing 'm' and multiplying by 1 million
         market_values[millions_mask] = (
             market_values[millions_mask]
             .str.replace('m', '', case=False, regex=False)
@@ -242,7 +256,9 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
 
         # Convert thousands (k) to actual numeric values
         # Example: "500k" becomes 500000
+        # First, identify rows containing 'k' in any case
         thousands_mask = market_values.str.contains('k', case=False, na=False)
+        # Then convert those values by removing 'k' and multiplying by 1 thousand
         market_values[thousands_mask] = (
             market_values[thousands_mask]
             .str.replace('k', '', case=False, regex=False)
@@ -250,16 +266,19 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
         )
 
         # Update the dataframe with the converted market values
+        # This replaces the original string values with numeric equivalents
         combined_data['total_market_value'] = market_values
 
         # Calculate the fraction of foreign players in each squad
         # This provides a normalized measure of squad internationalization
+        # Useful for comparing teams with different squad sizes
         combined_data['foreigner_fraction'] = (
             combined_data['foreigner_count'] / combined_data['squad_size']
         )
 
         # Normalize club names using external utility function
         # This ensures consistent naming across different data sources
+        # The function handles variations in club names (e.g., "Man Utd" vs "Manchester United")
         combined_data = transform_club_names(
             df=combined_data,
             source_name='club_name',
@@ -270,6 +289,7 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
         return combined_data
 
     except KeyError as e:
+        # Handle missing column errors
         logging.error(
             f"Missing column error in cleanse_data at line "
             f"{e.__traceback__.tb_lineno}: {e}. "
@@ -278,6 +298,7 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
         raise
 
     except ValueError as e:
+        # Handle value conversion errors (e.g., non-numeric strings)
         logging.error(
             f"Value conversion error in cleanse_data at line "
             f"{e.__traceback__.tb_lineno}: {e}"
@@ -285,6 +306,7 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
         raise
 
     except TypeError as e:
+        # Handle type errors (e.g., wrong data types for operations)
         logging.error(
             f"Type error in cleanse_data at line "
             f"{e.__traceback__.tb_lineno}: {e}"
@@ -292,6 +314,7 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
         raise
 
     except AttributeError as e:
+        # Handle attribute errors (e.g., missing methods on objects)
         logging.error(
             f"Attribute error in cleanse_data at line "
             f"{e.__traceback__.tb_lineno}: {e}"
@@ -299,6 +322,7 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
         raise
 
     except Exception as e:
+        # Handle any other unexpected errors
         logging.error(
             f"Unexpected error in cleanse_data at line "
             f"{e.__traceback__.tb_lineno}: {e}"
@@ -307,23 +331,26 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    # Set up logging
+    # Set up logging for the main execution
     setup_logging()
 
     logging.info("Starting TransferMarkt data processing...")
 
     try:
-        # Load and combine all CSV data
+        # Load and combine all CSV data from the Data-Download folder
         logging.info("Loading data from CSV files...")
         combined_data = get_data()
 
+        # Log information about the loaded data for debugging and verification
         logging.info(f"Data loaded successfully. Shape: {combined_data.shape}")
         logging.info(f"Columns: {list(combined_data.columns)}")
         logging.info(f"Sample data:\n{combined_data.head()}")
 
+        # Cleanse the combined data to prepare it for analysis
         cleansed_data = cleanse_data(combined_data=combined_data)
 
-        # Save the cleansed data to a CSV file
+        # Save the cleansed data to a CSV file in the Data folder
+        # This creates the final processed dataset ready for analysis
         cleansed_data.to_csv(
             'Data/transfermarkt.csv',
             index=False
@@ -332,6 +359,7 @@ if __name__ == "__main__":
         logging.info("TransferMarkt data processing completed successfully")
 
     except Exception as e:
+        # Handle any fatal errors that occur during the main processing
         logging.error(
             f"Fatal error in main processing at line "
             f"{e.__traceback__.tb_lineno}: {e}"

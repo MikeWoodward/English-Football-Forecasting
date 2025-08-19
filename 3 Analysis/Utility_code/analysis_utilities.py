@@ -1,13 +1,16 @@
 """
 Analysis utilities module for EPL predictor project.
 
-This module contains utility functions and classes for data analysis tasks.
+This module contains utility functions and classes for data analysis tasks,
+specifically focused on processing football match data and creating
+interactive visualizations using Bokeh.
 """
 
 import os
 import webbrowser
 from typing import List
 import bokeh
+import pandas as pd  
 
 
 def save_plots(
@@ -192,4 +195,104 @@ def save_plots(
               f"os.path.abspath(os.path.join(\"{folder_name}\", "
               f"\"{file_name}\")))'")
         raise
+
+
+def wide_to_long_matches(*, matches: pd.DataFrame) -> pd.DataFrame:
+    """
+    Convert match data from wide format to long format and add derived metrics.
+
+    This function transforms match data where each row represents a match
+    (with home and away teams in separate columns) into a long format where
+    each row represents a team's performance in a specific match. It also
+    calculates aggregated statistics and adds derived columns for analysis.
+
+    Args:
+        matches: DataFrame containing match data with columns:
+               season, league_tier, match_date, home_club, away_club,
+               home_goals, away_goals
+
+    Returns:
+        DataFrame with the following structure:
+        - season: Original season identifier (e.g., "2020-21")
+        - league_tier: League tier/division level
+        - club_name: Name of the club (from either home_club or away_club)
+        - for_goals: Total goals scored by the club in the season
+        - against_goals: Total goals conceded by the club in the season
+        - net_goals: Difference between goals scored and conceded
+        - season_start: Starting year of the season (extracted from season
+          string)
+
+    Example:
+        Input: One row per match with home_club, away_club, home_goals, away_goals
+        Output: Two rows per match (one for each team) with standardized
+                club_name, for_goals, against_goals columns
+    """
+    # Select only the required columns for analysis
+    # This reduces memory usage and focuses on relevant data
+    columns = [
+        'season', 'league_tier', 'match_date', 'home_club', 'away_club',
+        'home_goals', 'away_goals'
+    ]
+    matches = matches.loc[:, columns]
+
+    # Create separate dataframes for home and away teams
+    # This allows us to treat each team's performance separately
+    home = matches.loc[:, ['season', 'league_tier', 'home_club', 'home_goals',
+                           'away_goals']].copy()
+    
+    # Rename columns to standardize the data structure
+    # This creates a consistent format for both home and away teams
+    home = home.rename(columns={
+        'home_club': 'club_name',  # Standardize club name column
+        'home_goals': 'for_goals',  # Goals scored by the club
+        'away_goals': 'against_goals'  # Goals conceded by club
+    })
+
+    # Create away team dataframe with same structure
+    # Extract away team data and prepare for transformation
+    away = matches.loc[:, ['season', 'league_tier', 'away_club', 'home_goals',
+                           'away_goals']].copy()
+    
+    # Rename columns for away teams (note: goals are swapped for away
+    # perspective)
+    # For away teams, their goals are the away_goals from the original data
+    away = away.rename(columns={
+        'away_club': 'club_name',  # Standardize club name column
+        'away_goals': 'for_goals',  # Goals scored by club (away goals)
+        'home_goals': 'against_goals'  # Goals conceded by club (home goals)
+    })
+
+    # Combine home and away data into a single dataframe
+    # This gives us one row per team per match
+    total = pd.concat(objs=[home, away])
+
+    # Aggregate goals by club, season, and league tier
+    # This gives us total goals for and against each club per season
+    # The groupby operation sums up all goals across all matches in a season
+    total = total.groupby(by=['season', 'league_tier', 'club_name']).agg(
+        func={
+            'for_goals': 'sum',  # Total goals scored by club
+            'against_goals': 'sum'  # Total goals conceded by club
+        }).reset_index().sort_values(by=['club_name', 'season',
+                                         'league_tier'])
+
+    # Calculate net goals (goals scored minus goals conceded)
+    # This gives us a measure of overall performance - positive values
+    # indicate better performance
+    total['net_goals'] = total['for_goals'] - total['against_goals']
+
+    # Extract starting year from season string (e.g., "2020-21" -> 2020)
+    # This is needed for chronological analysis and sorting
+    # The season format is typically "YYYY-YY" where we want the first year
+    total['season_start'] = (total.loc[:, 'season']
+                             .str.split(pat='-')  # Split on hyphen
+                             .str[0]  # Take first part (year)
+                             .astype(dtype=int))  # Convert to integer
+
+    # Sort data chronologically by club and season for proper analysis
+    # This ensures that when we analyze trends over time, the data is
+    # in the correct chronological order
+    total = total.sort_values(by=['club_name', 'season_start'])
+
+    return total
 
