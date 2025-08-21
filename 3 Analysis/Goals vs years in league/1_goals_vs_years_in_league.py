@@ -316,7 +316,7 @@ def plot_data(*,
     year = tenure['season_start'].max()  # Default year to display
     league = 1   # Default league tier to display
     plot_height = 200
-    plot_width = 800
+    plot_width = 600
 
     # Select the data to plot for the initial view
     tenure_selected = ColumnDataSource(

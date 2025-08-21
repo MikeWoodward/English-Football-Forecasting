@@ -15,9 +15,7 @@ import pandas as pd
 
 def save_plots(
     *,
-    divs: List[str],
-    scripts: List[str],
-    titles: List[str],
+    plots: List[dict],
     file_name: str
 ) -> None:
     """
@@ -41,7 +39,7 @@ def save_plots(
         OSError: If there are issues writing to files.
     """
     # Define the output directory for all plot-related files
-    folder_name = "Plots"
+    folder_name = os.path.join("Plots", file_name.replace(".html", ""))
 
     # Create the Plots directory if it doesn't exist
     # This ensures the directory structure is available before writing files
@@ -51,18 +49,33 @@ def save_plots(
     # This ensures compatibility with the specific Bokeh version being used
     version = bokeh.__version__
 
+    # Build the header
     # Construct the CDN script imports for Bokeh libraries
     # These scripts provide the necessary JavaScript functionality for plots
-    imported_scripts = (
-        f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
-        f"""bokeh-{version}.min.js"></script>\n"""
-        f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
-        f"""bokeh-widgets-{version}.min.js"></script>\n"""
-        f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
-        f"""bokeh-tables-{version}.min.js"></script>\n"""
-        f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
-        f"""bokeh-mathjax-{version}.min.js"></script>\n"""
+    header = ("""<!-- Script imports -->\n"""
+                f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+                f"""bokeh-{version}.min.js"></script>\n"""
+                f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+                f"""bokeh-widgets-{version}.min.js"></script>\n"""
+                f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+                f"""bokeh-tables-{version}.min.js"></script>\n"""
+                f"""<script src="https://cdn.bokeh.org/bokeh/release/"""
+                f"""bokeh-mathjax-{version}.min.js"></script>\n"""
+              """\n"""
+              """<!-- Style -->\n"""
+              """<!----------->\n"""
+              """<style>\n"""
+              """#rcorners {\n"""
+              """      border-radius: 25px;\n"""
+              """      border: 2px solid #ADBBE6;\n"""
+              """      padding: 20px; \n"""
+              """      }\n"""
+              """\n"""
+              """</style>\n"""
     )
+
+    with open(os.path.join(folder_name, "header.txt"), "w") as f:
+        f.write(f"""{header}\n""")
 
     # Sample text content for the HTML page
     # This provides placeholder content between plots for better presentation
@@ -77,13 +90,13 @@ def save_plots(
     )
 
     # Create HTML file with the generated plot
+    # ----------------------------------------
     # This is the main output file that will be opened in the browser
     try:
         with open(os.path.join(folder_name, file_name), "w") as f:
             # Header equivalent - include Bokeh script imports
             # These scripts must be loaded before any plot content
-            f.write("<!-- Script imports -->\n")
-            f.write(imported_scripts)
+            f.write(f"""{header}\n""")
 
             # Body equivalent - add HTML content
             # Start the main content section of the HTML document
@@ -92,14 +105,16 @@ def save_plots(
             # Add introductory text content
             f.write(f"""<p>{lorem}</p>\n""")
 
-            # Iterate through each plot div and add it to the HTML
-            # Each plot is wrapped in a centered div for proper alignment
-            for index, div in enumerate(divs):
+            for index, plot in enumerate(plots):
                 # Plot container with center alignment
                 # This ensures plots are visually centered on the page
-                f.write(f"<!-- Plot {titles[index]} -->\n")
-                f.write("<div align='center'>\n")
-                f.write(div)
+                f.write(f"<!-- Plot {plot['plots']['title']} -->\n")
+                f.write("<div id='rcorners' align='center'>\n")
+                f.write(plot['plots']['div'])
+                f.write("\n")
+                f.write("</div>\n")
+                f.write("<div id='rcorners' align='center'>\n")
+                f.write(plot['controls']['div'])
                 f.write("\n")
                 f.write("</div>\n")
 
@@ -109,10 +124,11 @@ def save_plots(
             # Chart scripts for interactive functionality
             # These scripts enable plot interactivity and must be placed after divs
             f.write("<!-- Chart scripts -->\n")
-            for index, script in enumerate(scripts):
-                f.write(f"<!-- Plot {titles[index]} -->\n")
-                f.write(script)
+            for index, plot in enumerate(plots):
+                f.write(f"<!-- Plot {plot['script']['title']} -->\n")
+                f.write(plot['script']['script'])
                 f.write("\n")
+
     except FileNotFoundError as e:
         # Handle case where directory creation failed or path is invalid
         print(f"Error on line {e.__traceback__.tb_lineno}: Plots directory not "
@@ -127,14 +143,15 @@ def save_plots(
         raise
 
     # Write each of the scripts to a separate file
+    # --------------------------------------------
     # This allows for individual debugging and inspection of plot scripts
     try:
-        for index, script in enumerate(scripts):
+        for index, plot in enumerate(plots):
             # Create individual script files with descriptive names
-            script_filename = f"script_{index+1}.txt"
-            with open(os.path.join("Plots", script_filename), "w") as f:
-                f.write(f"<!--Chart script {titles[index]}-->\n")
-                f.write(script)
+            script_filename = f"script_{plot['script']['title']}.txt"
+            with open(os.path.join(folder_name, script_filename), "w") as f:
+                f.write(f"<!--Chart script {plot['script']['title']}-->\n")
+                f.write(plot['script']['script'])
     except OSError as e:
         # Handle errors when writing individual script files
         print(f"Error on line {e.__traceback__.tb_lineno}: Failed to write "
@@ -143,6 +160,7 @@ def save_plots(
         raise
 
     # Write all scripts to a combo file
+    # --------------------------------- 
     # This creates a single file containing all scripts for easy reference
     try:
         with open(os.path.join(folder_name, "scripts.txt"), "w") as f:
@@ -150,9 +168,9 @@ def save_plots(
             f.write("<!------------------------>\n")
 
             # Add each script with its corresponding title
-            for index, script in enumerate(scripts):
-                f.write(f"<!--Chart script {titles[index]}-->\n")
-                f.write(script)
+            for index, plot in enumerate(plots):
+                f.write(f"<!--Chart script {plot['script']['title']}-->\n")
+                f.write(plot['script']['script'])
                 f.write("\n")
     except OSError as e:
         # Handle errors when writing the combined scripts file
@@ -162,17 +180,24 @@ def save_plots(
         raise
 
     # Write each of the divs to a separate file
+    # -----------------------------------------
     # This allows for individual inspection and debugging of plot HTML
     try:
-        for index, div in enumerate(divs):
+        for index, plot in enumerate(plots):
             # Create individual div files with descriptive names
-            div_filename = f"div_{index+1}.txt"
+            div_filename = f"div_{plot['plots']['title']}.txt"
             with open(os.path.join(folder_name, div_filename), "w") as f:
-                f.write(f"<!-- Plot {titles[index]} -->\n")
-                f.write("<div align='center'>\n")
-                f.write("    " + div)  # Indent the div content for readability
+                f.write(f"<!-- Plot {plot['plots']['title']} -->\n")
+                f.write("<div  id='rcorners' align='center'>\n")
+                f.write("    " + plot['plots']['div'])
                 f.write("\n")
                 f.write("</div>\n")
+                f.write(f"<!-- Plot {plot['controls']['title']} -->\n")
+                f.write("<div id='rcorners' align='center'>\n")
+                f.write("    " + plot['controls']['div'])
+                f.write("\n")
+                f.write("</div>\n")
+
     except OSError as e:
         # Handle errors when writing individual div files
         print(f"Error on line {e.__traceback__.tb_lineno}: Failed to write "
