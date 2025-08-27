@@ -314,7 +314,9 @@ def plot_data(*,
     # Create local copy of data, filtering out rows with null values in
     # column_name
     # This ensures we only analyze complete data points
-    data_local = data[(data[column_name].notnull()) & (data['league_tier'] < 5)].copy()
+    data_local = data[(data[column_name].notnull()) 
+                      & (data['league_tier'] < 5)
+                      & (data['season_start'] >= 2004)].copy()
 
     # Create generic 'x' column for JavaScript compatibility in interactive
     # plots
@@ -584,7 +586,7 @@ if __name__ == "__main__":
     season analysis.
 
     This script analyzes the relationship between team performance (goals) and
-    foreign player characteristics in English football. It creates interactive
+    transfer value characteristics in English football. It creates interactive
     visualizations that can be embedded in web pages for data exploration.
     """
 
