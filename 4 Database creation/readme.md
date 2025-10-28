@@ -4,4 +4,4 @@ After analyzing the data, I wanted to do something a bit more sophisticated, whi
 
 ## What's missing
 
-I haven't added data on the club grounds. It turns out, this is a bit more complicated and hard to get than I thought. Although the ground is identified in all match reports, details on the grounds (e.g. capacity, seating/standing, etc.) are hard to come by.
+I haven't added data on the club grounds. It turns out, this is a bit more complicated and hard to get than I thought. Although the ground is identified in all match reports, details on the grounds (e.g. capacity, seating/standing, etc.) are hard to come by. Adding ground details is a future task.
