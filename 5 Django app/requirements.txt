@@ -3,6 +3,7 @@ Django==4.2.7
 
 # Database
 psycopg2-binary==2.9.7
+psycopg==3.2.3
 dj-database-url==3.0.1
 
 # Data Visualization
