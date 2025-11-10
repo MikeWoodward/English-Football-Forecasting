@@ -12,8 +12,8 @@ A Django web application for analyzing English Premier League data with interact
 
 ## Requirements
 
-- Python 3.8+
-- Django 4.2.7
+- Python 3.13.4
+- Django 5.2.8
 - PostgreSQL database
 - Bokeh 3.3.0
 - Bootstrap 5
