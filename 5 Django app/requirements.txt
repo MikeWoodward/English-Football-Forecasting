@@ -1,0 +1,11 @@
+Django==4.2.7
+psycopg2-binary==2.9.7
+bokeh==3.8.0
+django-crispy-forms==2.1
+crispy-bootstrap5==0.7
+python-decouple==3.8
+dj-database-url==3.0.1
+whitenoise[brotli]==6.11.0
+gunicorn==23.0.0
+uvicorn==0.34.2
+

@@ -124,10 +124,17 @@ cython_debug/
 .pdm-build/
 __pypackages__/
 *.csv
-*.txt
 *.html
 *.xlsx
 /999 OLD - do not use
 *.gif
 5 Django app/env.example
 /999 Utility code
+/3 Analysis/Score distributions/Plots
+/3 Analysis/Home advantage/Plots
+/3 Analysis/Goals/Plots
+/3 Analysis/Goals vs years in league/Plots
+/3 Analysis/Goals vs age foreigners value size/Plots
+/3 Analysis/Discipline/Plots
+/3 Analysis/Draws/Plots
+/3 Analysis/Attendance/Plots
