@@ -72,20 +72,6 @@ FOOTBALL_USER=your-db-username
 FOOTBALL_PASSWORD=your-db-password
 ```
 
-## Default Users
-
-The application comes with two pre-configured users:
-
-- **Admin User**: 
-  - Username: `Falcon1234`
-  - Password: `birdbrain`
-  - Access: Full admin privileges
-
-- **Regular User**:
-  - Username: `Footsmall`
-  - Password: `roundball`
-  - Access: Standard user features
-
 ## Application Structure
 
 ### Apps
