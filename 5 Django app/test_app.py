@@ -2,6 +2,9 @@
 """
 Simple test script to verify the Django application is working.
 """
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+from django.test import TestCase, Client
 import os
 import sys
 import django
@@ -12,13 +15,10 @@ project_dir = Path(__file__).parent
 sys.path.insert(0, str(project_dir))
 
 # Set up Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE',
                       'EnglishFootballLeagueAnalysis.settings')
 django.setup()
 
-from django.test import TestCase, Client
-from django.contrib.auth import get_user_model
-from django.urls import reverse
 
 User = get_user_model()
 
@@ -27,9 +27,9 @@ def test_basic_functionality():
     """Test basic application functionality."""
     print("Testing English Football League Analysis Application")
     print("=" * 50)
-    
+
     client = Client()
-    
+
     # Test 1: Home page loads
     print("1. Testing home page...")
     try:
@@ -40,7 +40,7 @@ def test_basic_functionality():
             print(f"   ✗ Home page failed: {response.status_code}")
     except Exception as e:
         print(f"   ✗ Home page error: {e}")
-    
+
     # Test 2: Login page loads
     print("2. Testing login page...")
     try:
@@ -51,7 +51,7 @@ def test_basic_functionality():
             print(f"   ✗ Login page failed: {response.status_code}")
     except Exception as e:
         print(f"   ✗ Login page error: {e}")
-    
+
     # Test 3: User model works
     print("3. Testing user model...")
     try:
@@ -59,7 +59,7 @@ def test_basic_functionality():
         print(f"   ✓ User model works: {user_count} users found")
     except Exception as e:
         print(f"   ✗ User model error: {e}")
-    
+
     # Test 4: Apps are registered
     print("4. Testing app registration...")
     try:
@@ -72,11 +72,10 @@ def test_basic_functionality():
                 print(f"   ✗ {app} app is not registered")
     except Exception as e:
         print(f"   ✗ App registration error: {e}")
-    
+
     print("\n" + "=" * 50)
     print("Basic functionality test completed!")
 
 
 if __name__ == "__main__":
     test_basic_functionality()
-

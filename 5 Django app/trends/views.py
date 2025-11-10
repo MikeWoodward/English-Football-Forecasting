@@ -30,6 +30,8 @@ import pandas as pd
 PLOT_HEIGHT = 400
 
 # Helper functions
+
+
 def get_script_div_leagues_over_time(
     *,
     data: pd.DataFrame,
@@ -127,13 +129,13 @@ def get_script_div_leagues_over_time(
         ]
     ))
 
-    if show_wars:   
+    if show_wars:
         # Add visual annotation for WWII period (1939-1945)
         # This helps identify potential data gaps or anomalies during wartime
         wwii_band = BoxAnnotation(
-            left=1939, 
+            left=1939,
             right=1945,
-            fill_color='lightcoral', 
+            fill_color='lightcoral',
             fill_alpha=0.3,
             name="wwii_band"
         )
@@ -142,9 +144,9 @@ def get_script_div_leagues_over_time(
         # Add visual annotation for WWI period (1914-1918)
         # Similar to WWII, helps identify wartime effects on football data
         wwi_band = BoxAnnotation(
-            left=1914, 
+            left=1914,
             right=1918,
-            fill_color='lightcoral', 
+            fill_color='lightcoral',
             fill_alpha=0.3,
             name="wwi_band"
         )
@@ -161,6 +163,7 @@ def get_script_div_leagues_over_time(
         return script, div
     else:
         return plot
+
 
 def get_attendance_violin_plot(
     *,
@@ -214,7 +217,7 @@ def get_attendance_violin_plot(
         # Create ColumnDataSource with a named identifier
         # Note: name is used in JavaScript callback to identify the source
         # of the data for the plot
-        source = ColumnDataSource(league_data, 
+        source = ColumnDataSource(league_data,
                                   name=f"violin_attendance_data_tier_{tier}")
         # Calculate height for each plot (divide total height by number of tiers)
         height = int(PLOT_HEIGHT/len(tiers))
@@ -251,13 +254,14 @@ def get_attendance_violin_plot(
         violin_plot.xaxis.visible = False if tier != tiers[-1] else True
         plots.append(violin_plot)
 
-    plots = column(plots, 
+    plots = column(plots,
                    sizing_mode="stretch_width")
     if create_components:
         script, div = components(plots)
         return script, div
     else:
         return plots
+
 
 def error_page(
     request: HttpRequest,
@@ -290,7 +294,7 @@ def error_page(
 def trends_dashboard(request: HttpRequest) -> HttpResponse:
     """
     Display the trends dashboard with chart selection menu.
-    
+
     Only visible to logged in users.
 
     Args:
@@ -352,7 +356,7 @@ def trends_dashboard(request: HttpRequest) -> HttpResponse:
 def goals_over_time(request: HttpRequest) -> HttpResponse:
     """
     Display a Bokeh chart showing goals over time from the Football database.
-    
+
     Only visible to logged in users.
 
     Args:
@@ -381,7 +385,7 @@ def goals_over_time(request: HttpRequest) -> HttpResponse:
         y_name="mean_goals",
         create_components=True,
     )
-    
+
     context = {
         'title': 'Goals scored by season and league',
         'script': script,
@@ -423,7 +427,7 @@ def goals_over_time(request: HttpRequest) -> HttpResponse:
 def home_advantage_over_time(request: HttpRequest) -> HttpResponse:
     """
     Display a Bokeh chart showing home advantage trends over time from the Football database.
-    
+
     Only visible to logged in users.
 
     Args:
@@ -668,7 +672,8 @@ def discipline_over_time(request: HttpRequest) -> HttpResponse:
     try:
         yellow_card_data = LeagueManager().get_yellow_card_data()
         yellow_card_data = pd.DataFrame.from_records(yellow_card_data)
-        yellow_card_data = yellow_card_data[yellow_card_data['mean_yellow_cards'].notna()]
+        yellow_card_data = yellow_card_data[yellow_card_data['mean_yellow_cards'].notna(
+        )]
     except Exception as e:
         error_message = "Error retrieving yellow card data."
         error_details = f"Error details: {e}"
@@ -958,10 +963,10 @@ def attendance_violin_json(
         )
         # Restructure data and convert Decimal type to float if appropriate. Creating this
         # structure:
-        # {'1': {'attendance': [...], 'probability_density': [...]}, 
-        # '2': {'attendance': [...], 'probability_density': [...]}, 
-        # '3': {'attendance': [...], 'probability_density': [...]}, 
-        # '4': {'attendance': [...], 'probability_density': [...]}, 
+        # {'1': {'attendance': [...], 'probability_density': [...]},
+        # '2': {'attendance': [...], 'probability_density': [...]},
+        # '3': {'attendance': [...], 'probability_density': [...]},
+        # '4': {'attendance': [...], 'probability_density': [...]},
         # '5': {'attendance': [...], 'probability_density': [...]}}
         data = {}
         for item in attendance_violin_data:
@@ -970,8 +975,10 @@ def attendance_violin_json(
                     'attendance': [],
                     'probability_density': []
                 }
-            data[item['league_tier']]['attendance'].append(float(item['attendance']))
-            data[item['league_tier']]['probability_density'].append(float(item['probability_density']))
+            data[item['league_tier']]['attendance'].append(
+                float(item['attendance']))
+            data[item['league_tier']]['probability_density'].append(
+                float(item['probability_density']))
         return JsonResponse({'data': data}, safe=False)
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()

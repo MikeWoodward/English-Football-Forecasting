@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 from decouple import Config, RepositoryEnv
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # This is used to serve static files.
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -69,14 +72,15 @@ WSGI_APPLICATION = 'EnglishFootballLeagueAnalysis.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('FOOTBALL_NAME'),
-        'USER': config('FOOTBALL_USER'),
-        'PASSWORD': config('FOOTBALL_PASSWORD'),
-        'HOST': config('FOOTBALL_HOST'),
-        'PORT': config('FOOTBALL_PORT'),
-    }
+    'default': dj_database_url.config(
+        default=(
+            f"postgresql://"
+            f"{config('FOOTBALL_USER')}:{config('FOOTBALL_PASSWORD')}"
+            f"@{config('FOOTBALL_HOST')}:{config('FOOTBALL_PORT')}"
+            f"/{config('FOOTBALL_NAME')}"
+        ),
+        conn_max_age=600
+    )
 }
 
 # Password validation
@@ -106,6 +110,14 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+# This production code might break development mode, so we check whether we're in DEBUG mode
+if not DEBUG:
+    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
+    # and renames the files with unique names for each version to support long-term caching
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

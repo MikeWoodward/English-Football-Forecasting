@@ -9,4 +9,3 @@ app_name = 'about'
 urlpatterns = [
     path('', views.about_page, name='about'),
 ]
-

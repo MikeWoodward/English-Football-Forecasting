@@ -22,7 +22,7 @@ def is_admin_user(user):
 def admin_dashboard(request):
     """
     Admin dashboard showing user management options.
-    
+
     Only accessible to logged in admin users.
     """
     context = {
@@ -39,12 +39,12 @@ def admin_dashboard(request):
 def user_list(request):
     """
     List all users with pagination and search.
-    
+
     Only accessible to logged in admin users.
     """
     search_query = request.GET.get('search', '')
     users = User.objects.all()
-    
+
     if search_query:
         users = users.filter(
             Q(username__icontains=search_query) |
@@ -52,11 +52,11 @@ def user_list(request):
             Q(first_name__icontains=search_query) |
             Q(last_name__icontains=search_query)
         )
-    
+
     paginator = Paginator(users, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     context = {
         'title': 'User Management',
         'page_obj': page_obj,
@@ -70,18 +70,19 @@ def user_list(request):
 def user_create(request):
     """
     Create a new user.
-    
+
     Only accessible to logged in admin users.
     """
     if request.method == 'POST':
         form = UserCreateForm(request.POST)
         if form.is_valid():
             user = form.save()
-            messages.success(request, f'User "{user.username}" created successfully.')
+            messages.success(
+                request, f'User "{user.username}" created successfully.')
             return redirect('admin_app:user_list')
     else:
         form = UserCreateForm()
-    
+
     context = {
         'title': 'Create User',
         'form': form,
@@ -94,20 +95,21 @@ def user_create(request):
 def user_edit(request, user_id):
     """
     Edit an existing user.
-    
+
     Only accessible to logged in admin users.
     """
     user = get_object_or_404(User, id=user_id)
-    
+
     if request.method == 'POST':
         form = UserEditForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            messages.success(request, f'User "{user.username}" updated successfully.')
+            messages.success(
+                request, f'User "{user.username}" updated successfully.')
             return redirect('admin_app:user_list')
     else:
         form = UserEditForm(instance=user)
-    
+
     context = {
         'title': f'Edit User: {user.username}',
         'form': form,
@@ -121,20 +123,19 @@ def user_edit(request, user_id):
 def user_delete(request, user_id):
     """
     Delete a user.
-    
+
     Only accessible to logged in admin users.
     """
     user = get_object_or_404(User, id=user_id)
-    
+
     if request.method == 'POST':
         username = user.username
         user.delete()
         messages.success(request, f'User "{username}" deleted successfully.')
         return redirect('admin_app:user_list')
-    
+
     context = {
         'title': f'Delete User: {user.username}',
         'user': user,
     }
     return render(request, 'admin_app/user_confirm_delete.html', context)
-

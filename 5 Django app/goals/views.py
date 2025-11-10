@@ -11,7 +11,7 @@ import numpy as np
 def goals_dashboard(request):
     """
     Display the goals dashboard with chart selection menu.
-    
+
     Shows factors that influence goals.
     """
     context = {
@@ -35,7 +35,7 @@ def goals_dashboard(request):
 def goal_timing(request):
     """
     Display a dummy Bokeh chart showing goal timing analysis.
-    
+
     Shows factors that influence when goals are scored.
     """
     # Create dummy data for demonstration
@@ -43,7 +43,7 @@ def goal_timing(request):
     goals_scored = [45, 52, 68, 55, 78, 89]
     home_goals = [28, 32, 42, 33, 45, 52]
     away_goals = [17, 20, 26, 22, 33, 37]
-    
+
     # Create Bokeh figure
     plot = figure(
         title="Goal Timing Analysis - When Goals Are Scored",
@@ -54,7 +54,7 @@ def goal_timing(request):
         toolbar_location="right",
         x_range=time_intervals
     )
-    
+
     # Create data source
     source = ColumnDataSource(data=dict(
         intervals=time_intervals,
@@ -62,19 +62,19 @@ def goal_timing(request):
         home=home_goals,
         away=away_goals
     ))
-    
+
     # Add bar chart
-    plot.vbar(x='intervals', top='total', width=0.6, color="#2E8B57", 
+    plot.vbar(x='intervals', top='total', width=0.6, color="#2E8B57",
               alpha=0.8, source=source, legend_label="Total Goals")
-    
+
     # Add line for home goals
-    plot.line(time_intervals, home_goals, line_width=3, color="#90EE90", 
+    plot.line(time_intervals, home_goals, line_width=3, color="#90EE90",
               line_dash="solid", legend_label="Home Goals")
-    
+
     # Add line for away goals
-    plot.line(time_intervals, away_goals, line_width=3, color="#98FB98", 
+    plot.line(time_intervals, away_goals, line_width=3, color="#98FB98",
               line_dash="dashed", legend_label="Away Goals")
-    
+
     # Add hover tool
     hover = HoverTool(tooltips=[
         ("Time", "@intervals"),
@@ -83,15 +83,15 @@ def goal_timing(request):
         ("Away Goals", "@away")
     ])
     plot.add_tools(hover)
-    
+
     # Style the plot
     plot.legend.location = "top_left"
     plot.legend.click_policy = "hide"
     plot.xaxis.major_label_orientation = 0
-    
+
     # Embed the plot
     script, div = components(plot)
-    
+
     context = {
         'title': 'Goal Timing Analysis',
         'script': script,
@@ -118,19 +118,19 @@ def goal_timing(request):
 def player_impact(request):
     """
     Display a dummy Bokeh chart showing player impact on goals.
-    
+
     Shows factors that influence individual player contributions.
     """
     # Create dummy data for demonstration
-    players = ['Haaland', 'Kane', 'Salah', 'Rashford', 'Odegaard', 
+    players = ['Haaland', 'Kane', 'Salah', 'Rashford', 'Odegaard',
                'De Bruyne', 'Saka', 'Toney', 'Wilson', 'Mitrovic']
     goals = [36, 30, 19, 17, 15, 7, 14, 20, 18, 14]
     assists = [5, 3, 12, 5, 8, 16, 11, 4, 1, 2]
     minutes = [2853, 3080, 2610, 2400, 2800, 2200, 2500, 2700, 2000, 1800]
-    
+
     # Calculate goals per 90 minutes
     goals_per_90 = [g * 90 / m for g, m in zip(goals, minutes)]
-    
+
     # Create Bokeh figure
     plot = figure(
         title="Player Impact on Goals - Goals vs Assists",
@@ -140,7 +140,7 @@ def player_impact(request):
         height=500,
         toolbar_location="right"
     )
-    
+
     # Create data source
     source = ColumnDataSource(data=dict(
         x=goals,
@@ -149,18 +149,18 @@ def player_impact(request):
         goals_per_90=goals_per_90,
         minutes=minutes
     ))
-    
+
     # Add scatter plot with size based on goals per 90
-    plot.scatter('x', 'y', size=[g*3 for g in goals_per_90], 
+    plot.scatter('x', 'y', size=[g*3 for g in goals_per_90],
                  color="#2E8B57", alpha=0.7, source=source)
-    
+
     # Add player labels
     from bokeh.models import LabelSet
     labels = LabelSet(x='x', y='y', text='players', source=source,
                       text_font_size='8pt', text_color='black',
                       x_offset=5, y_offset=5)
     plot.add_layout(labels)
-    
+
     # Add hover tool
     hover = HoverTool(tooltips=[
         ("Player", "@players"),
@@ -170,16 +170,16 @@ def player_impact(request):
         ("Minutes Played", "@minutes")
     ])
     plot.add_tools(hover)
-    
+
     # Style the plot
     plot.xaxis.axis_line_color = "#2E8B57"
     plot.yaxis.axis_line_color = "#2E8B57"
     plot.xaxis.major_tick_line_color = "#2E8B57"
     plot.yaxis.major_tick_line_color = "#2E8B57"
-    
+
     # Embed the plot
     script, div = components(plot)
-    
+
     context = {
         'title': 'Player Impact Analysis',
         'script': script,

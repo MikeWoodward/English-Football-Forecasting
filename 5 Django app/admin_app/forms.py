@@ -11,7 +11,7 @@ User = get_user_model()
 
 class UserCreateForm(forms.ModelForm):
     """Form for creating a new user."""
-    
+
     password1 = forms.CharField(
         label='Password',
         widget=forms.PasswordInput,
@@ -22,10 +22,10 @@ class UserCreateForm(forms.ModelForm):
         widget=forms.PasswordInput,
         help_text='Enter the same password as before.'
     )
-    
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 
+        fields = ['username', 'email', 'first_name', 'last_name',
                   'is_admin', 'is_active']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control'}),
@@ -33,7 +33,7 @@ class UserCreateForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -61,17 +61,17 @@ class UserCreateForm(forms.ModelForm):
             ),
             Submit('submit', 'Create User', css_class='btn btn-success')
         )
-    
+
     def clean_password2(self):
         """Validate that both passwords match."""
         password1 = self.cleaned_data.get('password1')
         password2 = self.cleaned_data.get('password2')
-        
+
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Passwords don't match.")
-        
+
         return password2
-    
+
     def save(self, commit=True):
         """Save the user with the provided password."""
         user = super().save(commit=False)
@@ -83,10 +83,10 @@ class UserCreateForm(forms.ModelForm):
 
 class UserEditForm(forms.ModelForm):
     """Form for editing an existing user."""
-    
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 
+        fields = ['username', 'email', 'first_name', 'last_name',
                   'is_admin', 'is_active']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control'}),
@@ -94,7 +94,7 @@ class UserEditForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -117,4 +117,3 @@ class UserEditForm(forms.ModelForm):
             ),
             Submit('submit', 'Update User', css_class='btn btn-primary')
         )
-

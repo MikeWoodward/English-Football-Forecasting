@@ -9,8 +9,10 @@ from django.db import models
 
 
 class AttendanceViolin(models.Model):
-    attendance = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    probability_density = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    attendance = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
+    probability_density = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
     league_tier = models.IntegerField(blank=True, null=True)
     season_start = models.IntegerField(blank=True, null=True)
     league_id = models.CharField(max_length=255, blank=True, null=True)
@@ -83,9 +85,12 @@ class ClubSeason(models.Model):
     club_name = models.CharField(max_length=255)
     squad_size = models.IntegerField(blank=True, null=True)
     foreigner_count = models.IntegerField(blank=True, null=True)
-    foreigner_fraction = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    mean_age = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    total_market_value = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    foreigner_fraction = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
+    mean_age = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
+    total_market_value = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -141,7 +146,8 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.SmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    content_type = models.ForeignKey(
+        'DjangoContentType', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey(CustomUser, models.DO_NOTHING)
 
     class Meta:

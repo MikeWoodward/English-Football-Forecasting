@@ -11,4 +11,3 @@ urlpatterns = [
     path('goal-timing/', views.goal_timing, name='goal_timing'),
     path('player-impact/', views.player_impact, name='player_impact'),
 ]
-

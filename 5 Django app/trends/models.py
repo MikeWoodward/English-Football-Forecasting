@@ -83,8 +83,10 @@ class AttendanceViolinManager(models.Manager):
 
 
 class AttendanceViolin(models.Model):
-    attendance = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    probability_density = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    attendance = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
+    probability_density = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
     league = models.ForeignKey('League', models.DO_NOTHING)
     attendance_league_id = models.CharField(primary_key=True, max_length=255)
 
@@ -126,7 +128,8 @@ class AuthPermission(models.Model):
 
 
 class ClubHistory(models.Model):
-    club_name_year_changed_id = models.CharField(primary_key=True, max_length=255)
+    club_name_year_changed_id = models.CharField(
+        primary_key=True, max_length=255)
     club_name = models.CharField(max_length=255)
     nickname = models.CharField(max_length=255, blank=True, null=True)
     modern_name = models.CharField(max_length=255)
@@ -139,15 +142,19 @@ class ClubHistory(models.Model):
         managed = False
         db_table = 'club_history'
 
+
 class ClubSeason(models.Model):
     league = models.ForeignKey('League', models.DO_NOTHING)
     club_name = models.CharField(max_length=255)
     club_league_id = models.CharField(primary_key=True, max_length=255)
     squad_size = models.IntegerField(blank=True, null=True)
     foreigner_count = models.IntegerField(blank=True, null=True)
-    foreigner_fraction = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    mean_age = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    total_market_value = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    foreigner_fraction = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
+    mean_age = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
+    total_market_value = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -203,7 +210,8 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.SmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    content_type = models.ForeignKey(
+        'DjangoContentType', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey(CustomUser, models.DO_NOTHING)
 
     class Meta:
@@ -300,7 +308,7 @@ class LeagueManager(models.Manager):
                 league_tier=F('league__league_tier'),
                 season_start=Substr('league__season', 1, 4),
                 mean_goals=ExpressionWrapper(
-                    Cast(F('total_goals'), FloatField()) / 
+                    Cast(F('total_goals'), FloatField()) /
                     Cast(F('match_count'), FloatField()),
                     output_field=FloatField(),
                 ),
@@ -363,7 +371,7 @@ class LeagueManager(models.Manager):
                 league_tier=F('league__league_tier'),
                 season_start=Substr('league__season', 1, 4),
                 home_win_fraction=ExpressionWrapper(
-                    Cast(F('home_wins'), FloatField()) / 
+                    Cast(F('home_wins'), FloatField()) /
                     Cast(F('total_wins'), FloatField()),
                     output_field=FloatField(),
                 ),
@@ -451,7 +459,7 @@ class LeagueManager(models.Manager):
                 league_tier=F('league__league_tier'),
                 season_start=Substr('league__season', 1, 4),
                 draw_fraction=ExpressionWrapper(
-                    Cast(F('draws'), FloatField()) / 
+                    Cast(F('draws'), FloatField()) /
                     Cast(F('match_count'), FloatField()),
                     output_field=FloatField(),
                 ),
@@ -462,6 +470,7 @@ class LeagueManager(models.Manager):
                 'draw_fraction',
             )
         )
+
     def get_red_card_data(self):
         """
         Return red card data per league per season.
@@ -494,7 +503,7 @@ class LeagueManager(models.Manager):
                 league_tier=F('league__league_tier'),
                 season_start=Substr('league__season', 1, 4),
                 mean_red_cards=ExpressionWrapper(
-                    Cast(F('total_red_cards'), FloatField()) / 
+                    Cast(F('total_red_cards'), FloatField()) /
                     Cast(F('match_count'), FloatField()),
                     output_field=FloatField(),
                 ),
@@ -516,7 +525,7 @@ class LeagueManager(models.Manager):
             QuerySet: Annotated queryset with league_tier, season_start,
             and yellow_cards_per_match fields.
         """
-        # Use FootballMatch directly which has home_yellow_cards and 
+        # Use FootballMatch directly which has home_yellow_cards and
         # away_yellow_cards. Sum total yellow cards and divide by match count
         return (
             FootballMatch.objects
@@ -538,7 +547,7 @@ class LeagueManager(models.Manager):
                 league_tier=F('league__league_tier'),
                 season_start=Substr('league__season', 1, 4),
                 mean_yellow_cards=ExpressionWrapper(
-                    Cast(F('total_yellow_cards'), FloatField()) / 
+                    Cast(F('total_yellow_cards'), FloatField()) /
                     Cast(F('match_count'), FloatField()),
                     output_field=FloatField(),
                 ),
@@ -582,7 +591,7 @@ class LeagueManager(models.Manager):
                 league_tier=F('league__league_tier'),
                 season_start=Substr('league__season', 1, 4),
                 mean_fouls=ExpressionWrapper(
-                    Cast(F('total_fouls'), FloatField()) / 
+                    Cast(F('total_fouls'), FloatField()) /
                     Cast(F('match_count'), FloatField()),
                     output_field=FloatField(),
                 ),
@@ -654,7 +663,7 @@ class LeagueManager(models.Manager):
                 league_tier=F('league__league_tier'),
                 season_start=Substr('league__season', 1, 4),
                 mean_attendance=ExpressionWrapper(
-                    Cast(F('total_attendance'), FloatField()) / 
+                    Cast(F('total_attendance'), FloatField()) /
                     Cast(F('match_count'), FloatField()),
                     output_field=FloatField(),
                 ),
@@ -757,6 +766,7 @@ class LeagueManager(models.Manager):
             """
             Simple QuerySet-like wrapper for win fraction std dev results.
             """
+
             def __init__(self, results):
                 self._results = results
 
@@ -779,8 +789,6 @@ class LeagueManager(models.Manager):
                 ])
 
         return WinFractionSDQuerySet(results)
-
- 
 
 
 class League(models.Model):

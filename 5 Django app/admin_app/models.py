@@ -8,7 +8,7 @@ from django.db import models
 class CustomUser(AbstractUser):
     """
     Custom user model extending Django's AbstractUser.
-    
+
     This model stores user and admin data in the PostgreSQL database.
     """
     is_admin = models.BooleanField(
@@ -26,4 +26,3 @@ class CustomUser(AbstractUser):
     def __str__(self):
         """Return string representation of the user."""
         return f"{self.username} ({'Admin' if self.is_admin else 'User'})"
-
