@@ -19,6 +19,7 @@ whitenoise[brotli]==6.11.0
 
 # Production Server
 gunicorn==23.0.0
+uvicorn==0.34.2
 
 # Environment Variables
 python-decouple==3.8
