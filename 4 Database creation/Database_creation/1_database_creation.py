@@ -2,16 +2,24 @@
 Database creation script for EPL predictor project.
 
 This script creates the PostgreSQL database tables for the football
-prediction system, including league, club, match, club_match, and
+prediction system, including league, club, match, and
 club_season tables.
 """
 
+# Standard library imports
 import logging
-import psycopg2
-from psycopg2 import OperationalError
-import pandas as pd
 import os
 from pathlib import Path
+
+# Third-party imports for database operations
+import psycopg2
+from psycopg2 import OperationalError
+
+# Third-party imports for data processing
+import pandas as pd
+
+# Third-party imports for configuration management
+from decouple import Config, RepositoryEnv
 
 
 def setup_logging() -> None:
@@ -26,9 +34,66 @@ def setup_logging() -> None:
     )
 
 
+def create_database_if_not_exists(
+    *,
+    db_name: str,
+    connection_params: dict
+) -> None:
+    """
+    Create a database if it doesn't already exist.
+
+    This function connects to the default 'postgres' database to create
+    the target database, since you cannot create a database while
+    connected to it.
+
+    Args:
+        db_name: Name of the database to create.
+        connection_params: Dictionary containing database connection
+                         parameters including host, port, user, and
+                         password. The 'database' key is replaced with
+                         'postgres' for the connection.
+    """
+    try:
+        # Connect to the default 'postgres' database to create new database
+        postgres_params = connection_params.copy()
+        postgres_params['database'] = 'postgres'
+        
+        conn = psycopg2.connect(**postgres_params)
+        conn.autocommit = True  # Required for CREATE DATABASE
+        cursor = conn.cursor()
+        
+        # Check if database exists
+        cursor.execute(
+            "SELECT 1 FROM pg_database WHERE datname = %s",
+            (db_name,)
+        )
+        exists = cursor.fetchone()
+        
+        if not exists:
+            # Create the database
+            cursor.execute(f'CREATE DATABASE "{db_name}"')
+            logging.info(f"Created database {db_name}")
+        else:
+            logging.info(f"Database {db_name} already exists")
+        
+        cursor.close()
+        conn.close()
+        
+    except OperationalError as e:
+        logging.error(f"Database connection error while creating database: "
+                     f"{e}")
+        raise
+    except Exception as e:
+        logging.error(f"Unexpected error while creating database: {e}")
+        raise
+
+
 def create_database_tables(*, connection_params: dict) -> None:
     """
     Create database tables for the EPL predictor system.
+
+    This function creates the following tables: league, football_match,
+    club_season, club_history, and attendance_violin.
 
     Args:
         connection_params: Dictionary containing database connection
@@ -38,24 +103,26 @@ def create_database_tables(*, connection_params: dict) -> None:
     try:
         # Connect to the database
         conn = psycopg2.connect(**connection_params)
-        logging.info("Successfully connected to database")
 
         cursor = conn.cursor()
 
-        # Drop existing tables if they exist
-        tables_to_drop = ['league', 'match', 'club_match',
-                          'club_season', 'club_history']
+        # Drop existing tables if they exist to ensure clean table creation
+        # CASCADE ensures foreign key constraints are also dropped
+        tables_to_drop = ['league', 'football_match',
+                          'club_season', 'club_history', 'attendance_violin']
         for table in tables_to_drop:
             try:
-                cursor.execute(f"DROP TABLE IF EXISTS {table}")
-                logging.info(f"Dropped table {table} if it existed")
+                cursor.execute(f"DROP TABLE IF EXISTS {table} CASCADE")
             except Exception as e:
                 logging.error(f"Error dropping table {table}: {e}")
                 raise
 
+        # Commit the DROP operations before creating new tables
         conn.commit()
 
         # Create the tables with proper formatting
+        # Define SQL CREATE TABLE statements for each table
+        # League table: stores league/season information
         create_statements = [
             """CREATE TABLE league (
                 league_id VARCHAR(255) PRIMARY KEY NOT NULL,
@@ -68,31 +135,41 @@ def create_database_tables(*, connection_params: dict) -> None:
                 league_size_clubs INT NOT NULL,
                 league_notes TEXT
             )""",
-            """CREATE TABLE "match" (
+            # Football match table: stores individual match results and statistics
+            # Foreign key reference to league table
+            """CREATE TABLE football_match (
                 match_id VARCHAR(255) PRIMARY KEY NOT NULL,
-                league_id VARCHAR(255) NOT NULL,
+                league_id VARCHAR(255) NOT NULL REFERENCES league(league_id),
                 match_date DATE NOT NULL,
-                attendance INT NOT NULL
+                match_time VARCHAR(255),
+                match_day_of_week VARCHAR(255) NOT NULL,
+                attendance INT,
+                home_club VARCHAR(255) NOT NULL,
+                home_goals INT NOT NULL,
+                home_fouls INT,
+                home_yellow_cards INT,
+                home_red_cards INT,
+                away_club VARCHAR(255) NOT NULL,
+                away_goals INT NOT NULL,
+                away_fouls INT,
+                away_yellow_cards INT,
+                away_red_cards INT
             )""",
-            """CREATE TABLE club_match (
-                match_id VARCHAR(255) NOT NULL,
-                club_name VARCHAR(255) NOT NULL,
-                goals INT NOT NULL,
-                red_cards INT,
-                yellow_cards INT,
-                fouls INT,
-                is_home BOOLEAN NOT NULL
-            )""",
+            # Club season table: stores club squad information for each season
+            # Composite primary key via club_league_id
             """CREATE TABLE club_season (
-                league_id VARCHAR(255) NOT NULL,
+                league_id VARCHAR(255) NOT NULL REFERENCES league(league_id),
                 club_name VARCHAR(255) NOT NULL,
+                club_league_id VARCHAR(255) NOT NULL PRIMARY KEY,
                 squad_size INT,
                 foreigner_count INT,
                 foreigner_fraction DECIMAL,
                 mean_age DECIMAL,
                 total_market_value DECIMAL
             )""",
+            # Club history table: tracks historical club name changes
             """CREATE TABLE club_history (
+                club_name_year_changed_id VARCHAR(255) NOT NULL PRIMARY KEY,
                 club_name VARCHAR(255) NOT NULL,
                 nickname VARCHAR(255),
                 modern_name VARCHAR(255) NOT NULL,
@@ -100,20 +177,30 @@ def create_database_tables(*, connection_params: dict) -> None:
                 date_changed DATE,
                 notes VARCHAR(255),
                 wikipedia VARCHAR(255)
+            )""",
+            # Attendance violin table: stores probability density data for
+            # attendance distributions by league
+            """CREATE TABLE attendance_violin (
+                attendance DECIMAL,
+                probability_density DECIMAL,
+                league_id VARCHAR(255) REFERENCES league(league_id) NOT NULL,
+                attendance_league_id VARCHAR(255) NOT NULL PRIMARY KEY
             )"""
         ]
 
-        table_names = ['league', 'match', 'club_match', 'club_season',
-                       'club_history']
+        # List of table names corresponding to create_statements
+        table_names = ['league', 'football_match', 'club_season',
+                       'club_history', 'attendance_violin']
 
+        # Execute each CREATE TABLE statement
         for statement, table_name in zip(create_statements, table_names):
             try:
                 cursor.execute(statement)
-                logging.info(f"Successfully created table {table_name}")
             except Exception as e:
                 logging.error(f"Error creating table {table_name}: {e}")
                 raise
 
+        # Commit all table creation operations
         conn.commit()
         logging.info("All tables created successfully")
 
@@ -128,12 +215,11 @@ def create_database_tables(*, connection_params: dict) -> None:
             cursor.close()
         if 'conn' in locals():
             conn.close()
-            logging.info("Database connection closed")
 
 
-def load_database_table_match(*, connection_params: dict) -> None:
+def load_database_table_football_match(*, connection_params: dict) -> None:
     """
-    Load match data from CSV file into the match table.
+    Load match data from CSV file into the football_match table.
 
     This function loads match data from Match/Data/match.csv into the
     match table in PostgreSQL.
@@ -146,7 +232,7 @@ def load_database_table_match(*, connection_params: dict) -> None:
     try:
         # Connect to the database
         conn = psycopg2.connect(**connection_params)
-        logging.info("Successfully connected to database for data loading")
+        logging.info("Successfully connected to database for football_match loading")
 
         cursor = conn.cursor()
 
@@ -158,52 +244,103 @@ def load_database_table_match(*, connection_params: dict) -> None:
         # Load match data from Match/Data/match.csv
         match_csv_path = (
             project_root /
-            "Match" /
+            "Football_Match" /
             "Data" /
-            "match.csv"
+            "football_match.csv"
         )
-
-        logging.info(f"Loading match data from: {match_csv_path}")
 
         # Read the CSV file
         match_data = pd.read_csv(match_csv_path, low_memory=False)
         logging.info(f"Loaded {len(match_data)} match records from CSV")
 
-        # Prepare data for insertion
+        # Prepare data for insertion by creating tuples matching table columns
+        # Order: match_id, league_id, match_date, match_time, match_day_of_week,
+        # attendance, home_club, home_goals, home_fouls, home_yellow_cards,
+        # home_red_cards, away_club, away_goals, away_fouls, away_yellow_cards,
+        # away_red_cards
         match_records = [
             (
                 row['match_id'],
-                str(row['league_id']),
+                str(row['league_id']),  # Convert to string for consistency
                 row['match_date'],
-                int(row['attendance']) if pd.notna(row['attendance']) else 0
+                # Handle NaN values for match_time
+                row['match_time'] if pd.notna(row['match_time']) else None,
+                row['match_day_of_week'],
+                # Convert attendance to int, handle NaN
+                int(row['attendance'])
+                if pd.notna(row['attendance']) else None,
+                row['home_club'],
+                # Convert home_goals to int, handle NaN
+                int(row['home_goals'])
+                if pd.notna(row['home_goals']) else None,
+                # Handle NaN for home_fouls
+                int(row['home_fouls'])
+                if pd.notna(row['home_fouls']) else None,
+                # Handle NaN for home_yellow_cards
+                int(row['home_yellow_cards'])
+                if pd.notna(row['home_yellow_cards']) else None,
+                # Handle NaN for home_red_cards
+                int(row['home_red_cards'])
+                if pd.notna(row['home_red_cards']) else None,
+                row['away_club'],
+                # Convert away_goals to int, handle NaN
+                int(row['away_goals'])
+                if pd.notna(row['away_goals']) else None,
+                # Handle NaN for away_fouls
+                int(row['away_fouls'])
+                if pd.notna(row['away_fouls']) else None,
+                # Handle NaN for away_yellow_cards
+                int(row['away_yellow_cards'])
+                if pd.notna(row['away_yellow_cards']) else None,
+                # Handle NaN for away_red_cards
+                int(row['away_red_cards'])
+                if pd.notna(row['away_red_cards']) else None,
+
             )
             for _, row in match_data.iterrows()
         ]
 
         # Insert data into match table
         insert_query = """
-            INSERT INTO "match" (match_id, league_id, match_date, attendance)
-            VALUES (%s, %s, %s, %s)
-            ON CONFLICT (match_id) DO UPDATE SET
-                league_id = EXCLUDED.league_id,
-                match_date = EXCLUDED.match_date,
-                attendance = EXCLUDED.attendance
+            INSERT INTO football_match (match_id,
+                league_id,
+                match_date,
+                match_time,
+                match_day_of_week,
+                attendance,
+                home_club,
+                home_goals,
+                home_fouls,
+                home_yellow_cards,
+                home_red_cards,
+                away_club,
+                away_goals,
+                away_fouls,
+                away_yellow_cards,
+                away_red_cards)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
 
-        # Execute batch insert
-        cursor.executemany(insert_query, match_records)
+        # Execute one row at a time to identify problematic rows
+        for i, record in enumerate(match_records):
+            try:
+                cursor.execute(insert_query, record)
+            except Exception as e:
+                logging.error(f"Error inserting row {i+1}: {e}")
+                logging.error(f"Row data: {record}")
+                raise
         conn.commit()
 
         logging.info(f"Successfully loaded {len(match_records)} match "
                      "records into database")
 
         # Verify the data was loaded
-        cursor.execute('SELECT COUNT(*) FROM "match"')
+        cursor.execute('SELECT COUNT(*) FROM football_match')
         count = cursor.fetchone()[0]
         logging.info(f"Total records in match table: {count}")
 
     except FileNotFoundError as e:
-        logging.error(f"CSV file not found: {e}")
+        logging.error(f"football_match CSV file not found: {e}")
         raise
     except OperationalError as e:
         logging.error(f"Database connection error: {e}")
@@ -252,31 +389,35 @@ def load_database_table_league(*, connection_params: dict) -> None:
             "league.csv"
         )
 
-        logging.info(f"Loading league data from: {league_csv_path}")
-
         # Read the CSV file
         league_data = pd.read_csv(league_csv_path, low_memory=False)
         logging.info(f"Loaded {len(league_data)} league records from CSV")
 
-        # Prepare data for insertion
+        # Prepare data for insertion with proper type conversions
+        # Order: league_id, season, league_tier, league_name, season_start,
+        # season_end, league_size_matches, league_size_clubs, league_notes
         league_records = [
             (
-                str(row['league_id']),
+                str(row['league_id']),  # Convert to string
                 row['season'],
-                int(row['league_tier']),
+                int(row['league_tier']),  # Convert to integer
                 row['league_name'],
                 row['season_start'],
                 row['season_end'],
+                # Handle missing values for league_size_matches
                 int(row['league_size_matches'])
                 if pd.notna(row['league_size_matches']) else 0,
+                # Handle missing values for league_size_clubs
                 int(row['league_size_clubs'])
                 if pd.notna(row['league_size_clubs']) else 0,
+                # Handle missing values for league_notes
                 row['league_notes'] if pd.notna(row['league_notes']) else None
             )
             for _, row in league_data.iterrows()
         ]
 
-        # Insert data into league table
+        # Insert data into league table with upsert logic
+        # ON CONFLICT updates existing records if league_id already exists
         insert_query = """
             INSERT INTO league (
                 league_id, season, league_tier, league_name,
@@ -321,8 +462,6 @@ def load_database_table_league(*, connection_params: dict) -> None:
             cursor.close()
         if 'conn' in locals():
             conn.close()
-            logging.info("Database connection closed after league data "
-                         "loading")
 
 
 def load_database_table_club_season(*, connection_params: dict) -> None:
@@ -365,19 +504,28 @@ def load_database_table_club_season(*, connection_params: dict) -> None:
         logging.info(f"Loaded {len(club_season_data)} club season records "
                      "from CSV")
 
-        # Prepare data for insertion
+        # Prepare data for insertion with proper type conversions and
+        # null handling
+        # Order: league_id, club_name, club_league_id, squad_size,
+        # foreigner_count, foreigner_fraction, mean_age, total_market_value
         club_season_records = [
             (
-                str(row['league_id']),
+                str(row['league_id']),  # Convert to string
                 row['club_name'],
+                str(row['club_league_id']),  # Convert to string
+                # Handle missing values for squad_size
                 int(row['squad_size'])
                 if pd.notna(row['squad_size']) else None,
+                # Handle missing values for foreigner_count
                 int(row['foreigner_count'])
                 if pd.notna(row['foreigner_count']) else None,
+                # Handle missing values for foreigner_fraction
                 float(row['foreigner_fraction'])
                 if pd.notna(row['foreigner_fraction']) else None,
+                # Handle missing values for mean_age
                 float(row['mean_age'])
                 if pd.notna(row['mean_age']) else None,
+                # Handle missing values for total_market_value
                 float(row['total_market_value'])
                 if pd.notna(row['total_market_value']) else None
             )
@@ -385,12 +533,14 @@ def load_database_table_club_season(*, connection_params: dict) -> None:
         ]
 
         # Insert data into club_season table
+        # ON CONFLICT DO NOTHING skips duplicate records based on primary key
         insert_query = """
             INSERT INTO club_season (
-                league_id, club_name, squad_size, foreigner_count,
-                foreigner_fraction, mean_age, total_market_value
+                league_id, club_name, club_league_id, squad_size,
+                foreigner_count, foreigner_fraction, mean_age,
+                total_market_value
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT DO NOTHING
         """
 
@@ -424,101 +574,7 @@ def load_database_table_club_season(*, connection_params: dict) -> None:
                          "loading")
 
 
-def load_database_table_club_match(*, connection_params: dict) -> None:
-    """
-    Load club match data from CSV file into the club_match table.
 
-    This function loads club match data from Club_Match/Data/club_match.csv
-    into the club_match table in PostgreSQL.
-
-    Args:
-        connection_params: Dictionary containing database connection
-                          parameters including host, port, database,
-                          user, and password.
-    """
-    try:
-        # Connect to the database
-        conn = psycopg2.connect(**connection_params)
-        logging.info("Successfully connected to database for club match "
-                     "data loading")
-
-        cursor = conn.cursor()
-
-        # Find the project root by looking for the script's location
-        script_dir = Path(__file__).parent
-        # Go up one level from Database_creation
-        project_root = script_dir.parent
-
-        # Load club match data from Club_Match/Data/club_match.csv
-        club_match_csv_path = (
-            project_root /
-            "Club_Match" /
-            "Data" /
-            "club_match.csv"
-        )
-
-        logging.info(f"Loading club match data from: {club_match_csv_path}")
-
-        # Read the CSV file
-        club_match_data = pd.read_csv(club_match_csv_path, low_memory=False)
-        logging.info(f"Loaded {len(club_match_data)} club match records "
-                     "from CSV")
-
-        # Prepare data for insertion with proper column mapping
-        club_match_records = [
-            (
-                row['match_id'],  # Use actual match_id from CSV
-                row['club_name'],
-                int(row['goals']) if pd.notna(row['goals']) else 0,
-                int(row['red_cards'])
-                if pd.notna(row['red_cards']) else None,
-                int(row['yellow_cards'])
-                if pd.notna(row['yellow_cards']) else None,
-                int(row['fouls'])
-                if pd.notna(row['fouls']) else None,
-                bool(row['is_home'])
-                if pd.notna(row['is_home']) else False
-            )
-            for _, row in club_match_data.iterrows()
-        ]
-
-        # Insert data into club_match table
-        insert_query = """
-            INSERT INTO club_match (
-                match_id, club_name, goals, red_cards,
-                yellow_cards, fouls, is_home
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """
-
-        # Execute batch insert
-        cursor.executemany(insert_query, club_match_records)
-        conn.commit()
-
-        logging.info(f"Successfully loaded {len(club_match_records)} club "
-                     "match records into database")
-
-        # Verify the data was loaded
-        cursor.execute('SELECT COUNT(*) FROM "club_match"')
-        count = cursor.fetchone()[0]
-        logging.info(f"Total records in club_match table: {count}")
-
-    except FileNotFoundError as e:
-        logging.error(f"Club match CSV file not found: {e}")
-        raise
-    except OperationalError as e:
-        logging.error(f"Database connection error: {e}")
-        raise
-    except Exception as e:
-        logging.error(f"Unexpected error during club match data loading: {e}")
-        raise
-    finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
-            logging.info("Database connection closed after club match data "
-                         "loading")
 
 
 def load_database_table_club_history(*, connection_params: dict) -> None:
@@ -563,17 +619,20 @@ def load_database_table_club_history(*, connection_params: dict) -> None:
         logging.info(f"Loaded {len(club_history_data)} club history records "
                      "from CSV")
 
-        # Prepare data for insertion
+        # Prepare data for insertion with special handling for date_changed
+        # Order: club_name_year_changed_id, club_name, nickname, modern_name,
+        # year_changed, date_changed, notes, wikipedia
         club_history_records = []
         for _, row in club_history_data.iterrows():
             # Handle date_changed with potential invalid formats
+            # Some dates may have '=' instead of '-' separators
             date_changed = None
             if pd.notna(row['date_changed']):
                 try:
                     # Try to parse the date, handle common format issues
                     date_str = str(row['date_changed']).replace('=', '-')
                     if date_str and date_str != 'nan':
-                        # Validate date format
+                        # Validate date format (YYYY-MM-DD)
                         from datetime import datetime
                         datetime.strptime(date_str, '%Y-%m-%d')
                         date_changed = date_str
@@ -581,13 +640,16 @@ def load_database_table_club_history(*, connection_params: dict) -> None:
                     # If date parsing fails, set to None
                     date_changed = None
 
+            # Build record tuple with null handling
             club_history_records.append((
+                row['club_name_year_changed_id'],
                 row['club_name'],
                 row['nickname'] if pd.notna(row['nickname']) else None,
                 row['modern_name'],
+                # Convert year_changed to int, default to 0 if missing
                 int(row['year_changed'])
                 if pd.notna(row['year_changed']) else 0,
-                date_changed,
+                date_changed,  # Already handled above
                 row['notes'] if pd.notna(row['notes']) else None,
                 row['wikipedia'] if pd.notna(row['wikipedia']) else None
             ))
@@ -595,10 +657,16 @@ def load_database_table_club_history(*, connection_params: dict) -> None:
         # Insert data into club_history table
         insert_query = """
             INSERT INTO club_history (
-                club_name, nickname, modern_name, year_changed,
-                date_changed, notes, wikipedia
+                club_name_year_changed_id, 
+                club_name, 
+                nickname, 
+                modern_name, 
+                year_changed,
+                date_changed, 
+                notes, 
+                wikipedia
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
 
         # Execute batch insert
@@ -632,41 +700,159 @@ def load_database_table_club_history(*, connection_params: dict) -> None:
                          "loading")
 
 
+def load_database_table_attendance_violin(*, connection_params: dict) -> None:
+    """
+    Load attendance violin data from CSV file into the attendance_violin 
+    table.
+
+    This function loads attendance violin data from 
+    Attendance_violin/Data/attendance_violin.csv into the attendance_violin
+    table in PostgreSQL.
+
+    Args:
+        connection_params: Dictionary containing database connection
+                          parameters including host, port, database,
+                          user, and password.
+    """
+    try:
+        # Connect to the database
+        conn = psycopg2.connect(**connection_params)
+        logging.info("Successfully connected to database for attendance "
+                     "violin data loading")
+
+        cursor = conn.cursor()
+
+        # Find the project root by looking for the script's location
+        script_dir = Path(__file__).parent
+        # Go up one level from Database_creation
+        project_root = script_dir.parent
+
+        # Load attendance violin data from 
+        # Attendance_violin/Data/attendance_violin.csv
+        attendance_violin_csv_path = (
+            project_root /
+            "Attendance_violin" /
+            "Data" /
+            "attendance_violin.csv"
+        )
+
+        logging.info(f"Loading attendance violin data from: "
+                     f"{attendance_violin_csv_path}")
+
+        # Read the CSV file
+        attendance_violin_data = pd.read_csv(
+            attendance_violin_csv_path,
+            low_memory=False
+        )
+        logging.info(f"Loaded {len(attendance_violin_data)} attendance "
+                     "violin records from CSV")
+
+        # Prepare data for insertion with type conversions
+        # Order: attendance, probability_density, league_id,
+        # attendance_league_id
+        attendance_violin_records = [
+            (
+                float(row['attendance']),  # Convert to float
+                float(row['probability_density']),  # Convert to float
+                str(row['league_id']),  # Convert to string
+                str(row['attendance_league_id'])  # Convert to string
+            )
+            for _, row in attendance_violin_data.iterrows()
+        ]
+
+        # Insert data into attendance_violin table
+        insert_query = """
+            INSERT INTO attendance_violin (
+                attendance, 
+                probability_density, 
+                league_id,
+                attendance_league_id
+            )
+            VALUES (%s, %s, %s, %s)
+        """
+
+        # Execute batch insert
+        cursor.executemany(insert_query, attendance_violin_records)
+        conn.commit()
+
+        logging.info(f"Successfully loaded {len(attendance_violin_records)} "
+                     "attendance violin records into database")
+
+        # Verify the data was loaded
+        cursor.execute('SELECT COUNT(*) FROM "attendance_violin"')
+        count = cursor.fetchone()[0]
+        logging.info(f"Total records in attendance_violin table: {count}")
+
+    except FileNotFoundError as e:
+        logging.error(f"Attendance violin CSV file not found: {e}")
+        raise
+    except OperationalError as e:
+        logging.error(f"Database connection error: {e}")
+        raise
+    except Exception as e:
+        logging.error(f"Unexpected error during attendance violin data "
+                      f"loading: {e}")
+        raise
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+            logging.info("Database connection closed after attendance violin "
+                         "data loading")
+
+
 if __name__ == "__main__":
+    # Initialize logging before any operations
     setup_logging()
 
-    # Database connection parameters
+    # Locate .env file - it's in the 5 Django app directory
+    # Navigate up from Database_creation to project root, then to Django app
+    ENV_DIR = Path(__file__).resolve().parent.parent.parent / "5 Django app"
+
+    # Load environment variables from .env file
+    # Using RepositoryEnv to ensure .env file is properly read
+    # This resolved a bug where the .env file was not being read
+    config = Config(RepositoryEnv(os.path.join(ENV_DIR, ".env")))
+
+    # Build database connection parameters from environment variables
     connection_params = {
-        'host': os.environ['FOOTBALL_HOST'],
-        'port': int(os.environ['FOOTBALL_PORT']),
-        'database': "Football",
-        'user': os.environ['FOOTBALL_USER'],
-        'password': os.environ['FOOTBALL_PASSWORD']
+        'host':  config('FOOTBALL_HOST'),
+        'port': int(config('FOOTBALL_PORT')),  # Convert port to integer
+        'database': config('FOOTBALL_NAME'),
+        'user': config('FOOTBALL_USER'),
+        'password': config('FOOTBALL_PASSWORD')
     }
 
     try:
+        # Step 0: Create database if it doesn't exist
+        db_name = connection_params['database']
+        create_database_if_not_exists(
+            db_name=db_name,
+            connection_params=connection_params
+        )
+        
+        # Step 1: Create all database tables
         create_database_tables(connection_params=connection_params)
-        logging.info("Database creation completed successfully")
 
-        # Load match data into the table
-        load_database_table_match(connection_params=connection_params)
-        logging.info("Match data loading completed successfully")
-
-        # Load league data into the table
+        # Step 2: Load league data (must be loaded first due to foreign keys)
         load_database_table_league(connection_params=connection_params)
-        logging.info("League data loading completed successfully")
 
-        # Load club season data into the table
-        load_database_table_club_season(connection_params=connection_params)
-        logging.info("Club season data loading completed successfully")
+        # Step 3: Load match data (depends on league table)
+        load_database_table_football_match(connection_params=connection_params)
 
-        # Load club history data into the table
+        # Step 4: Load club history data
         load_database_table_club_history(connection_params=connection_params)
-        logging.info("Club history data loading completed successfully")
 
-        # Load club match data into the table
-        load_database_table_club_match(connection_params=connection_params)
-        logging.info("Club match data loading completed successfully")
+        # Step 5: Load attendance violin data (depends on league table)
+        load_database_table_attendance_violin(
+            connection_params=connection_params
+        )
+
+        # Step 6: Load club season data (depends on league table)
+        load_database_table_club_season(connection_params=connection_params)
+
+        logging.info("All data loading completed successfully")
 
     except Exception as e:
         logging.error(f"Database operation failed: {e}")

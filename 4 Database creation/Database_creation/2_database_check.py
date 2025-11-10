@@ -12,6 +12,7 @@ import pandas as pd
 import os
 from pathlib import Path
 from typing import Dict, Any, List, Tuple
+from decouple import Config, RepositoryEnv
 
 
 def setup_logging() -> None:
@@ -67,8 +68,8 @@ def check_database_tables(*, connection_params: Dict[str, Any]) -> None:
         cursor = conn.cursor()
         
         # List of expected tables
-        expected_tables = ['league', 'match', 'club_match', 'club_season', 
-                          'club_history']
+        expected_tables = ['league', 'football_match', 'club_season', 
+                          'club_history', 'attendance_violin']
         
         logging.info("Checking database table existence...")
         
@@ -123,7 +124,7 @@ def check_database_tables(*, connection_params: Dict[str, Any]) -> None:
         # Check match counts per season and league are consistent with the league size matches data
         cursor.execute("""
             SELECT league_id, COUNT(DISTINCT match_id) as match_count
-            FROM match
+            FROM football_match
             GROUP BY league_id
         """)
         match_counts = cursor.fetchall()
@@ -160,7 +161,7 @@ def check_table_record_counts(*, connection_params: Dict[str, Any]) -> None:
         conn = get_database_connection(connection_params=connection_params)
         cursor = conn.cursor()
         
-        tables = ['league', 'match', 'club_match', 'club_season', 'club_history']
+        tables = ['league', 'football_match', 'club_season', 'club_history', 'attendance_violin']
         
         logging.info("Checking table record counts...")
         
@@ -200,12 +201,14 @@ def check_data_quality(*, connection_params: Dict[str, Any]) -> None:
         quality_checks = [
             ("league", "league_id", "NULL league_id values"),
             ("league", "season", "NULL season values"),
-            ("match", "match_id", "NULL match_id values"),
-            ("match", "league_id", "NULL league_id values in match table"),
-            ("club_match", "match_id", "NULL match_id values in club_match"),
-            ("club_match", "club_name", "NULL club_name values"),
+            ("football_match", "match_id", "NULL match_id values"),
+            ("football_match", "league_id", "NULL league_id values in match table"),
             ("club_season", "league_id", "NULL league_id values in club_season"),
-            ("club_season", "club_name", "NULL club_name values in club_season")
+            ("club_season", "club_name", "NULL club_name values in club_season"),
+            ("attendance_violin", "attendance", "NULL attendance values in attendance_violin"),
+            ("attendance_violin", "probability_density", "NULL probability_density values in attendance_violin"),
+            ("attendance_violin", "league_id", "NULL league_id values in attendance_violin"),
+            ("attendance_violin", "attendance_league_id", "NULL attendance_league_id values in attendance_violin")
         ]
         
         for table, column, description in quality_checks:
@@ -223,7 +226,7 @@ def check_data_quality(*, connection_params: Dict[str, Any]) -> None:
         try:
             cursor.execute('''
                 SELECT match_id, COUNT(*) as count
-                FROM "match"
+                FROM football_match
                 GROUP BY match_id
                 HAVING COUNT(*) > 1
             ''')
@@ -239,12 +242,57 @@ def check_data_quality(*, connection_params: Dict[str, Any]) -> None:
         
         # Check date ranges
         try:
-            cursor.execute('SELECT MIN(match_date), MAX(match_date) FROM "match"')
+            cursor.execute('SELECT MIN(match_date), MAX(match_date) FROM football_match')
             min_date, max_date = cursor.fetchone()
             logging.info(f"Match date range: {min_date} to {max_date}")
         except Exception as e:
             logging.error(f"Error checking date range: {e}")
         
+        # Check number of matches in a league 
+        # and season are consistent with the league size matches data, 
+        # and that the number of clubs in a league and season are consistent 
+        # with the league size clubs data
+        # 
+        try:
+            cursor.execute('SELECT league_id, COUNT(distinct home_club) FROM football_match GROUP BY league_id')
+            home_club_counts = cursor.fetchall()
+            for league_id, home_club_count in home_club_counts:
+                cursor.execute('SELECT league_size_clubs FROM league WHERE league_id = %s', (league_id,))
+                league_size_clubs = cursor.fetchone()[0]
+                if home_club_count != league_size_clubs:
+                    logging.error(f"✗ Home club count for league {league_id} is not consistent with the league size clubs data")
+            logging.info("✓ Home club count for leagues is consistent with the league size clubs data")
+        except Exception as e:
+            logging.error(f"Error checking home club counts: {e}")
+            raise
+
+        try:
+            cursor.execute('SELECT league_id, COUNT(distinct away_club) FROM football_match GROUP BY league_id')
+            away_club_counts = cursor.fetchall()
+            for league_id, away_club_count in away_club_counts:
+                cursor.execute('SELECT league_size_clubs FROM league WHERE league_id = %s', (league_id,))
+                league_size_clubs = cursor.fetchone()[0]
+                if away_club_count != league_size_clubs:
+                    logging.error(f"✗ Away club count for league {league_id} is not consistent with the league size clubs data")
+            logging.info("✓ Away club count for leagues is consistent with the league size clubs data")
+        except Exception as e:
+            logging.error(f"Error checking away club counts: {e}")
+            raise
+
+        try:
+            cursor.execute('SELECT league_id, COUNT(distinct match_id) FROM football_match GROUP BY league_id')
+            match_counts = cursor.fetchall()
+            for league_id, match_count in match_counts:
+                cursor.execute('SELECT league_size_matches FROM league WHERE league_id = %s', (league_id,))
+                league_size_matches = cursor.fetchone()[0]
+                if match_count != league_size_matches:
+                    logging.error(f"✗ Match count for league {league_id} is not consistent with the league size matches data")
+            logging.info("✓ Match count for leagues is consistent with the league size matches data")
+        except Exception as e:
+            logging.error(f"Error checking match counts: {e}")
+            raise
+
+
         cursor.close()
         conn.close()
         logging.info("Data quality checks completed")
@@ -252,6 +300,10 @@ def check_data_quality(*, connection_params: Dict[str, Any]) -> None:
     except Exception as e:
         logging.error(f"Error during data quality checks: {e}")
         raise
+
+
+
+
 
 
 def check_foreign_key_relationships(*, connection_params: Dict[str, Any]) -> None:
@@ -272,7 +324,7 @@ def check_foreign_key_relationships(*, connection_params: Dict[str, Any]) -> Non
         # Check match.league_id references league.league_id
         try:
             cursor.execute('''
-                SELECT COUNT(*) FROM "match" m
+                SELECT COUNT(*) FROM football_match m
                 LEFT JOIN league l ON m.league_id = l.league_id
                 WHERE l.league_id IS NULL
             ''')
@@ -284,20 +336,6 @@ def check_foreign_key_relationships(*, connection_params: Dict[str, Any]) -> Non
         except Exception as e:
             logging.error(f"Error checking match-league relationship: {e}")
         
-        # Check club_match.match_id references match.match_id
-        try:
-            cursor.execute('''
-                SELECT COUNT(*) FROM club_match cm
-                LEFT JOIN "match" m ON cm.match_id = m.match_id
-                WHERE m.match_id IS NULL
-            ''')
-            orphaned_club_matches = cursor.fetchone()[0]
-            if orphaned_club_matches > 0:
-                logging.warning(f"Found {orphaned_club_matches} club_matches with invalid match_id")
-            else:
-                logging.info("✓ All club_matches have valid match_id references")
-        except Exception as e:
-            logging.error(f"Error checking club_match-match relationship: {e}")
         
         # Check club_season.league_id references league.league_id
         try:
@@ -339,12 +377,20 @@ def generate_database_summary(*, connection_params: Dict[str, Any]) -> None:
         logging.info("Generating database summary...")
         
         # Get unique clubs
-        cursor.execute('SELECT DISTINCT club_name FROM club_match ORDER BY club_name')
-        clubs = cursor.fetchall()
-        logging.info(f"Found {len(clubs)} unique clubs in match data")
+        cursor.execute('SELECT DISTINCT home_club FROM football_match')
+        home_clubs = cursor.fetchall()
+        logging.info(f"Found {len(home_clubs)} unique home clubs in match data")
         
+        cursor.execute('SELECT DISTINCT away_club FROM football_match')
+        away_clubs = cursor.fetchall()
+        logging.info(f"Found {len(home_clubs)} unique away clubs in match data")
+
+        if len(home_clubs) != len(away_clubs):
+            logging.error(f"Found {len(home_clubs)} unique home clubs and {len(away_clubs)} unique away clubs in match data")
+            raise ValueError("Home and away clubs are not the same")
+
         # Get date range
-        cursor.execute('SELECT MIN(match_date), MAX(match_date) FROM "match"')
+        cursor.execute('SELECT MIN(match_date), MAX(match_date) FROM football_match')
         min_date, max_date = cursor.fetchone()
         logging.info(f"Match data spans from {min_date} to {max_date}")
         
@@ -360,13 +406,20 @@ def generate_database_summary(*, connection_params: Dict[str, Any]) -> None:
 if __name__ == "__main__":
     setup_logging()
     
+    # Locate .env file - it's in the 5 Django app directory
+    ENV_DIR = Path(__file__).resolve().parent.parent.parent / "5 Django app"
+
+    # Not entirely sure this is needed - but it resolved a bug where the .env 
+    # file was not being read.
+    config = Config(RepositoryEnv(os.path.join(ENV_DIR, ".env")))
+
     # Database connection parameters
     connection_params = {
-        'host': os.environ['FOOTBALL_HOST'],
-        'port': int(os.environ['FOOTBALL_PORT']),
-        'database': "Football",
-        'user': os.environ['FOOTBALL_USER'],
-        'password': os.environ['FOOTBALL_PASSWORD']
+        'host':  config('FOOTBALL_HOST'),
+        'port': int(config('FOOTBALL_PORT')),
+        'database': config('FOOTBALL_NAME'),
+        'user': config('FOOTBALL_USER'),
+        'password': config('FOOTBALL_PASSWORD')
     }
     
     try:

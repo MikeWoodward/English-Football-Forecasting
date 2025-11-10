@@ -129,3 +129,5 @@ __pypackages__/
 *.xlsx
 /999 OLD - do not use
 *.gif
+5 Django app/env.example
+/999 Utility code

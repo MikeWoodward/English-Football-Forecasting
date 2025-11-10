@@ -181,7 +181,7 @@ def get_data(
             ignore_index=True,
             sort=False  # Don't sort columns to maintain original order
         )
-
+        
         # Sort the dataframe by season, league_tier, and club_name
         # This makes the data easier to analyze and compare
         combined_df = combined_df.sort_values(
@@ -357,6 +357,17 @@ def cleanse_data(*, combined_data: pd.DataFrame) -> pd.DataFrame:
         combined_data = matches.merge(
             combined_data, on=['league_id', 'club_name'], how='left'
         ).sort_values(by=['league_id', 'club_name'])
+
+        # Add a combined primary key
+        combined_data['club_league_id'] = (combined_data['league_id'].astype(str)
+        + '-'
+        + (combined_data['club_name']
+           .str
+           .replace(' ', '')
+           .replace("&", "")
+           .replace("'", "")
+           .replace(".", ""))
+        )
 
         return combined_data
 

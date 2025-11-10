@@ -161,15 +161,16 @@ def main() -> None:
             match_data['season'].str.split('-').str[0].astype(int)
         )
 
+        # Clean up the match_time column. Remove data that appears in brackets  e.g.(10:00)
+        match_data['match_time'] = match_data['match_time'].str.replace(r'\s*\([^)]*\)\s*', '', regex=True)
+
         # ================================================================
         # DATA FILTERING AND SORTING SECTION
         # ================================================================
 
         # Select only essential columns for the final dataset
         # Sort by league_id first, then by match_date for chronological order
-        match_data = match_data[[
-            'league_id', 'match_id', 'match_date', 'attendance'
-        ]].sort_values(by=['league_id', 'match_date'])
+        match_data = match_data.drop(['season', 'league_tier', 'venue'], axis=1).sort_values(by=['league_id', 'match_date'])
 
         # ================================================================
         # DATA VALIDATION AND REPORTING SECTION
@@ -199,7 +200,7 @@ def main() -> None:
         # File is saved in the Match/Data directory for database creation
         output_path = (
             "/Users/mikewoodward/Documents/Projects/Python/EPL predictor/"
-            "4 Database creation/Match/Data/match.csv"
+            "4 Database creation/Football_Match/Data/football_match.csv"
         )
         match_data.to_csv(output_path, index=False)
         logging.info(f"Successfully exported {len(match_data)} matches to "

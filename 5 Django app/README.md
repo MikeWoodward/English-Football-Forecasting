@@ -1,0 +1,147 @@
+# English Football League Analysis
+
+A Django web application for analyzing English Premier League data with interactive visualizations powered by Bokeh.
+
+## Features
+
+- **Trends Analysis**: Interactive charts showing trends over time
+- **Goals Analysis**: Factors that influence goal scoring
+- **User Management**: Admin panel for user management
+- **Authentication**: Secure login/logout with role-based access
+- **Interactive Visualizations**: Powered by Bokeh for rich data exploration
+
+## Requirements
+
+- Python 3.8+
+- Django 4.2.7
+- PostgreSQL database
+- Bokeh 3.3.0
+- Bootstrap 5
+
+## Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd "5 Django app"
+   ```
+
+2. **Create a virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set up environment variables**:
+   ```bash
+   cp env.example .env
+   # Edit .env with your database credentials
+   ```
+
+5. **Set up the database**:
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+
+6. **Create initial users**:
+   ```bash
+   python manage.py create_users
+   ```
+
+7. **Run the development server**:
+   ```bash
+   python manage.py runserver
+   ```
+
+## Environment Variables
+
+Create a `.env` file with the following variables:
+
+```env
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+FOOTBALL_HOST=localhost
+FOOTBALL_PORT=5432
+FOOTBALL_USER=your-db-username
+FOOTBALL_PASSWORD=your-db-password
+```
+
+## Default Users
+
+The application comes with two pre-configured users:
+
+- **Admin User**: 
+  - Username: `Falcon1234`
+  - Password: `birdbrain`
+  - Access: Full admin privileges
+
+- **Regular User**:
+  - Username: `Footsmall`
+  - Password: `roundball`
+  - Access: Standard user features
+
+## Application Structure
+
+### Apps
+
+- **about**: Main landing page and application description
+- **trends**: Interactive trend analysis with Bokeh charts
+- **goals**: Goal scoring factor analysis
+- **admin_app**: User management and admin functionality
+
+### Key Features
+
+- **Custom User Model**: Extended Django user model with admin flag
+- **Bokeh Integration**: Interactive charts for data visualization
+- **Bootstrap Styling**: Responsive design with green color scheme
+- **Crispy Forms**: Enhanced form rendering
+- **Role-based Access**: Different permissions for admin and regular users
+
+## Usage
+
+1. **Access the application**: Navigate to `http://localhost:8000`
+2. **Login**: Use the provided credentials to access features
+3. **Explore Trends**: View interactive charts showing league trends
+4. **Analyze Goals**: Examine factors influencing goal scoring
+5. **Manage Users** (Admin only): Add, edit, or delete users
+
+## Database Connection
+
+The application connects to an existing PostgreSQL database named "Football" using the credentials specified in your environment variables. Make sure your database is accessible and contains the required tables.
+
+## Development
+
+### Running Tests
+```bash
+python manage.py test
+```
+
+### Creating Migrations
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### Creating Superuser
+```bash
+python manage.py createsuperuser
+```
+
+## Styling
+
+The application uses a green color scheme as specified:
+- Primary green: #2E8B57
+- Light green: #90EE90
+- Very light green: #98FB98
+- All text is black and minimum 12pt font size
+
+## License
+
+This project is for educational and analytical purposes.
+
