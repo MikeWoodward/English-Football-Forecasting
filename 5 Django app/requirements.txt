@@ -1,3 +1,4 @@
+# Python 3.13.4
 # Django Framework
 Django==5.2.8
 
@@ -18,9 +19,8 @@ crispy-bootstrap5==0.7
 # Static Files
 whitenoise[brotli]==6.11.0
 
-# Production Server
-gunicorn==23.0.0
-uvicorn==0.34.2
-
 # Environment Variables
 python-decouple==3.8
+
+# Production Server
+gunicorn==23.0.0
