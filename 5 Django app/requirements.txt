@@ -24,3 +24,4 @@ python-decouple==3.8
 
 # Production Server
 gunicorn==23.0.0
+uvicorn==0.34.2
