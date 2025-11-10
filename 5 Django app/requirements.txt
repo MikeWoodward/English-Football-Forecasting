@@ -1,5 +1,5 @@
 Django==4.2.7
-psycopg2-binary==2.9.7
+psycopg2-binary==2.9.9
 bokeh==3.8.0
 django-crispy-forms==2.1
 crispy-bootstrap5==0.7
