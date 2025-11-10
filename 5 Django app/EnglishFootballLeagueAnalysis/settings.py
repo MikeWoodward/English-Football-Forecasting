@@ -71,11 +71,11 @@ DATABASES = {
     'default': dj_database_url.config(
         default=(
 
-            #os.environ.get('DATABASE_URL')
-            f"postgresql://"
-            f"{os.environ.get('FOOTBALL_USER')}:{os.environ.get('FOOTBALL_PASSWORD')}"
-            f"@{os.environ.get('FOOTBALL_HOST')}:{os.environ.get('FOOTBALL_PORT')}"
-            f"/{os.environ.get('FOOTBALL_NAME')}"
+            os.environ.get('DATABASE_URL')
+            # f"postgresql://"
+            # f"{os.environ.get('FOOTBALL_USER')}:{os.environ.get('FOOTBALL_PASSWORD')}"
+            # f"@{os.environ.get('FOOTBALL_HOST')}:{os.environ.get('FOOTBALL_PORT')}"
+            # f"/{os.environ.get('FOOTBALL_NAME')}"
         ),
         conn_max_age=600
     )
