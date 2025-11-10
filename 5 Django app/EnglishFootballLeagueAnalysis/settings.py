@@ -4,22 +4,18 @@ Django settings for EnglishFootballLeagueAnalysis project.
 
 import os
 from pathlib import Path
-from decouple import Config, RepositoryEnv
+from decouple import Config
 
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Not entirely sure this is needed - but it resolved a bug where the .env file was not being read.
-config = Config(RepositoryEnv(os.path.join(BASE_DIR, ".env")))
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', 
-                   default='django-insecure-change-this-in-production')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = os.environ.get("DEBUG") == "True"
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -74,10 +70,12 @@ WSGI_APPLICATION = 'EnglishFootballLeagueAnalysis.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=(
+
+            #os.environ.get('DATABASE_URL')
             f"postgresql://"
-            f"{config('FOOTBALL_USER')}:{config('FOOTBALL_PASSWORD')}"
-            f"@{config('FOOTBALL_HOST')}:{config('FOOTBALL_PORT')}"
-            f"/{config('FOOTBALL_NAME')}"
+            f"{os.environ.get('FOOTBALL_USER')}:{os.environ.get('FOOTBALL_PASSWORD')}"
+            f"@{os.environ.get('FOOTBALL_HOST')}:{os.environ.get('FOOTBALL_PORT')}"
+            f"/{os.environ.get('FOOTBALL_NAME')}"
         ),
         conn_max_age=600
     )
