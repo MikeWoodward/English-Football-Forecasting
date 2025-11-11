@@ -155,8 +155,9 @@ def get_script_div_leagues_over_time(
     # Rotate x-axis labels for better readability
     plot.xaxis.major_label_orientation = 45
 
-    # Only create components when asked. Creating components binds the plot to a
-    # Bokeh Document; that plot must not then be added to a different Document
+    # Only create components when asked. Creating components binds the plot
+    # to a Bokeh Document; that plot must not then be added to a different
+    # Document
     # (e.g., via Tabs) or Bokeh will raise an ownership error.
     if create_components:
         script, div = components(plot)
@@ -200,8 +201,8 @@ def get_attendance_violin_plot(
     # Calculate the range
     range = attendance_max - attendance_min
     # Add 5% padding on both sides for better visualization
-    attendance_min = attendance_min - 0.05*range
-    attendance_max = attendance_max + 0.05*range
+    attendance_min = attendance_min - 0.05 * range
+    attendance_max = attendance_max + 0.05 * range
 
     # Get unique league tiers and sort them
     tiers = np.sort(data['league_tier'].unique())
@@ -219,8 +220,9 @@ def get_attendance_violin_plot(
         # of the data for the plot
         source = ColumnDataSource(league_data,
                                   name=f"violin_attendance_data_tier_{tier}")
-        # Calculate height for each plot (divide total height by number of tiers)
-        height = int(PLOT_HEIGHT/len(tiers))
+        # Calculate height for each plot (divide total height by number
+        # of tiers)
+        height = int(PLOT_HEIGHT / len(tiers))
         # Create a Bokeh figure for this tier's violin plot
         violin_plot = figure(
             title=f"Violin plot for league tier {tier} in {season_start}",
@@ -309,12 +311,16 @@ def trends_dashboard(request: HttpRequest) -> HttpResponse:
             {
                 'name': 'Goals by season and league tier',
                 'url': 'trends:goals_over_time',
-                'description': 'Goal scoring trends across seasons and leagues'
+                'description': (
+                    'Goal scoring trends across seasons and leagues'
+                )
             },
             {
                 'name': 'Home advantage over time',
                 'url': 'trends:home_advantage_over_time',
-                'description': 'Home advantage trends across seasons and leagues'
+                'description': (
+                    'Home advantage trends across seasons and leagues'
+                )
             },
             {
                 'name': 'Draw fraction over time',
@@ -391,29 +397,37 @@ def goals_over_time(request: HttpRequest) -> HttpResponse:
         'script': script,
         'div': div,
         'chart_controls': """
-        The legend on the right is interactive, by clicking on the legend items you can turn them on and off. To the right 
-        of the legend is a toolbar you can use to zoom in and out of the chart, move around the chart, etc. Lastly, by hovering 
-        over the data points you can see the league, season, and mean goals for that data point.
+        The legend on the right is interactive, by clicking on the legend
+        items you can turn them on and off. To the right of the legend is a
+        toolbar you can use to zoom in and out of the chart, move around the
+        chart, etc. Lastly, by hovering over the data points you can see the
+        league, season, and mean goals for that data point.
         """,
         'description': """
-        This chart shows the mean number of goals scored per game per season for the top five tiers of the 
-        English football league. <br/><br/>
+        This chart shows the mean number of goals scored per game per season
+        for the top five tiers of the English football league. <br/><br/>
 
-        The light coral colored bands represent World Wars I and II. The league was officially suspended during the wars, though it 
-        did continue in a highly modified form.<br/><br/>
-        
-        Note how the mean number decreases from the start of the league to about 1924. This might be driven by increasing 
-        professionalism in the game. In 1925, the league made a change to the offside rule with the intent of increasing the 
-        number of goals scored. The number of goals did increase immediately after this change. It decreased again over 
-        time, perhaps as a result of tactics evolving. <br/><br/>
+        The light coral colored bands represent World Wars I and II. The
+        league was officially suspended during the wars, though it did
+        continue in a highly modified form.<br/><br/>
 
-        The fifth tier (currently called the National League), has consistently a higher mean number of goals than the other tiers.
-        This might be because of more unequal teams in this tier than the others (though see the comments on 
-        recent trends in the Premier League). <br/><br/>
+        Note how the mean number decreases from the start of the league to
+        about 1924. This might be driven by increasing professionalism in
+        the game. In 1925, the league made a change to the offside rule with
+        the intent of increasing the number of goals scored. The number of
+        goals did increase immediately after this change. It decreased again
+        over time, perhaps as a result of tactics evolving. <br/><br/>
 
-        Since about 2009, the mean number of goals per game has been increasing in the Premier League but not in the other tiers. 
-        This might be driven by inequalities in this league; there is good evidence that this tier is less equal 
-        than the others. 
+        The fifth tier (currently called the National League), has
+        consistently a higher mean number of goals than the other tiers.
+        This might be because of more unequal teams in this tier than the
+        others (though see the comments on recent trends in the Premier
+        League). <br/><br/>
+
+        Since about 2009, the mean number of goals per game has been
+        increasing in the Premier League but not in the other tiers. This
+        might be driven by inequalities in this league; there is good
+        evidence that this tier is less equal than the others.
         """.replace('\n', '').replace("<br/>", "\n")
     }
     return render(
@@ -473,23 +487,23 @@ def home_advantage_over_time(request: HttpRequest) -> HttpResponse:
         'script_hwg': script_hwg,
         'div_hwg': div_hwg,
         'chart_controls': """
-        There are two charts on this page, use the tabs to switch between them. 
-        The legend on the right is interactive, by clicking on the legend items you can turn them on and off. To the right 
-        of the legend is a toolbar you can use to zoom in and out of the chart, move around the chart, etc. Lastly, by hovering 
+        There are two charts on this page, use the tabs to switch between them.
+        The legend on the right is interactive, by clicking on the legend items you can turn them on and off. To the right
+        of the legend is a toolbar you can use to zoom in and out of the chart, move around the chart, etc. Lastly, by hovering
         over the data points you can see the league, season, and home win fraction for that data point.
         """,
         'description': """
-        The chart on the tab "Home win fraction" shows the home win fraction by season start for each league tier. 
-        This is teh fraction of all wins that were at home. If there were no home advantage, we would expect this 
+        The chart on the tab "Home win fraction" shows the home win fraction by season start for each league tier.
+        This is teh fraction of all wins that were at home. If there were no home advantage, we would expect this
         fraction to be 0.5. <br/>
-        As you can see, the win fraction has been declining steadily since the end of WWII, disappearing entirely for 
-        some leagues during COVID. The COVID effect suggests that spectators are part of the home club advantage. However, 
-        home advantage does not track the attendance charts, and the decline in home advantage has been roughly 
-        linear over the last fifty years whereas attenadance figures have not. I don't have a full explanation for home 
+        As you can see, the win fraction has been declining steadily since the end of WWII, disappearing entirely for
+        some leagues during COVID. The COVID effect suggests that spectators are part of the home club advantage. However,
+        home advantage does not track the attendance charts, and the decline in home advantage has been roughly
+        linear over the last fifty years whereas attenadance figures have not. I don't have a full explanation for home
         advantage. <br/><br/>
-        
-        The chart on the tab "Home win goals difference" shows the difference in goals scored by the home team and the 
-        away team by season start for each league tier. It quantifies home many goals home advantage is worth.  It's on 
+
+        The chart on the tab "Home win goals difference" shows the difference in goals scored by the home team and the
+        away team by season start for each league tier. It quantifies home many goals home advantage is worth.  It's on
         a steady decline post WWII and may disappear entirely over the next few decades.
         """.replace('\n', '').replace("<br/>", "\n")
     }
@@ -551,13 +565,13 @@ def draw_fraction_over_time(request: HttpRequest) -> HttpResponse:
         'description': (
             """
             This chart shows the fraction of matches ending in a draw by
-            season start for each league tier. The light coral colored bands represent World Wars I and II. 
+            season start for each league tier. The light coral colored bands represent World Wars I and II.
             The league was officially suspended during the wars, though it did continue in a highly modified form.<br/><br/>
-            The draw fraction starts of low (1888-1889) and increases steadily until about 1924. In 1925, there was a change 
-            to the offside rule, which might have decreased the draw fraction. The draw fraction increased substantially 
-            for the 1968-1969 season, which coincided with a rules change to allow the use of substitutions for any reason. 
-            Sinnce then, the draw fraction for most leagues has been on a slight decline. The exception is the Premier League, 
-            where the draw fraction has seen a marked decline since the early 2000s. This might be driven by increasing 
+            The draw fraction starts of low (1888-1889) and increases steadily until about 1924. In 1925, there was a change
+            to the offside rule, which might have decreased the draw fraction. The draw fraction increased substantially
+            for the 1968-1969 season, which coincided with a rules change to allow the use of substitutions for any reason.
+            Sinnce then, the draw fraction for most leagues has been on a slight decline. The exception is the Premier League,
+            where the draw fraction has seen a marked decline since the early 2000s. This might be driven by increasing
             (financial and otherwise) inequalities in the league. We'll explore this in the inequality analysis.
             """
         ).replace('\n', '').replace("<br/>", "\n"),
@@ -623,16 +637,16 @@ def inequality_win_fraction_sd_over_time(request: HttpRequest) -> HttpResponse:
         ),
         'description': (
             """
-            The standard deviation of the win fraction measures the spread of win fractions across the clubs in a league 
-            for a season. A low win fraction standard deviation indicates the clubs are faily closely matched, a high 
-            standard deviation indicates the clubs are unequally matched. The trend in the win fraction standard dviation 
+            The standard deviation of the win fraction measures the spread of win fractions across the clubs in a league
+            for a season. A low win fraction standard deviation indicates the clubs are faily closely matched, a high
+            standard deviation indicates the clubs are unequally matched. The trend in the win fraction standard dviation
             over time is a measure of the inequality in the league over time. <br/><br/>
-            The data shows declining inquality in the earliest years of the league (1888-1889 onwards). This is as expected; 
-            the league was new and clubs were professionalizing. Notably the first tier became more equal with relegation 
+            The data shows declining inquality in the earliest years of the league (1888-1889 onwards). This is as expected;
+            the league was new and clubs were professionalizing. Notably the first tier became more equal with relegation
             to the second tier. <br/><br/>
-            The top tier shows a marked increase in inequality after the introduction of the Premier League in the 1992-1993 season. 
+            The top tier shows a marked increase in inequality after the introduction of the Premier League in the 1992-1993 season.
             A deeper analysis shows money in this league is concentrated to the top few clubs. <br/><br/>
-            At the other end, tier 5, we can see an increase in win fraction standard deviation over the last few years. This 
+            At the other end, tier 5, we can see an increase in win fraction standard deviation over the last few years. This
             league has also seen an influx of money to a few clubs, most famously Wrexham.
             """
         ).replace('\n', '').replace("<br/>", "\n"),
@@ -746,12 +760,12 @@ def discipline_over_time(request: HttpRequest) -> HttpResponse:
         'description': (
             """
             I don't have a full data set for disciplinary data, here's all the data I've been able to find.<br/><br/>
-            The red card data shows a steady decline over time, with the National League (tier 5) showiing the highest rate. The National 
-            League is the lowest tier and isn't usually even considered "league football". It's possible then that the players are 
-            less disciplined, so are awarded more red cards. Bear in mind, players awarded a red card are sent off, reducing their 
+            The red card data shows a steady decline over time, with the National League (tier 5) showiing the highest rate. The National
+            League is the lowest tier and isn't usually even considered "league football". It's possible then that the players are
+            less disciplined, so are awarded more red cards. Bear in mind, players awarded a red card are sent off, reducing their
             team to 10 men, a very significant disadvantage. Clubs are therefore incentived not to get red cards.<br/><br/>
-            The yellow card data is more complex and shows an uptick over the last few years and a COVID dip. It's possible the 
-            COVID dip is due to then absence of fans in the stadiums.  The uptick could be due to more risk taking by players or players 
+            The yellow card data is more complex and shows an uptick over the last few years and a COVID dip. It's possible the
+            COVID dip is due to then absence of fans in the stadiums.  The uptick could be due to more risk taking by players or players
             "downgrading" thjeir risk behavior from red cards to yellow cards. <br/><br/>
             The foul data has been more or less constant ove the last twenty years.
             """
@@ -886,19 +900,19 @@ def attendance_over_time(request: HttpRequest) -> HttpResponse:
         'description': (
             """
             The total and mean (per game) attendance figures tell the same story. <br/><br/>
-            Attendance increased from the league start to about 1948 as the game became a professional sport and a 
+            Attendance increased from the league start to about 1948 as the game became a professional sport and a
             mass spectator sport. <br/><br/>
-            Unfortunately, hooliganism led to a decline in attendance and there were valid safety concerns for fans. 
-            There were some significant and tragicevents in the 1980s: 
-            the Bradford City stadium fire in 1985, the Heysel Stadium disaster in 1989, and the Hillsborough disaster in 1989. 
+            Unfortunately, hooliganism led to a decline in attendance and there were valid safety concerns for fans.
+            There were some significant and tragicevents in the 1980s:
+            the Bradford City stadium fire in 1985, the Heysel Stadium disaster in 1989, and the Hillsborough disaster in 1989.
             These events involved large scale loss of life. The English game had reached a nadir by the end of the 1980s.<br/><br/>
-            Subsequently, clubs and the government worked to improve safety and the match-going experience. In more 
-            recent years, clubs have focused on creating a family-friendly atmosphere. The public rewarded these efforts 
+            Subsequently, clubs and the government worked to improve safety and the match-going experience. In more
+            recent years, clubs have focused on creating a family-friendly atmosphere. The public rewarded these efforts
             with increased attendance.<br/><br/>
-            The data clearly shows the COVID dip in 2020 when league games were played behind closed doors, so 
+            The data clearly shows the COVID dip in 2020 when league games were played behind closed doors, so
             attendance was zero.<br/><br/>
             The attendance violin plots show the emergence of a league-within-a-league for the Premier League over the last few years.
-            They also show attendance is not equally distributed across the leagues. The higher you go, the more people 
+            They also show attendance is not equally distributed across the leagues. The higher you go, the more people
             attend games.
             """
         ).replace('\n', '').replace("<br/>", "\n"),

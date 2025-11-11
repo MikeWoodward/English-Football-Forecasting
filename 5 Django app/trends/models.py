@@ -481,7 +481,8 @@ class LeagueManager(models.Manager):
             QuerySet: Annotated queryset with league_tier, season_start,
             and red_cards_per_match fields.
         """
-        # Use FootballMatch directly which has home_red_cards and away_red_cards
+        # Use FootballMatch directly which has home_red_cards and
+        # away_red_cards
         # Sum total red cards and divide by match count
         return (
             FootballMatch.objects
@@ -703,31 +704,31 @@ class LeagueManager(models.Manager):
         sql = """
             WITH club_matches AS (
                 -- Home matches for each club
-                SELECT 
+                SELECT
                     l.league_tier,
                     l.season,
                     fm.home_club AS club_name,
-                    CASE WHEN fm.home_goals > fm.away_goals THEN 1 
+                    CASE WHEN fm.home_goals > fm.away_goals THEN 1
                          ELSE 0 END AS is_win,
                     1 AS is_game
                 FROM football_match fm
                 JOIN league l ON fm.league_id = l.league_id
-                WHERE fm.home_goals IS NOT NULL 
+                WHERE fm.home_goals IS NOT NULL
                   AND fm.away_goals IS NOT NULL
-                
+
                 UNION ALL
-                
+
                 -- Away matches for each club
-                SELECT 
+                SELECT
                     l.league_tier,
                     l.season,
                     fm.away_club AS club_name,
-                    CASE WHEN fm.away_goals > fm.home_goals THEN 1 
+                    CASE WHEN fm.away_goals > fm.home_goals THEN 1
                          ELSE 0 END AS is_win,
                     1 AS is_game
                 FROM football_match fm
                 JOIN league l ON fm.league_id = l.league_id
-                WHERE fm.home_goals IS NOT NULL 
+                WHERE fm.home_goals IS NOT NULL
                   AND fm.away_goals IS NOT NULL
             ),
             club_win_fractions AS (
@@ -736,7 +737,7 @@ class LeagueManager(models.Manager):
                     league_tier,
                     season,
                     club_name,
-                    CAST(SUM(is_win) AS FLOAT) / 
+                    CAST(SUM(is_win) AS FLOAT) /
                     CAST(SUM(is_game) AS FLOAT) AS win_fraction
                 FROM club_matches
                 GROUP BY league_tier, season, club_name

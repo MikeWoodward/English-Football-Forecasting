@@ -20,12 +20,16 @@ def goals_dashboard(request):
             {
                 'name': 'Goal Timing Analysis',
                 'url': 'goals:goal_timing',
-                'description': 'Analyze when goals are most likely to be scored'
+                'description': (
+                    'Analyze when goals are most likely to be scored'
+                )
             },
             {
                 'name': 'Player Impact',
                 'url': 'goals:player_impact',
-                'description': 'Examine individual player contributions to goals'
+                'description': (
+                    'Examine individual player contributions to goals'
+                )
             }
         ]
     }
@@ -97,10 +101,10 @@ def goal_timing(request):
         'script': script,
         'div': div,
         'description': """
-        This analysis reveals the temporal patterns of goal scoring in the 
-        English Premier League. The data shows clear trends in when goals 
+        This analysis reveals the temporal patterns of goal scoring in the
+        English Premier League. The data shows clear trends in when goals
         are most likely to be scored during a match.
-        
+
         Key findings:
         - Goals increase significantly in the final 15 minutes (75-90 min)
         - The first half shows a gradual increase in goal frequency
@@ -151,7 +155,7 @@ def player_impact(request):
     ))
 
     # Add scatter plot with size based on goals per 90
-    plot.scatter('x', 'y', size=[g*3 for g in goals_per_90],
+    plot.scatter('x', 'y', size=[g * 3 for g in goals_per_90],
                  color="#2E8B57", alpha=0.7, source=source)
 
     # Add player labels
@@ -185,17 +189,18 @@ def player_impact(request):
         'script': script,
         'div': div,
         'description': """
-        This scatter plot analyzes individual player contributions to goals, 
-        plotting goals scored against assists provided. The size of each 
+        This scatter plot analyzes individual player contributions to goals,
+        plotting goals scored against assists provided. The size of each
         point represents the player's goals per 90 minutes ratio.
-        
+
         Key insights:
         - Players in the top-right quadrant are the most complete attackers
         - Large points indicate high efficiency (goals per 90 minutes)
         - Pure strikers cluster in the top-left (high goals, low assists)
-        - Creative midfielders cluster in the bottom-right (low goals, high assists)
+        - Creative midfielders cluster in the bottom-right (low goals,
+          high assists)
         - The most valuable players balance both goals and assists
-        
+
         Factors influencing player impact:
         - Playing position and role in the team
         - Minutes played and fitness levels

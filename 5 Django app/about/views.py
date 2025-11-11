@@ -8,7 +8,7 @@ def about_page(request):
     """
     Display the main about page with application description.
 
-    Shows explanatory text about the whole app and provides links 
+    Shows explanatory text about the whole app and provides links
     to login as a user or as an admin.
     """
     context = {
