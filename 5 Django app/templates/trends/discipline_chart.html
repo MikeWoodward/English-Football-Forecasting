@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - English Football League Analysis{% endblock %}
+
+{% block extra_css %}
+<!-- Bokeh CSS -->
+<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css" type="text/css" />
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title text-center mb-0">{{ title }}</h1>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <a href="{% url 'trends:dashboard' %}" 
+                           class="btn btn-secondary mb-3">
+                            ← Back to Trends Dashboard
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Bootstrap Tabs for Charts -->
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs mb-3" id="disciplineTabs" 
+                            role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" 
+                                        id="red-cards-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#red-cards-panel" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="red-cards-panel" 
+                                        aria-selected="true"
+                                        title="The mean number of red cards per match.">
+                                    Red cards
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" 
+                                        id="yellow-cards-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#yellow-cards-panel" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="yellow-cards-panel" 
+                                        aria-selected="false"
+                                        title="The mean number of yellow cards per match.">
+                                    Yellow cards
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" 
+                                        id="fouls-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#fouls-panel" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="fouls-panel" 
+                                        aria-selected="false"
+                                        title="The mean number of fouls per match.">
+                                    Fouls
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="disciplineTabContent">
+                            <div class="tab-pane fade show active" 
+                                 id="red-cards-panel" 
+                                 role="tabpanel" 
+                                 aria-labelledby="red-cards-tab">
+                                <div class="chart-container">
+                                    {{ div_red|safe }}
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" 
+                                 id="yellow-cards-panel" 
+                                 role="tabpanel" 
+                                 aria-labelledby="yellow-cards-tab">
+                                <div class="chart-container">
+                                    {{ div_yellow|safe }}
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" 
+                                 id="fouls-panel" 
+                                 role="tabpanel" 
+                                 aria-labelledby="fouls-tab">
+                                <div class="chart-container">
+                                    {{ div_foul|safe }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chart Controls - Under Chart -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Chart Controls</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="analysis-text">{{ chart_controls }}
+								</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analysis Details - Under Chart Controls -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Analysis</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="analysis-text">
+                                    {{ description|linebreaksbr }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bokeh JS -->
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js"></script>
+
+{{ script_red|safe }}
+{{ script_yellow|safe }}
+{{ script_foul|safe }}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - English Football League Analysis{% endblock %}
+
+{% block extra_css %}
+<!-- Bokeh CSS -->
+<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css" type="text/css" />
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title text-center mb-0">{{ title }}</h1>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <a href="{% url 'trends:dashboard' %}" 
+                           class="btn btn-secondary mb-3">
+                            ← Back to Trends Dashboard
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Bootstrap Tabs for Charts -->
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs mb-3" id="homeAdvantageTabs" 
+                            role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" 
+                                        id="win-fraction-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#win-fraction-panel" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="win-fraction-panel" 
+                                        aria-selected="true"
+                                        title="The fraction of wins that the home team achieved.">
+                                    Home win fraction
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" 
+                                        id="goals-diff-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#goals-diff-panel" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="goals-diff-panel" 
+                                        aria-selected="false"
+                                        title="The difference over a season between the goals scored by the home team and the goals scored by the away team.">
+                                    Home win goals difference
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="homeAdvantageTabContent">
+                            <div class="tab-pane fade show active" 
+                                 id="win-fraction-panel" 
+                                 role="tabpanel" 
+                                 aria-labelledby="win-fraction-tab">
+                                <div class="chart-container">
+                                    {{ div_hwf|safe }}
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" 
+                                 id="goals-diff-panel" 
+                                 role="tabpanel" 
+                                 aria-labelledby="goals-diff-tab">
+                                <div class="chart-container">
+                                    {{ div_hwg|safe }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chart Controls - Under Chart -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Chart Controls</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="analysis-text">{{ chart_controls }}
+								</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analysis Details - Under Chart Controls -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Analysis</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="analysis-text">
+                                    {{ description|linebreaksbr }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bokeh JS -->
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js"></script>
+
+{{ script_hwf|safe }}
+{{ script_hwg|safe }}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

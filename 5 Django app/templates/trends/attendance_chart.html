@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - English Football League Analysis{% endblock %}
+
+{% block extra_css %}
+<!-- Bokeh CSS -->
+<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css" type="text/css" />
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title text-center mb-0">{{ title }}</h1>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <a href="{% url 'trends:dashboard' %}" 
+                           class="btn btn-secondary mb-3">
+                            ← Back to Trends Dashboard
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Bootstrap Tabs for Charts -->
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs mb-3" id="attendanceTabs" 
+                            role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" 
+                                        id="season-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#season-panel" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="season-panel" 
+                                        aria-selected="true"
+                                        title="The total attendance for a season.">
+                                    Total season attendance
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" 
+                                        id="mean-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#mean-panel" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="mean-panel" 
+                                        aria-selected="false"
+                                        title="The mean attendance per match for a season.">
+                                    Mean attendance per match
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" 
+                                        id="violin-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#violin-panel" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="violin-panel" 
+                                        aria-selected="false"
+                                        title="Violin plot showing attendance distribution for 2024.">
+                                    Attendance violin plot
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="attendanceTabContent">
+                            <div class="tab-pane fade show active" 
+                                 id="season-panel" 
+                                 role="tabpanel" 
+                                 aria-labelledby="season-tab">
+                                <div class="chart-container">
+                                    {{ div_season|safe }}
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" 
+                                 id="mean-panel" 
+                                 role="tabpanel" 
+                                 aria-labelledby="mean-tab">
+                                <div class="chart-container">
+                                    {{ div_mean|safe }}
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" 
+                                 id="violin-panel" 
+                                 role="tabpanel" 
+                                 aria-labelledby="violin-tab">
+                                <div class="chart-container" style="display: flex; flex-direction: column;">
+                                    <div style="width: 100%; display: block; clear: both;">
+                                        {{ div_violin|safe }}
+                                    </div>
+                                    <div style="width: 100%; margin-top: 20px; display: block; clear: both;">
+                                        <label for="violin-year-slider" 
+                                               class="form-label">
+                                            Season start year: <span id="violin-year-value">
+                                                {{ violin_max_year }}
+                                            </span>
+                                        </label>
+                                        <input type="range" 
+                                               class="form-range" 
+                                               id="violin-year-slider" 
+                                               style="width: 100%; display: block;"
+                                               min="{{ violin_min_year }}" 
+                                               max="{{ violin_max_year }}" 
+                                               step="1" 
+                                               value="{{ violin_max_year }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chart Controls - Under Chart -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Chart Controls</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="analysis-text">{{ chart_controls }}
+								</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analysis Details - Under Chart Controls -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Analysis</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="analysis-text">
+                                    {{ description|linebreaksbr }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bokeh JS -->
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js"></script>
+
+{{ script_season|safe }}
+{{ script_mean|safe }}
+{{ script_violin|safe }}
+
+<script>
+    // Update violin year slider display and plot
+    document.addEventListener('DOMContentLoaded', function() {
+        const violinYearSlider = document.getElementById('violin-year-slider');
+        const violinYearValue = document.getElementById('violin-year-value');
+        
+        if (violinYearSlider && violinYearValue) {
+            // Update display value on input
+            violinYearSlider.addEventListener('input', function() {
+                violinYearValue.textContent = this.value;
+            });
+            
+            // Update plot data on change (when user releases slider)
+            violinYearSlider.addEventListener('change', function() {
+                const seasonStart = parseInt(this.value, 10);
+                updateViolinPlot(seasonStart);
+            });
+        }
+    });
+    
+    /**
+     * Update the violin plot with new data for the selected season.
+     * 
+     * @param {number} seasonStart - The season start year to fetch data for
+     */
+    function updateViolinPlot(seasonStart) {
+        // Get the API endpoint URL
+        const apiUrl = '{% url "trends:attendance_violin_json" %}?season_start=' + 
+                       seasonStart;
+        
+        // Show loading state
+        const violinYearValue = document.getElementById('violin-year-value');
+        const originalText = violinYearValue.textContent;
+        violinYearValue.textContent = seasonStart + ' (loading...)';
+        
+        // Fetch data from API
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(
+                        'Network response was not ok: ' + response.status
+                    );
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching data:', data.error);
+                    alert('Error loading violin plot data: ' + data.error);
+                    violinYearValue.textContent = originalText;
+                    return;
+                }
+                
+                // Update the Bokeh plot with new data
+                updateBokehViolinPlot(data.data, seasonStart);
+                violinYearValue.textContent = seasonStart;
+            })
+            .catch(error => {
+                console.error('Error fetching violin data:', error);
+                alert('Error loading data. Please try again.');
+                violinYearValue.textContent = originalText;
+            });
+    }
+    
+    /**
+     * Update the Bokeh violin plot with new data.
+     * 
+     * @param {Array} data - Array of data objects with league_tier, 
+     *                      attendance, and probability_density
+     * @param {number} seasonStart - The season start year
+     */
+    function updateBokehViolinPlot(data, seasonStart) {
+        // Group data by league_tier for efficient lookup
+        // Structure: {tier: {attendance: [...], probability_density: [...]}}
+
+
+        // Find the index of the Bokeh.documents that contains the model id "violin_attendance_data_tier_1"
+        let violinDataIndex = -1;
+        for (let i = 0; i < Bokeh.documents.length; i++) {
+            const doc = Bokeh.documents[i];
+            // Use get_model_by_name to find the model with the name "violin_attendance_data_tier_1"
+            const model = doc.get_model_by_name("violin_attendance_data_tier_1");
+            if (model) {
+                violinDataIndex = i;
+                break;
+            }
+        }
+
+        if (violinDataIndex === -1) {
+            console.error('No Bokeh document found with the model id "violin_attendance_data_tier_1"');
+            return;
+        }
+        
+        // Update chart titles for all tiers (typically 1-5)
+        // Loop through tiers and update title if the model exists
+        for (let tier = 1; tier <= 5; tier++) {
+            const modelName = "violin_attendance_plot_tier_" + tier;
+            const model = Bokeh.documents[violinDataIndex].get_model_by_name(
+                modelName
+            );
+            if (model) {
+                model.title.text = "Violin plot for league tier " + tier + 
+                              " in " + seasonStart;
+            }
+        }
+
+        // Update the data source for all tiers
+        // Data structure: {tier: {attendance: [...], probability_density: [...]}}
+        for (let tier = 1; tier <= 5; tier++) {
+            const modelName = "violin_attendance_data_tier_" + tier;
+            const model = Bokeh.documents[violinDataIndex].get_model_by_name(
+                modelName
+            );
+            if (model) {
+                // Get data for this tier
+                let tierData = data[tier];
+                // If no data for this tier, use empty arrays
+                if (!tierData || 
+                    !tierData.attendance || 
+                    tierData.attendance.length === 0) {
+                    tierData = {
+                        attendance: [0],
+                        probability_density: [0]
+                    };
+                }
+                // Update the model's data source
+                model.data.attendance = tierData.attendance;
+                model.data.probability_density = tierData.probability_density;
+                // Trigger a change event to update the plot
+                model.change.emit();
+            }
+        }
+    }
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - English Football League Analysis{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title text-center mb-0">{{ title }}</h1>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <p class="lead text-center">
+                            Analyze the factors that influence goal scoring in the English 
+                            Premier League. Explore timing patterns, player contributions, 
+                            and other key metrics.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Select Analysis to View</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="dropdown">
+                                    <button class="btn btn-success btn-lg dropdown-toggle w-100" 
+                                            type="button" id="chartDropdown" 
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        Choose an Analysis
+                                    </button>
+                                    <ul class="dropdown-menu w-100" aria-labelledby="chartDropdown">
+                                        {% for chart in charts %}
+                                            <li>
+                                                <a class="dropdown-item" href="{% url chart.url %}">
+                                                    <strong>{{ chart.name }}</strong><br>
+                                                    <small class="text-muted">{{ chart.description }}</small>
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-success">
+                            <h5>About Goals Analysis</h5>
+                            <p class="mb-0">
+                                Our goals analysis examines the various factors that influence 
+                                goal scoring in football. From timing patterns to individual 
+                                player contributions, these visualizations help understand 
+                                what drives success in the English Premier League. Each chart 
+                                provides detailed insights and interactive exploration tools.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

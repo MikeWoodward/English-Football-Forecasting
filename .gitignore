@@ -124,7 +124,6 @@ cython_debug/
 .pdm-build/
 __pypackages__/
 *.csv
-*.html
 *.xlsx
 /999 OLD - do not use
 *.gif
@@ -138,3 +137,9 @@ __pypackages__/
 /3 Analysis/Discipline/Plots
 /3 Analysis/Draws/Plots
 /3 Analysis/Attendance/Plots
+/1 Data downloads/ENFA/HTML
+/1 Data downloads/EnglishFootballLeagueTables/HTML
+/1 Data downloads/Todor/HTML
+3 Analysis/Goals/1_goals_analysis.html
+3 Analysis/Home advantage/1_home_advantage_analysis.html
+3 Analysis/Score distributions/football_scores_heatmap.html

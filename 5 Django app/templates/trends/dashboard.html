@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - English Football League Analysis{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title text-center mb-0">{{ title }}</h1>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <p class="lead text-center">
+                            Explore trends and patterns in English Football League data over time. 
+                            Select a chart below to begin your analysis.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row justify-content-center">
+                    <div class="col-md-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Select Chart to View</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="dropdown">
+                                    <button class="btn btn-primary btn-lg dropdown-toggle w-100" 
+                                            type="button" id="chartDropdown" 
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        Choose a Chart
+                                    </button>
+                                    <ul class="dropdown-menu w-100" aria-labelledby="chartDropdown">
+                                        {% for chart in charts %}
+                                            <li>
+                                                <a class="dropdown-item" href="{% url chart.url %}">
+                                                    <strong>{{ chart.name }}</strong><br>
+                                                    <small class="text-muted">{{ chart.description }}</small>
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-success">
+                            <h5>About Trends Analysis</h5>
+                            <p class="mb-0">
+                                My trends analysis provides insights into how various metrics 
+                                change over time. This helps identify patterns, seasonal effects, 
+                                and long-term trends in the English Football Leagues. Each chart 
+                                includes detailed explanations and interactive features to 
+                                enhance your understanding of the data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

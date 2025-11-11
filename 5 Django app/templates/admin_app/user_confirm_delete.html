@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - English Football League Analysis{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title text-center mb-0">{{ title }}</h1>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <a href="{% url 'admin_app:user_list' %}" 
+                           class="btn btn-secondary mb-3">
+                            ← Back to User List
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="alert alert-danger">
+                    <h4 class="alert-heading">Warning!</h4>
+                    <p>
+                        Are you sure you want to delete the user 
+                        <strong>{{ user.username }}</strong>? This action cannot be undone.
+                    </p>
+                    <hr>
+                    <p class="mb-0">
+                        <strong>User Details:</strong><br>
+                        Email: {{ user.email|default:"Not provided" }}<br>
+                        Full Name: {{ user.get_full_name|default:"Not provided" }}<br>
+                        Admin Status: {{ user.is_admin|yesno:"Yes,No" }}<br>
+                        Active Status: {{ user.is_active|yesno:"Active,Inactive" }}
+                    </p>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button type="submit" class="btn btn-danger btn-lg me-md-2">
+                            Yes, Delete User
+                        </button>
+                        <a href="{% url 'admin_app:user_list' %}" 
+                           class="btn btn-secondary btn-lg">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

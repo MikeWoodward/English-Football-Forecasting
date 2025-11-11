@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - English Football League Analysis{% endblock %}
+
+{% block extra_css %}
+<!-- Bokeh CSS -->
+<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css" type="text/css" />
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title text-center mb-0">{{ title }}</h1>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <a href="{% url 'trends:dashboard' %}" 
+                           class="btn btn-secondary mb-3">
+                            ← Back to Trends Dashboard
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Chart - Full Width -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            {{ div|safe }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chart Controls - Under Chart -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Chart Controls</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="analysis-text">{{ chart_controls }}
+								</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analysis Details - Under Chart Controls -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Analysis</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="analysis-text">
+                                    {{ description|linebreaksbr }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bokeh JS -->
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js"></script>
+
+{{ script|safe }}
+{% endblock %}
