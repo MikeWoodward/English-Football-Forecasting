@@ -920,7 +920,7 @@ class FootballMatchManager(models.Manager):
     def get_score_distribution(
         self,
         *,
-        season_start,
+        season_start: int,
     ):
         """
         Return the distribution of scores for a given season start.
@@ -932,17 +932,9 @@ class FootballMatchManager(models.Manager):
         Returns:
             Dictionary with score distribution data.
         """
-        # Handle both date objects and integer years
-        # If season_start is an integer, treat it as a year
-        if isinstance(season_start, int):
-            start_year = season_start
-        else:
-            # If it's a date object, extract the year
-            start_year = season_start.year
-
         # Convert season_start to season string format (e.g., "2024-2025")
         season = (
-            str(start_year) + '-' + str(start_year + 1)
+            str(season_start) + '-' + str(season_start + 1)
         )
 
         # Use parameterized query to prevent SQL injection
@@ -971,7 +963,7 @@ class FootballMatchManager(models.Manager):
                 on 
                     league.league_id = football_match.league_id
                 where
-                    season = %s
+                    season = '{season}'
                 ) as score
             group by
                 league_size_matches,
@@ -980,7 +972,7 @@ class FootballMatchManager(models.Manager):
             )
         """
         with connection.cursor() as cursor:
-            cursor.execute(sql, [season])
+            cursor.execute(sql)
             columns = [col[0] for col in cursor.description]
             result = [
                 dict(zip(columns, row))
