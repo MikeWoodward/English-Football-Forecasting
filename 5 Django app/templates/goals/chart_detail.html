@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ title }} - English Football League Analysis{% endblock %}
+{% block title %}{{ title }} - English Football League Analysis
+{% endblock %}
 
 {% block extra_css %}
 <!-- Bokeh CSS -->
-<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css" type="text/css" />
+<link rel="stylesheet"
+      href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css"
+      type="text/css" />
 {% endblock %}
 
 {% block content %}
@@ -29,12 +32,15 @@
                     <div class="col-12">
                         <div class="chart-container" 
                              style="display: flex; flex-direction: column;">
-                            <div style="width: 100%; display: block; clear: both;">
+                            <div style="width: 100%; display: block;
+                                        clear: both;">
                                 {{ div|safe }}
                             </div>
-                            <!-- Year Slider - Under Chart (for Goals) -->
+                            <!-- Year Slider - Under Chart
+                                 (for Goals) -->
                             {% if min_year and max_year and current_year %}
-                            <div style="width: 100%; margin-top: 20px; display: block; clear: both;">
+                            <div style="width: 100%; margin-top: 20px;
+                                        display: block; clear: both;">
                                 <label for="year-slider" 
                                        class="form-label">
                                     Season start year: 
@@ -51,8 +57,10 @@
                                        step="1" 
                                        value="{{ current_year }}">
                             </div>
-                            <!-- League Tier Radio Buttons - Under Year Slider -->
-                            <div style="width: 100%; margin-top: 20px; display: block; clear: both;">
+                            <!-- League Tier Radio Buttons -
+                                 Under Year Slider -->
+                            <div style="width: 100%; margin-top: 20px;
+                                        display: block; clear: both;">
                                 <label class="form-label">League Tier:</label>
                                 <div class="btn-group" 
                                      role="group" 
@@ -139,9 +147,15 @@
 
 {% block extra_js %}
 <!-- Bokeh JS -->
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js"></script>
+<script type="text/javascript"
+        src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js">
+</script>
+<script type="text/javascript"
+        src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js">
+</script>
+<script type="text/javascript"
+        src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js">
+</script>
 
 {{ script|safe }}
 
@@ -170,17 +184,20 @@
     });
     
     /**
-     * Update the goals plot with new data for the selected season and tier.
+     * Update the goals plot with new data for the selected
+     * season and tier.
      * 
-     * Fetches data from the API based on the current year slider and league
-     * tier radio button selections, then updates the Bokeh plot.
+     * Fetches data from the API based on the current year
+     * slider and league tier radio button selections, then
+     * updates the Bokeh plot.
      */
     function updateGoalsPlot() {
         // Get the selected league tier from radio buttons
         // Defaults to 1 if no radio button is selected
-        const selectedTierRadio = document.querySelector(
-            'input[name="league-tier-radio"]:checked'
-        );
+        const selectedTierRadio =
+            document.querySelector(
+                'input[name="league-tier-radio"]:checked'
+            );
         const leagueTier = selectedTierRadio
             ? parseInt(selectedTierRadio.value, 10)
             : 1;
@@ -188,18 +205,25 @@
         // Validate league tier is a valid number
         if (isNaN(leagueTier) || leagueTier < 1 || leagueTier > 4) {
             console.error('Invalid league tier:', leagueTier);
-            alert('Invalid league tier selected. Please try again.');
+            alert(
+                'Invalid league tier selected. Please try again.'
+            );
             return;
         }
         
-        // Get the selected year value from the slider input element
-        const yearSlider = document.getElementById('year-slider');
+        // Get the selected year value from the slider
+        // input element
+        const yearSlider =
+            document.getElementById('year-slider');
         // Get the span element that displays the year value
-        const yearValue = document.getElementById('year-value');
+        const yearValue =
+            document.getElementById('year-value');
         
         // Check if required elements exist
         if (!yearSlider || !yearValue) {
-            console.error('Year slider or value display element not found');
+            console.error(
+                'Year slider or value display element not found'
+            );
             return;
         }
         
@@ -208,7 +232,10 @@
         
         // Validate season start is a valid number
         if (isNaN(seasonStart)) {
-            console.error('Invalid season start value:', yearSlider.value);
+            console.error(
+                'Invalid season start value:',
+                yearSlider.value
+            );
             alert('Invalid year selected. Please try again.');
             return;
         }
@@ -218,12 +245,16 @@
         yearValue.textContent = seasonStart + ' (loading...)';
 
         // Get the API endpoint URL
-        // Construct URL path using callback variable from context
-        // URL pattern: money-goals-json/<int:league_tier>/<int:season_start>/
-        // Convert callback name (e.g., 'money_goals_json') to URL path format
+        // Construct URL path using callback variable
+        // from context
+        // URL pattern:
+        // money-goals-json/<int:league_tier>/<int:season_start>/
+        // Convert callback name (e.g., 'money_goals_json')
+        // to URL path format
         const callbackName = '{{ callback }}';
         const urlPath = callbackName.replace(/_/g, '-');
-        const apiUrl = '/goals/' + urlPath + '/' + leagueTier + '/' + seasonStart + '/';
+        const apiUrl = '/goals/' + urlPath + '/' + leagueTier + '/' +
+            seasonStart + '/';
 
         // Fetch data from API
         fetch(apiUrl)
@@ -241,20 +272,30 @@
                 // Check if the API returned an error
                 if (data.error) {
                     console.error('Error fetching data:', data.error);
-                    alert('Error loading goals data: ' + data.error);
+                    alert(
+                        'Error loading goals data: ' + data.error
+                    );
                     // Restore original text on error
                     yearValue.textContent = originalText;
                     return;
                 }
 
                 // Update the Bokeh plot with new data
-                updateBokehGoalsPlot(data, seasonStart, leagueTier);
-                // Update the year slider value display, removing loading text
+                updateBokehGoalsPlot(
+                    data,
+                    seasonStart,
+                    leagueTier
+                );
+                // Update the year slider value display,
+                // removing loading text
                 yearValue.textContent = seasonStart;
             })
             .catch(error => {
                 // Handle network or parsing errors
-                console.error('Error fetching goals data:', error);
+                console.error(
+                    'Error fetching goals data:',
+                    error
+                );
                 alert('Error loading data. Please try again.');
                 // Restore original text on error
                 yearValue.textContent = originalText;
@@ -270,36 +311,58 @@
      */
     function updateBokehGoalsPlot(data, seasonStart, leagueTier) {
         // Implementation to be added
-        console.log('updateBokehGoalsPlot', data, seasonStart, leagueTier);
+        console.log(
+            'updateBokehGoalsPlot',
+            data,
+            seasonStart,
+            leagueTier
+        );
 
         doc = Bokeh.documents[0];
         // Loop through for_goals, against_goals, net_goals
         for (const y_axis of ['for_goals', 'against_goals', 'net_goals']) {
             // Get the plot for the y-axis
-            const plot = doc.get_model_by_name(y_axis + '_plot');
+            const plot = doc.get_model_by_name(
+                y_axis + '_plot'
+            );
             // r2 and p-value
             r2 = data[y_axis + '_r2']
             pvalue = data[y_axis + '_pvalue']
             // Update the plot title
-            plot.title.text = y_axis.replace('_', ' ') + ' vs ' + 'total_market_value' + ' for league ' + leagueTier + ' and season starting in ' + seasonStart + ' R-squared: ' + r2.toFixed(2) + ', p-value: ' + pvalue.toFixed(2);
+            const xField = '{{ x_field }}'.replaceAll('_', ' ');
+            const yAxisLabel = y_axis.replace('_', ' ');
+            plot.title.text = yAxisLabel + ' vs ' + xField +
+                ' for league ' + leagueTier +
+                ' and season starting in ' + seasonStart +
+                ' R-squared: ' + r2.toFixed(2) +
+                ', p-value: ' + pvalue.toFixed(2);
 
             // Get the plot data source
-            const source = doc.get_model_by_name('goals_data');
+            const source = doc.get_model_by_name(
+                'goals_data'
+            );
             // Update the plot with new data
             source.data.club_name = data.club_name;
-            source.data['{{ x_field }}'] = data['{{ x_field }}'];
+            source.data['{{ x_field }}'] =
+                data['{{ x_field }}'];
             source.data.for_goals = data.for_goals;
             source.data.against_goals = data.against_goals;
             source.data.net_goals = data.net_goals;
             source.data.for_goals_fit = data.for_goals_fit;
             source.data.against_goals_fit = data.against_goals_fit;
             source.data.net_goals_fit = data.net_goals_fit;
-            source.data.for_goals_fit_lower = data.for_goals_fit_lower;
-            source.data.against_goals_fit_lower = data.against_goals_fit_lower;
-            source.data.net_goals_fit_lower = data.net_goals_fit_lower;
-            source.data.for_goals_fit_upper = data.for_goals_fit_upper;
-            source.data.against_goals_fit_upper = data.against_goals_fit_upper;
-            source.data.net_goals_fit_upper = data.net_goals_fit_upper;
+            source.data.for_goals_fit_lower =
+                data.for_goals_fit_lower;
+            source.data.against_goals_fit_lower =
+                data.against_goals_fit_lower;
+            source.data.net_goals_fit_lower =
+                data.net_goals_fit_lower;
+            source.data.for_goals_fit_upper =
+                data.for_goals_fit_upper;
+            source.data.against_goals_fit_upper =
+                data.against_goals_fit_upper;
+            source.data.net_goals_fit_upper =
+                data.net_goals_fit_upper;
             // Trigger a change event to update the plot
             source.change.emit();
             plot.change.emit();
@@ -308,7 +371,8 @@
     }
     
     // League tier radio button callback
-    // Set up event listeners for all league tier radio buttons
+    // Set up event listeners for all league tier radio
+    // buttons
     document.addEventListener('DOMContentLoaded', function() {
         // Get all radio buttons in the league tier group
         const tierRadios = document.querySelectorAll(
@@ -316,7 +380,8 @@
         );
         
         // Add change event listener to each radio button
-        // When a tier is selected, update the plot with new data
+        // When a tier is selected, update the plot with
+        // new data
         tierRadios.forEach(function(radio) {
             radio.addEventListener('change', function() {
                 updateGoalsPlot();

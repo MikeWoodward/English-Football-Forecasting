@@ -32,5 +32,10 @@ urlpatterns = [
         views.foreigner_count_goals_json,
         name='foreigner_count_goals_json',
     ),
-    path('score-distribution/', views.score_distribution, name='score_distribution'),
+    path('score-heatmaps/', views.score_heatmaps, name='score_heatmaps'),
+    path(
+        'score-heatmaps-json/<int:season_start>/',
+        views.score_heatmaps_json,
+        name='score_heatmaps_json',
+    ),
 ]

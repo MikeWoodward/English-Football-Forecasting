@@ -2,9 +2,12 @@
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
 #   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
+#   * Make sure each ForeignKey and OneToOneField has `on_delete`
+#     set to the desired behavior
+#   * Remove `managed = False` lines if you wish to allow Django to
+#     create, modify, and delete the table
+# Feel free to rename the models, but don't rename db_table values or
+# field names.
 from django.db import models, connection
 from django.db.models import (
     Sum,
@@ -24,8 +27,18 @@ import statsmodels.api as sm
 
 
 class AttendanceViolin(models.Model):
-    attendance = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    probability_density = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    attendance = models.DecimalField(
+        max_digits=65535,
+        decimal_places=65535,
+        blank=True,
+        null=True
+    )
+    probability_density = models.DecimalField(
+        max_digits=65535,
+        decimal_places=65535,
+        blank=True,
+        null=True
+    )
     league = models.ForeignKey('League', models.DO_NOTHING)
     attendance_league_id = models.CharField(primary_key=True, max_length=255)
 
@@ -65,7 +78,10 @@ class AuthPermission(models.Model):
 
 
 class ClubHistory(models.Model):
-    club_name_year_changed_id = models.CharField(primary_key=True, max_length=255)
+    club_name_year_changed_id = models.CharField(
+        primary_key=True,
+        max_length=255
+    )
     club_name = models.CharField(max_length=255)
     nickname = models.CharField(max_length=255, blank=True, null=True)
     modern_name = models.CharField(max_length=255)
@@ -182,9 +198,24 @@ class ClubSeason(models.Model):
     club_league_id = models.CharField(primary_key=True, max_length=255)
     squad_size = models.IntegerField(blank=True, null=True)
     foreigner_count = models.IntegerField(blank=True, null=True)
-    foreigner_fraction = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    mean_age = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    total_market_value = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    foreigner_fraction = models.DecimalField(
+        max_digits=65535,
+        decimal_places=65535,
+        blank=True,
+        null=True
+    )
+    mean_age = models.DecimalField(
+        max_digits=65535,
+        decimal_places=65535,
+        blank=True,
+        null=True
+    )
+    total_market_value = models.DecimalField(
+        max_digits=65535,
+        decimal_places=65535,
+        blank=True,
+        null=True
+    )
 
     objects = ClubSeasonManager()
 
@@ -242,7 +273,12 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.SmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    content_type = models.ForeignKey(
+        'DjangoContentType',
+        models.DO_NOTHING,
+        blank=True,
+        null=True
+    )
     user = models.ForeignKey(CustomUser, models.DO_NOTHING)
 
     class Meta:
@@ -398,6 +434,38 @@ class FootballMatchManager(models.Manager):
                 for row in cursor.fetchall()
             ]
 
+        # If no data is returned, return an empty JSON object
+        if len(result) == 0:
+            json_data = {
+                'club_name': ['No data'],
+                'for_goals': [0],
+                'against_goals': [0],
+                'net_goals': [0],
+                'total_market_value': [0],
+                'for_goals_fit': [0],
+                'against_goals_fit': [0],
+                'net_goals_fit': [0],
+                'for_goals_fit_lower': [0],
+                'against_goals_fit_lower': [0],
+                'net_goals_fit_lower': [0],
+                'for_goals_fit_upper': [0],
+                'against_goals_fit_upper': [0],
+                'net_goals_fit_upper': [0],
+                'for_goals_r2': 0,
+                'against_goals_r2': 0,
+                'net_goals_r2': 0,
+                'for_goals_pvalue': -1,
+                'against_goals_pvalue': -1,
+                'net_goals_pvalue': -1,
+                'for_goals_fit_lower': [0],
+                'against_goals_fit_lower': [0],
+                'net_goals_fit_lower': [0],
+                'for_goals_fit_upper': [0],
+                'against_goals_fit_upper': [0],
+                'net_goals_fit_upper': [0],
+            }
+            return json_data
+
         json_data: Dict[str, List[Any]] = {
             'club_name': [
                 row['club_name'] for row in result
@@ -470,7 +538,7 @@ class FootballMatchManager(models.Manager):
             json_data[y_axis + '_fit_upper'] = fit_upper_array.tolist()
 
             # Add quality of fit metrics
-            # R-squared: proportion of variance explained (0-1, higher is better)
+            # R-squared: proportion of variance explained (0-1, higher better)
             # p-value: statistical significance of the relationship
             json_data[y_axis + '_r2'] = results.rsquared
             # pvalues[1] is the p-value for the slope (not intercept)
@@ -515,7 +583,8 @@ class FootballMatchManager(models.Manager):
 
         # WARNING: This query uses f-strings instead of parameterized queries
         # This is a security risk (SQL injection vulnerability)
-        # The complex nested tenure calculation makes parameterization difficult
+        # The complex nested tenure calculation makes
+        # parameterization difficult
         # TODO: Refactor to use parameterized queries
         # This query calculates tenure (consecutive seasons in league) using
         # a complex window function approach that handles gaps in seasons
@@ -558,12 +627,14 @@ class FootballMatchManager(models.Manager):
                     SELECT club_name
                         ,Count(season_start) AS seasons_in_league
                     FROM (
-                        -- Calculate cumulative guard to identify continuous runs
+                        -- Calculate cumulative guard to identify
+                        -- continuous runs
                         SELECT club_name
                             ,season_start
                             ,guard
                             ,SUM(guard) OVER (
-                                PARTITION BY club_name ORDER BY season_start DESC
+                                PARTITION BY club_name
+                                ORDER BY season_start DESC
                                 ) AS cum_guard
                         FROM (
                             -- Fix guard values for special cases (WWI, WWII)
@@ -578,26 +649,31 @@ class FootballMatchManager(models.Manager):
                                     ELSE guard
                                     END AS guard
                             FROM (
-                                -- Calculate guard: difference between consecutive
+                                -- Calculate guard: difference between
+                                -- consecutive
                                 -- seasons (1 = consecutive, >1 = gap)
                                 SELECT club_name
                                     ,season_start
                                     ,season_start + 1 - Lag(season_start, 1, 
                                         season_start + 1) OVER (
-                                        PARTITION BY club_name ORDER BY club_name
+                                        PARTITION BY club_name
+                                        ORDER BY club_name
                                             ,season_start DESC
                                         ) AS guard
                                 FROM (
-                                    -- Extract season start year from season string
+                                    -- Extract season start year from
+                                    -- season string
                                     SELECT club_season.club_name AS club_name
                                         ,league_tier
                                         ,Substring(season, 1, 4)::INT AS 
                                         season_start
                                     FROM club_season
-                                    JOIN league ON league.league_id = club_season
-                                        .league_id
+                                    JOIN league
+                                        ON league.league_id =
+                                        club_season.league_id
                                     JOIN (
-                                        -- Filter to clubs in the target season/tier
+                                        -- Filter to clubs in the target
+                                        -- season/tier
                                         SELECT club_name
                                         FROM club_season
                                         JOIN league ON league.league_id = 
@@ -613,7 +689,8 @@ class FootballMatchManager(models.Manager):
                                 ) AS guard
                             ) AS guard_fixed
                         )
-                    -- Only count seasons in the current continuous run (cum_guard=0)
+                    -- Only count seasons in the current continuous run
+                    -- (cum_guard=0)
                     WHERE cum_guard = 0
                     GROUP BY club_name
                     ) AS tenure ON tenure.club_name = subby.club_name
@@ -636,6 +713,35 @@ class FootballMatchManager(models.Manager):
                 dict(zip(columns, row))
                 for row in cursor.fetchall()
             ]
+
+        # If no data is returned, return an empty JSON object
+        if len(result) == 0:
+            json_data = {
+                'club_name': ['No data'],
+                'for_goals': [0],
+                'against_goals': [0],
+                'net_goals': [0],
+                'tenure': [0],
+                'for_goals_fit': [0],
+                'against_goals_fit': [0],
+                'net_goals_fit': [0],
+                'for_goals_fit_lower': [0],
+                'against_goals_fit_lower': [0],
+                'net_goals_fit_lower': [0],
+                'for_goals_fit_upper': [0],
+                'against_goals_fit_upper': [0],
+                'net_goals_fit_upper': [0],
+                'tenure_fit': [0],
+                'tenure_fit_lower': [0],
+                'tenure_fit_upper': [0],
+                'for_goals_r2': 0,
+                'against_goals_r2': 0,
+                'net_goals_r2': 0,
+                'for_goals_pvalue': -1,
+                'against_goals_pvalue': -1,
+                'net_goals_pvalue': -1,
+            }
+            return json_data
 
         # Transform query results into JSON-friendly format
         # Each key contains a list of values, one per club
@@ -1098,7 +1204,8 @@ class FootballMatchManager(models.Manager):
             frequency
         from
             (
-            -- Calculate frequency: count of each score / total matches in league
+            -- Calculate frequency: count of each score / total matches
+            -- in league
             select 
                 league_tier,
                 score,

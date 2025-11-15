@@ -18,14 +18,14 @@ from goals.models import FootballMatch, ClubSeason
 # Default height for Bokeh plots in pixels
 PLOT_HEIGHT = 400
 
-def bokeh_score_distribution_plots(data, league_tier, season_start):
+def bokeh_score_distribution_plots(data, year):
     """
     Create Bokeh plots for score distribution analysis.
     """
     # Find maximum values for scaling axes and color mapping
-    max_frequency = data['frequency'].max()
-    max_home_goals = data['home_goals'].max()
-    max_away_goals = data['away_goals'].max()
+    max_frequency = max(data['frequency'])
+    max_home_goals = max(data['home_goals'])
+    max_away_goals = max(data['away_goals'])
     # Create color mapper to map frequency values to colors
     # Higher frequency = brighter color in Viridis palette
     color_mapper = LinearColorMapper(
@@ -35,25 +35,32 @@ def bokeh_score_distribution_plots(data, league_tier, season_start):
     )
     plots = []
     # Create a separate plot for each league tier
-    for league_tier in data['league_tier'].unique():
+    for league_tier in list(dict.fromkeys(data['league_tier'])):
         # Filter data for current league tier
-        data_subset = data[data['league_tier'] == league_tier]
+        data_subset: Dict[str, List[Any]] = {
+            k: [
+                x for i, x in enumerate(v)
+                if data['league_tier'][i] == league_tier
+            ]
+            for k, v in data.items()
+        }
         # Create unique source name for JavaScript callback identification
+        # Create Bokeh data source for the plot
         source_name = (
             'score_distribution_data' + '_' + str(league_tier)
         )
-        # Create Bokeh data source for the plot
         source = ColumnDataSource(data_subset, name=source_name)
-        plot_title = (
-            f'Score Distribution for League Tier {league_tier} '
-            f'and season starting in {season_start}'
-        )
-        plot_name = 'score_distribution_plot' + '_' + str(league_tier)
         plot = figure(
-            title=plot_title,
+            title=(
+            f'League {league_tier} '
+            f'season {year}'
+        ),
             x_axis_label='Home Goals',
             y_axis_label='Away Goals',
-            name=plot_name,
+            height=int(PLOT_HEIGHT/2),
+            sizing_mode="stretch_width",
+            toolbar_location=None,
+            name='score_distribution_plot' + '_' + str(league_tier),
         )
         # Create rectangular glyphs for each score combination
         # Each rectangle represents one score (e.g., 2-1)
@@ -85,10 +92,7 @@ def bokeh_score_distribution_plots(data, league_tier, season_start):
 
     # Arrange plots in a 2x2 grid layout
     # First row: first two plots, second row: next two plots
-    plots = column(
-        row(plots[0:2], sizing_mode="stretch_width"),
-        row(plots[2:4], sizing_mode="stretch_width")
-    )
+    plots = row(plots, sizing_mode="stretch_width")
     script, div = components(plots)
     return script, div
 
@@ -231,10 +235,10 @@ def goals_dashboard(request):
                 )
             },
             {
-                'name': 'Score distribution',
-                'url': 'goals:score_distribution',
+                'name': 'Score heatmaps',
+                'url': 'goals:score_heatmaps',
                 'description': (
-                    'See the distribution of scores for a given league tier '
+                    'See the heatmaps of scores for a given league tier '
                     'and season.'
                 )
             }
@@ -287,7 +291,8 @@ def money_and_goals(request):
         'chart_controls': (
             """
             The legend on the right is interactive. Click items to toggle.
-            Use the toolbar to zoom and pan. Hover over points for details. <br/><br/>
+            Use the toolbar to zoom and pan. Hover over points for
+            details. <br/><br/>
             The year slider allows you to select the season start year. The
             league tier radio buttons allow you to select the league tier.
             """.replace('\n', '').replace("<br/>", "\n")
@@ -395,7 +400,8 @@ def tenure_and_goals(request):
         'chart_controls': (
             """
             The legend on the right is interactive. Click items to toggle.
-            Use the toolbar to zoom and pan. Hover over points for details. <br/><br/>
+            Use the toolbar to zoom and pan. Hover over points for
+            details. <br/><br/>
             The year slider allows you to select the season start year. The
             league tier radio buttons allow you to select the league tier.
             """.replace('\n', '').replace("<br/>", "\n")
@@ -504,7 +510,8 @@ def mean_age_and_goals(request):
         'chart_controls': (
             """
             The legend on the right is interactive. Click items to toggle.
-            Use the toolbar to zoom and pan. Hover over points for details. <br/><br/>
+            Use the toolbar to zoom and pan. Hover over points for
+            details. <br/><br/>
             The year slider allows you to select the season start year. The
             league tier radio buttons allow you to select the league tier.
             """.replace('\n', '').replace("<br/>", "\n")
@@ -610,7 +617,8 @@ def foreigner_count_and_goals(request):
         'chart_controls': (
             """
             The legend on the right is interactive. Click items to toggle.
-            Use the toolbar to zoom and pan. Hover over points for details. <br/><br/>
+            Use the toolbar to zoom and pan. Hover over points for
+            details. <br/><br/>
             The year slider allows you to select the season start year. The
             league tier radio buttons allow you to select the league tier.
             """.replace('\n', '').replace("<br/>", "\n")
@@ -670,7 +678,7 @@ def foreigner_count_goals_json(
             status=500,
         )
 
-def score_distribution(request):
+def score_heatmaps(request):
     """
     Display a chart showing the distribution of scores for a given league
     tier and season.
@@ -698,22 +706,24 @@ def score_distribution(request):
     # Note: league_tier and season_start parameters are missing
     script, div = bokeh_score_distribution_plots(
         data=json_data,
+        year=max_year,
     )
     context = {
-        'title': 'Score Distribution',
+        'title': 'Score Heatmaps',
         'script': script,
         'div': div,
         'chart_controls': (
             """
             The legend on the right is interactive. Click items to toggle.
-            Use the toolbar to zoom and pan. Hover over points for details. <br/><br/>
-            The year slider allows you to select the season start year. The
-            league tier radio buttons allow you to select the league tier.
+            Use the toolbar to zoom and pan. Hover over points for
+            details. <br/><br/>
+            The year slider allows you to select the season start year. 
             """.replace('\n', '').replace("<br/>", "\n")
         ),
         'min_year': min_year,
         'max_year': max_year,
         'current_year': max_year,
+        'callback': 'score_heatmaps_json',
         'description': """
         This chart shows the distribution of scores for a given league tier
         and season. The x-axis shows the number of home goals and the
@@ -722,11 +732,11 @@ def score_distribution(request):
         matches.
         """.replace('\n', '').replace("<br/>", "\n")
     }
-    return render(request, 'goals/chart_score_distribution.html', context)
+    return render(request, 'goals/chart_score_distributions.html', context)
 
-def score_distribution_json(request, *, season_start: int):
+def score_heatmaps_json(request, *, season_start: int):
     """
-    Return JSON data structure for score distribution analysis.
+    Return JSON data structure for score heatmaps analysis.
 
     Args:
         request: HTTP request object
