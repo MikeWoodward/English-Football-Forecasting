@@ -23,6 +23,7 @@ Date: 2024
 import logging
 import pandas as pd
 import sys
+import os
 
 
 def setup_logging(*, log_level: str = "INFO") -> None:
@@ -140,6 +141,44 @@ def main() -> None:
         # Load raw match data from CSV file with error handling
         match_data = open_csv_file(file_path=csv_file_path)
 
+        # Normalize club names to ensure consistent naming across the dataset
+        # Club names may have variations (e.g., "Man Utd" vs
+        # "Manchester United")
+        # This normalization maps all variations to a standard name
+        # Get the club_name_normalization.csv file from the Data folder
+        club_name_normalization_path = os.path.join(
+            os.path.dirname(__file__), '..', '..', '4 Database creation',
+            'Data', 'club_name_normalization.csv'
+        )
+        # Load the normalization mapping table
+        # Expected columns: 'club_name' (original) and 'club_name_normalized'
+        club_name_normalization = pd.read_csv(club_name_normalization_path)
+
+        # Replace home_club names with normalized versions
+        # For each club name in home_club, look up the normalized version
+        # in the normalization table and replace the original value
+        match_data['home_club'] = (
+            match_data['home_club'].apply(
+                # Lambda function: find matching row in normalization table
+                # and extract the normalized club name
+                lambda x: club_name_normalization.loc[
+                    club_name_normalization['club_name'] == x,
+                    'club_name_normalized'
+                ].values[0]
+            )
+        )
+        # Replace away_club names with normalized versions
+        # Same process as home_club normalization above
+        match_data['away_club'] = (
+            match_data['away_club'].apply(
+                # Lambda function: find matching row in normalization table
+                # and extract the normalized club name
+                lambda x: club_name_normalization.loc[
+                    club_name_normalization['club_name'] == x,
+                    'club_name_normalized'
+                ].values[0]
+            )
+        )
         # ================================================================
         # DATA TRANSFORMATION SECTION
         # ================================================================
@@ -147,49 +186,78 @@ def main() -> None:
         # Generate unique match identifier by combining date and team names
         # Format: YYYY-MM-DD-HomeTeam-AwayTeam (e.g., 2023-08-12-Arsenal-
         # Chelsea)
+        # This creates a unique identifier for each match that can be used
+        # as a primary key in the database
         match_data['match_id'] = (
-            match_data['match_date'].astype(str) + '-' +
-            match_data['home_club'] + '-' +
-            match_data['away_club']
+            match_data['match_date'].astype(str) + '-'
+            + match_data['home_club'] + '-'
+            + match_data['away_club']
         )
 
         # Create league identifier by combining tier and season year
         # Formula: (league_tier * 10000) + season_year
         # Example: Premier League (tier 1) in 2023 = 12023
+        # This creates a unique numeric identifier for each league-season
+        # combination, allowing efficient filtering and grouping
         match_data['league_id'] = (
-            match_data['league_tier'] * 10000 +
-            match_data['season'].str.split('-').str[0].astype(int)
+            match_data['league_tier'] * 10000
+            # Extract year from season string (e.g., "2023-2024" -> 2023)
+            + match_data['season'].str.split('-').str[0].astype(int)
         )
 
-        # Clean up the match_time column. Remove data that appears in brackets  e.g.(10:00)
-        match_data['match_time'] = match_data['match_time'].str.replace(r'\s*\([^)]*\)\s*', '', regex=True)
+        # Clean up the match_time column by removing parenthetical content
+        # Some match times have additional info in brackets, e.g.,
+        # "15:00 (10:00)"
+        # This regex removes everything in parentheses and surrounding
+        # whitespace
+        # Pattern breakdown: \s* = optional whitespace, \( = opening paren,
+        # [^)]* = any chars except closing paren, \) = closing paren, \s* =
+        # optional whitespace
+        match_data['match_time'] = (
+            match_data['match_time'].str.replace(
+                r'\s*\([^)]*\)\s*', '', regex=True
+            )
+        )
 
         # ================================================================
         # DATA FILTERING AND SORTING SECTION
         # ================================================================
 
         # Select only essential columns for the final dataset
-        # Sort by league_id first, then by match_date for chronological order
-        match_data = match_data.drop(['season', 'league_tier', 'venue'], axis=1).sort_values(by=['league_id', 'match_date'])
+        # Remove redundant columns: 'season' and 'league_tier' are now
+        # represented by 'league_id', and 'venue' is not needed for this
+        # dataset
+        # Sort by league_id first (groups matches by league), then by
+        # match_date for chronological order within each league
+        match_data = (
+            match_data.drop(
+                ['season', 'league_tier', 'venue'], axis=1
+            ).sort_values(by=['league_id', 'match_date'])
+        )
 
         # ================================================================
         # DATA VALIDATION AND REPORTING SECTION
         # ================================================================
 
-        # Log comprehensive dataset information for validation
+        # Log comprehensive dataset information for validation and debugging
+        # This summary helps verify data quality and processing success
         logging.info("Processed Dataset Summary:")
         logging.info(f"Shape: {match_data.shape} (rows, columns)")
         logging.info(f"Columns: {list(match_data.columns)}")
+        # Display the date range to verify temporal coverage
         logging.info(f"Date range: {match_data['match_date'].min()} to "
                      f"{match_data['match_date'].max()}")
+        # Count unique league identifiers to verify league processing
         logging.info(f"Unique leagues: {match_data['league_id'].nunique()}")
         logging.info(f"Total matches: {len(match_data)}")
 
         # Display sample data for manual verification
+        # First 5 rows help spot-check data quality and formatting
         logging.info("Sample data (first 5 rows):")
         logging.info(f"\n{match_data.head()}")
 
         # Log data types to ensure proper formatting
+        # Verifies that dates, numbers, and strings are correctly typed
         logging.info("Column data types:")
         logging.info(f"\n{match_data.dtypes}")
 
@@ -198,6 +266,7 @@ def main() -> None:
         # ================================================================
         # Export processed match data to CSV file for database import
         # File is saved in the Match/Data directory for database creation
+        # index=False prevents pandas from writing row indices to the CSV
         output_path = (
             "/Users/mikewoodward/Documents/Projects/Python/EPL predictor/"
             "4 Database creation/Football_Match/Data/football_match.csv"
