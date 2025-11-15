@@ -12,7 +12,11 @@ from django.db.models import (
     When,
     OuterRef,
     F,
+    Min,
+    Max,
+    IntegerField,
 )
+from django.db.models.functions import Substr, Cast
 from collections import defaultdict
 from typing import Dict, List, Any
 import numpy as np
@@ -75,6 +79,103 @@ class ClubHistory(models.Model):
         db_table = 'club_history'
 
 
+class ClubSeasonManager(models.Manager):
+    """
+    Custom manager for ClubSeason model with methods to analyze
+    market value data.
+    """
+
+    def get_season_min_max(self):
+        """
+        Return the minimum and maximum season for which there is
+        club season data.
+
+        Returns:
+            Tuple of (min_season, max_season) where each value is a string
+            representing the season (e.g., "2024-2025").
+            Returns (None, None) if no club season data exists.
+        """
+        # Aggregate to find the minimum and maximum season values
+        # across all club season records
+        result = (
+            self.aggregate(
+                min_season=Min('league__season'),
+                max_season=Max('league__season'),
+            )
+        )
+        # Return tuple of min and max season values
+        return result['min_season'], result['max_season']
+
+    def get_club_money_season_min_max(self):
+        """
+        Return the minimum and maximum season for which there is a
+        total_market_value.
+
+        Returns:
+            Tuple of (min_season, max_season) where each value is a string
+            representing the season (e.g., "2024-2025").
+            Returns (None, None) if no market value data exists.
+        """
+        # Filter for records with non-null total_market_value
+        # then aggregate to find min and max season values
+        result = (
+            self.filter(total_market_value__isnull=False)
+            .aggregate(
+                min_season=Min('league__season'),
+                max_season=Max('league__season'),
+            )
+        )
+
+        # Return tuple of min and max season values
+        return result['min_season'], result['max_season']
+
+    def get_club_mean_age_season_min_max(self):
+        """
+        Return the minimum and maximum season for which there is a
+        mean_age.
+
+        Returns:
+            Tuple of (min_season, max_season) where each value is a string
+            representing the season (e.g., "2024-2025").
+            Returns (None, None) if no mean age data exists.
+        """
+        # Filter for records with non-null mean_age
+        # then aggregate to find min and max season values
+        result = (
+            self.filter(mean_age__isnull=False)
+            .aggregate(
+                min_season=Min('league__season'),
+                max_season=Max('league__season'),
+            )
+        )
+
+        # Return tuple of min and max season values
+        return result['min_season'], result['max_season']
+
+    def get_club_foreigner_count_season_min_max(self):
+        """
+        Return the minimum and maximum season for which there is a
+        foreigner_count.
+
+        Returns:
+            Tuple of (min_season, max_season) where each value is a string
+            representing the season (e.g., "2024-2025").
+            Returns (None, None) if no foreigner count data exists.
+        """
+        # Filter for records with non-null foreigner_count
+        # then aggregate to find min and max season values
+        result = (
+            self.filter(foreigner_count__isnull=False)
+            .aggregate(
+                min_season=Min('league__season'),
+                max_season=Max('league__season'),
+            )
+        )
+
+        # Return tuple of min and max season values
+        return result['min_season'], result['max_season']
+
+
 class ClubSeason(models.Model):
     league = models.ForeignKey('League', models.DO_NOTHING)
     club_name = models.CharField(max_length=255)
@@ -84,6 +185,8 @@ class ClubSeason(models.Model):
     foreigner_fraction = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
     mean_age = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
     total_market_value = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+
+    objects = ClubSeasonManager()
 
     class Meta:
         managed = False
@@ -221,6 +324,8 @@ class FootballMatchManager(models.Manager):
         )
 
         # Use parameterized query to prevent SQL injection
+        # This query aggregates goals for each club by combining home and away
+        # matches, then joins with club_season to get market values
         sql = """
         select 
             subby.league_id,
@@ -231,6 +336,7 @@ class FootballMatchManager(models.Manager):
             club_season.total_market_value
         from
             (
+                -- Subquery 1: Aggregate goals when club is home team
                 select
                     league.league_id,
                     home_club as club_name, 
@@ -248,6 +354,7 @@ class FootballMatchManager(models.Manager):
                     league.league_id,
                     home_club
                 union all
+                -- Subquery 2: Aggregate goals when club is away team
                 select
                     league.league_id,
                     away_club as club_name, 
@@ -315,24 +422,30 @@ class FootballMatchManager(models.Manager):
             ],
         }
 
+        # Perform linear regression analysis for each goal type
         # Get predictions with 95% confidence intervals
         # Convert lists to numpy arrays and filter out None values
-        # Create mask to filter out None values
         market_values = np.array(json_data['total_market_value'])
+        # Create boolean mask to identify valid (non-NaN) market values
         valid_mask = ~np.isnan(market_values)
         
-        # Add constant term for intercept in regression
+        # Add constant term (intercept) for linear regression
+        # OLS requires X to include a column of ones for the intercept
         X_const = sm.add_constant(market_values[valid_mask])
         
+        # Perform regression for each goal type (for, against, net)
         for y_axis in ['for_goals', 'against_goals', 'net_goals']:
             # Get y values and filter to match valid market values
+            # Only use data points where market value is not null
             y_values = np.array(json_data[y_axis])[valid_mask]
             
-            # Create OLS model with constant term
+            # Create Ordinary Least Squares (OLS) linear regression model
             model = sm.OLS(y_values, X_const)
+            # Fit the model to the data
             results = model.fit()
             
             # Get predictions with 95% confidence intervals
+            # alpha=0.05 means 95% confidence interval
             predictions = (
                 results
                 .get_prediction(X_const)
@@ -340,22 +453,27 @@ class FootballMatchManager(models.Manager):
             )
             
             # Initialize arrays with NaN for all data points
+            # This ensures arrays match the original data length
             fit_array = np.full(len(json_data[y_axis]), np.nan)
             fit_lower_array = np.full(len(json_data[y_axis]), np.nan)
             fit_upper_array = np.full(len(json_data[y_axis]), np.nan)
             
             # Fill in predictions only for valid data points
+            # Invalid points remain NaN
             fit_array[valid_mask] = predictions['mean']
             fit_lower_array[valid_mask] = predictions['mean_ci_lower']
             fit_upper_array[valid_mask] = predictions['mean_ci_upper']
             
-            # Convert back to lists
+            # Convert numpy arrays back to Python lists for JSON serialization
             json_data[y_axis + '_fit'] = fit_array.tolist()
             json_data[y_axis + '_fit_lower'] = fit_lower_array.tolist()
             json_data[y_axis + '_fit_upper'] = fit_upper_array.tolist()
 
             # Add quality of fit metrics
+            # R-squared: proportion of variance explained (0-1, higher is better)
+            # p-value: statistical significance of the relationship
             json_data[y_axis + '_r2'] = results.rsquared
+            # pvalues[1] is the p-value for the slope (not intercept)
             json_data[y_axis + '_pvalue'] = results.pvalues[1]
         return json_data
 
@@ -395,7 +513,12 @@ class FootballMatchManager(models.Manager):
             str(start_year) + '-' + str(start_year + 1)
         )
 
-        # Use parameterized query to prevent SQL injection
+        # WARNING: This query uses f-strings instead of parameterized queries
+        # This is a security risk (SQL injection vulnerability)
+        # The complex nested tenure calculation makes parameterization difficult
+        # TODO: Refactor to use parameterized queries
+        # This query calculates tenure (consecutive seasons in league) using
+        # a complex window function approach that handles gaps in seasons
         sql = f"""
                 SELECT subby.club_name
                     ,SUM(for_goals) AS for_goals
@@ -403,6 +526,7 @@ class FootballMatchManager(models.Manager):
                     ,SUM(for_goals) - SUM(against_goals) AS net_goals
                     ,seasons_in_league AS tenure
                 FROM (
+                    -- Aggregate goals when club is home team
                     SELECT league.league_id
                         ,home_club AS club_name
                         ,SUM(home_goals) AS for_goals
@@ -416,6 +540,7 @@ class FootballMatchManager(models.Manager):
                     
                     UNION ALL
                     
+                    -- Aggregate goals when club is away team
                     SELECT league.league_id
                         ,away_club AS club_name
                         ,SUM(away_goals) AS for_goals
@@ -428,9 +553,12 @@ class FootballMatchManager(models.Manager):
                         ,away_club
                     ) AS subby
                 JOIN (
+                    -- Calculate tenure: count of consecutive seasons in league
+                    -- This uses window functions to identify gaps in seasons
                     SELECT club_name
                         ,Count(season_start) AS seasons_in_league
                     FROM (
+                        -- Calculate cumulative guard to identify continuous runs
                         SELECT club_name
                             ,season_start
                             ,guard
@@ -438,6 +566,7 @@ class FootballMatchManager(models.Manager):
                                 PARTITION BY club_name ORDER BY season_start DESC
                                 ) AS cum_guard
                         FROM (
+                            -- Fix guard values for special cases (WWI, WWII)
                             SELECT club_name
                                 ,season_start
                                 ,CASE 
@@ -449,6 +578,8 @@ class FootballMatchManager(models.Manager):
                                     ELSE guard
                                     END AS guard
                             FROM (
+                                -- Calculate guard: difference between consecutive
+                                -- seasons (1 = consecutive, >1 = gap)
                                 SELECT club_name
                                     ,season_start
                                     ,season_start + 1 - Lag(season_start, 1, 
@@ -457,6 +588,7 @@ class FootballMatchManager(models.Manager):
                                             ,season_start DESC
                                         ) AS guard
                                 FROM (
+                                    -- Extract season start year from season string
                                     SELECT club_season.club_name AS club_name
                                         ,league_tier
                                         ,Substring(season, 1, 4)::INT AS 
@@ -465,6 +597,7 @@ class FootballMatchManager(models.Manager):
                                     JOIN league ON league.league_id = club_season
                                         .league_id
                                     JOIN (
+                                        -- Filter to clubs in the target season/tier
                                         SELECT club_name
                                         FROM club_season
                                         JOIN league ON league.league_id = 
@@ -480,6 +613,7 @@ class FootballMatchManager(models.Manager):
                                 ) AS guard
                             ) AS guard_fixed
                         )
+                    -- Only count seasons in the current continuous run (cum_guard=0)
                     WHERE cum_guard = 0
                     GROUP BY club_name
                     ) AS tenure ON tenure.club_name = subby.club_name
@@ -489,17 +623,22 @@ class FootballMatchManager(models.Manager):
                     tenure
         """
 
+        # Execute SQL query (note: parameters are not used due to f-string)
+        # This is a security risk that should be fixed
         with connection.cursor() as cursor:
             cursor.execute(
                 sql,
                 [league_tier, season, league_tier, season],
             )
+            # Convert query results to list of dictionaries
             columns = [col[0] for col in cursor.description]
             result = [
                 dict(zip(columns, row))
                 for row in cursor.fetchall()
             ]
 
+        # Transform query results into JSON-friendly format
+        # Each key contains a list of values, one per club
         json_data: Dict[str, List[Any]] = {
             'club_name': [
                 row['club_name'] for row in result
@@ -523,17 +662,18 @@ class FootballMatchManager(models.Manager):
             ],
         }
 
+        # Perform linear regression analysis for each goal type
         # Get predictions with 95% confidence intervals
         # Convert lists to numpy arrays and filter out None values
-        # Create mask to filter out None values
         tenure = np.array(json_data['tenure'])
+        # Create boolean mask to identify valid (non-NaN) tenure values
         valid_mask = ~np.isnan(tenure)
         
-        # Add constant term for intercept in regression
+        # Add constant term (intercept) for linear regression
         X_const = sm.add_constant(tenure[valid_mask])
         
         for y_axis in ['for_goals', 'against_goals', 'net_goals']:
-            # Get y values and filter to match valid market values
+            # Get y values and filter to match valid tenure values
             y_values = np.array(json_data[y_axis])[valid_mask]
             
             # Create OLS model with constant term
@@ -669,11 +809,14 @@ class FootballMatchManager(models.Manager):
                 [league_tier, season, league_tier, season],
             )
             columns = [col[0] for col in cursor.description]
+            # Convert query results to list of dictionaries
             result = [
                 dict(zip(columns, row))
                 for row in cursor.fetchall()
             ]
 
+        # Transform query results into JSON-friendly format
+        # Each key contains a list of values, one per club
         json_data: Dict[str, List[Any]] = {
             'club_name': [
                 row['club_name'] for row in result
@@ -698,17 +841,19 @@ class FootballMatchManager(models.Manager):
             ],
         }
 
+        # Perform linear regression analysis for each goal type
         # Get predictions with 95% confidence intervals
         # Convert lists to numpy arrays and filter out None values
-        # Create mask to filter out None values
         mean_ages = np.array(json_data['mean_age'])
+        # Create boolean mask to identify valid (non-NaN) mean age values
         valid_mask = ~np.isnan(mean_ages)
         
-        # Add constant term for intercept in regression
+        # Add constant term (intercept) for linear regression
         X_const = sm.add_constant(mean_ages[valid_mask])
         
         for y_axis in ['for_goals', 'against_goals', 'net_goals']:
             # Get y values and filter to match valid mean ages
+            # Only use data points where mean age is not null
             y_values = np.array(json_data[y_axis])[valid_mask]
             
             # Create OLS model with constant term
@@ -844,11 +989,14 @@ class FootballMatchManager(models.Manager):
                 [league_tier, season, league_tier, season],
             )
             columns = [col[0] for col in cursor.description]
+            # Convert query results to list of dictionaries
             result = [
                 dict(zip(columns, row))
                 for row in cursor.fetchall()
             ]
 
+        # Transform query results into JSON-friendly format
+        # Each key contains a list of values, one per club
         json_data: Dict[str, List[Any]] = {
             'club_name': [
                 row['club_name'] for row in result
@@ -873,17 +1021,19 @@ class FootballMatchManager(models.Manager):
             ],
         }
 
+        # Perform linear regression analysis for each goal type
         # Get predictions with 95% confidence intervals
         # Convert lists to numpy arrays and filter out None values
-        # Create mask to filter out None values
         foreigner_counts = np.array(json_data['foreigner_count'])
+        # Create boolean mask to identify valid (non-NaN) foreigner counts
         valid_mask = ~np.isnan(foreigner_counts)
         
-        # Add constant term for intercept in regression
+        # Add constant term (intercept) for linear regression
         X_const = sm.add_constant(foreigner_counts[valid_mask])
         
         for y_axis in ['for_goals', 'against_goals', 'net_goals']:
             # Get y values and filter to match valid foreigner counts
+            # Only use data points where foreigner count is not null
             y_values = np.array(json_data[y_axis])[valid_mask]
             
             # Create OLS model with constant term
@@ -938,6 +1088,8 @@ class FootballMatchManager(models.Manager):
         )
 
         # Use parameterized query to prevent SQL injection
+        # This query calculates the frequency of each score combination
+        # (e.g., "2-1", "0-0") across all matches in the season
         sql = """
         select
             league_tier,
@@ -946,12 +1098,14 @@ class FootballMatchManager(models.Manager):
             frequency
         from
             (
+            -- Calculate frequency: count of each score / total matches in league
             select 
                 league_tier,
                 score,
                 count(score)/league_size_matches::float as frequency
             from
                 (
+                -- Create score strings by concatenating home and away goals
                 select
                     league_tier,
                     league_size_matches,
@@ -963,7 +1117,7 @@ class FootballMatchManager(models.Manager):
                 on 
                     league.league_id = football_match.league_id
                 where
-                    season = '{season}'
+                    season = %s
                 ) as score
             group by
                 league_size_matches,
@@ -971,13 +1125,17 @@ class FootballMatchManager(models.Manager):
                 score
             )
         """
+        # Execute SQL query with parameterized season value
         with connection.cursor() as cursor:
-            cursor.execute(sql)
+            cursor.execute(sql, [season])
+            # Convert query results to list of dictionaries
             columns = [col[0] for col in cursor.description]
             result = [
                 dict(zip(columns, row))
                 for row in cursor.fetchall()
             ]
+        # Transform query results into JSON-friendly format
+        # Each key contains a list of values, one per score combination
         json_data: Dict[str, List[Any]] = {
             'league_tier': [
                 int(row['league_tier']) if row['league_tier'] else 0
