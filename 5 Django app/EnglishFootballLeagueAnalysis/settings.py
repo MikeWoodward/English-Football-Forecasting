@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'trends',
     'goals',
     'admin_app',
+    'club_analysis',
 ]
 
 MIDDLEWARE = [

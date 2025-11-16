@@ -31,6 +31,9 @@
                                 <strong>Goals Analysis:</strong> Deep dive into the factors that influence goals scored and conceded.
                             </li>
                             <li class="mb-2">
+                                <strong>Club Analysis:</strong> Explore detailed club history, league progression, and match data.
+                            </li>
+                            <li class="mb-2">
                                 <strong>Interactive Charts:</strong> Powered by Bokeh, our 
                                 visualizations provide rich, interactive data exploration.
                             </li>
@@ -63,6 +66,11 @@
                                     <a href="{% url 'goals:dashboard' %}" 
                                        class="btn btn-success btn-lg mb-2 w-100">
                                         Analyze Goals
+                                    </a>
+                                    <a href="{% url 'club_analysis:club_analysis' %}" 
+                                       class="btn btn-lg mb-2 w-100"
+                                       style="background-color: #90EE90; border-color: #90EE90; color: black;">
+                                        Club Analysis
                                     </a>
                                     {% if user.is_admin %}
                                         <a href="{% url 'admin_app:dashboard' %}" 

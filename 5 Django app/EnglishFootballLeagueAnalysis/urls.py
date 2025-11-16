@@ -12,6 +12,7 @@ urlpatterns = [
     path('trends/', include('trends.urls')),
     path('goals/', include('goals.urls')),
     path('admin_app/', include('admin_app.urls')),
+    path('club_analysis/', include('club_analysis.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 
