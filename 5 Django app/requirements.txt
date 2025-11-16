@@ -11,6 +11,7 @@ dj-database-url==3.0.1
 bokeh==3.8.0
 numpy==2.2.6
 pandas==2.2.3
+statsmodels==0.14.5
 
 # Forms
 django-crispy-forms==2.1
