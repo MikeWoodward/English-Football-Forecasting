@@ -9,7 +9,9 @@ club_season tables.
 # Standard library imports
 import logging
 import os
+import re
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Third-party imports for database operations
 import psycopg2
@@ -17,9 +19,6 @@ from psycopg2 import OperationalError
 
 # Third-party imports for data processing
 import pandas as pd
-
-# Third-party imports for configuration management
-from decouple import Config, RepositoryEnv
 
 
 def setup_logging() -> None:
@@ -37,7 +36,7 @@ def setup_logging() -> None:
 def create_database_if_not_exists(
     *,
     db_name: str,
-    connection_params: dict
+    db_connection_string: str
 ) -> None:
     """
     Create a database if it doesn't already exist.
@@ -48,17 +47,19 @@ def create_database_if_not_exists(
 
     Args:
         db_name: Name of the database to create.
-        connection_params: Dictionary containing database connection
-                         parameters including host, port, user, and
-                         password. The 'database' key is replaced with
-                         'postgres' for the connection.
+        db_connection_string: PostgreSQL connection string. The database
+                            name in the string is replaced with 'postgres'
+                            for the connection.
     """
     try:
         # Connect to the default 'postgres' database to create new database
-        postgres_params = connection_params.copy()
-        postgres_params['database'] = 'postgres'
-        
-        conn = psycopg2.connect(**postgres_params)
+        # Replace the database name in the connection string with 'postgres'
+        postgres_connection_string = re.sub(
+            r'/([^/]+)$',
+            '/postgres',
+            db_connection_string
+        )
+        conn = psycopg2.connect(postgres_connection_string)
         conn.autocommit = True  # Required for CREATE DATABASE
         cursor = conn.cursor()
         
@@ -88,7 +89,7 @@ def create_database_if_not_exists(
         raise
 
 
-def create_database_tables(*, connection_params: dict) -> None:
+def create_database_tables(*, db_connection_string: str) -> None:
     """
     Create database tables for the EPL predictor system.
 
@@ -96,13 +97,11 @@ def create_database_tables(*, connection_params: dict) -> None:
     club_season, club_history, and attendance_violin.
 
     Args:
-        connection_params: Dictionary containing database connection
-                          parameters including host, port, database,
-                          user, and password.
+        db_connection_string: PostgreSQL connection string.
     """
     try:
         # Connect to the database
-        conn = psycopg2.connect(**connection_params)
+        conn = psycopg2.connect(db_connection_string)
 
         cursor = conn.cursor()
 
@@ -217,21 +216,22 @@ def create_database_tables(*, connection_params: dict) -> None:
             conn.close()
 
 
-def load_database_table_football_match(*, connection_params: dict) -> None:
+def load_database_table_football_match(
+    *,
+    db_connection_string: str
+) -> None:
     """
     Load match data from CSV file into the football_match table.
 
-    This function loads match data from Match/Data/match.csv into the
-    match table in PostgreSQL.
+    This function loads match data from Football_Match/Data/football_match.csv
+    into the football_match table in PostgreSQL.
 
     Args:
-        connection_params: Dictionary containing database connection
-                          parameters including host, port, database,
-                          user, and password.
+        db_connection_string: PostgreSQL connection string.
     """
     try:
         # Connect to the database
-        conn = psycopg2.connect(**connection_params)
+        conn = psycopg2.connect(db_connection_string)
         logging.info("Successfully connected to database for football_match loading")
 
         cursor = conn.cursor()
@@ -321,15 +321,17 @@ def load_database_table_football_match(*, connection_params: dict) -> None:
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
 
-        # Execute one row at a time to identify problematic rows
-        for i, record in enumerate(match_records):
-            try:
-                cursor.execute(insert_query, record)
-            except Exception as e:
-                logging.error(f"Error inserting row {i+1}: {e}")
-                logging.error(f"Row data: {record}")
-                raise
-        conn.commit()
+        # Execute bulk insert using executemany for better performance
+        try:
+            cursor.executemany(insert_query, match_records)
+            conn.commit()
+        except Exception as e:
+            logging.error(
+                f"Error inserting match records: {e}. "
+                f"Total records attempted: {len(match_records)}"
+            )
+            conn.rollback()
+            raise
 
         logging.info(f"Successfully loaded {len(match_records)} match "
                      "records into database")
@@ -356,7 +358,7 @@ def load_database_table_football_match(*, connection_params: dict) -> None:
             logging.info("Database connection closed after data loading")
 
 
-def load_database_table_league(*, connection_params: dict) -> None:
+def load_database_table_league(*, db_connection_string: str) -> None:
     """
     Load league data from CSV file into the league table.
 
@@ -364,13 +366,11 @@ def load_database_table_league(*, connection_params: dict) -> None:
     league table in PostgreSQL.
 
     Args:
-        connection_params: Dictionary containing database connection
-                          parameters including host, port, database,
-                          user, and password.
+        db_connection_string: PostgreSQL connection string.
     """
     try:
         # Connect to the database
-        conn = psycopg2.connect(**connection_params)
+        conn = psycopg2.connect(db_connection_string)
         logging.info("Successfully connected to database for league data "
                      "loading")
 
@@ -464,7 +464,7 @@ def load_database_table_league(*, connection_params: dict) -> None:
             conn.close()
 
 
-def load_database_table_club_season(*, connection_params: dict) -> None:
+def load_database_table_club_season(*, db_connection_string: str) -> None:
     """
     Load club season data from CSV file into the club_season table.
 
@@ -472,13 +472,11 @@ def load_database_table_club_season(*, connection_params: dict) -> None:
     into the club_season table in PostgreSQL.
 
     Args:
-        connection_params: Dictionary containing database connection
-                          parameters including host, port, database,
-                          user, and password.
+        db_connection_string: PostgreSQL connection string.
     """
     try:
         # Connect to the database
-        conn = psycopg2.connect(**connection_params)
+        conn = psycopg2.connect(db_connection_string)
         logging.info("Successfully connected to database for club season "
                      "data loading")
 
@@ -577,7 +575,7 @@ def load_database_table_club_season(*, connection_params: dict) -> None:
 
 
 
-def load_database_table_club_history(*, connection_params: dict) -> None:
+def load_database_table_club_history(*, db_connection_string: str) -> None:
     """
     Load club history data from CSV file into the club_history table.
 
@@ -585,13 +583,11 @@ def load_database_table_club_history(*, connection_params: dict) -> None:
     club_history.csv into the club_history table in PostgreSQL.
 
     Args:
-        connection_params: Dictionary containing database connection
-                          parameters including host, port, database,
-                          user, and password.
+        db_connection_string: PostgreSQL connection string.
     """
     try:
         # Connect to the database
-        conn = psycopg2.connect(**connection_params)
+        conn = psycopg2.connect(db_connection_string)
         logging.info("Successfully connected to database for club history "
                      "data loading")
 
@@ -700,7 +696,10 @@ def load_database_table_club_history(*, connection_params: dict) -> None:
                          "loading")
 
 
-def load_database_table_attendance_violin(*, connection_params: dict) -> None:
+def load_database_table_attendance_violin(
+    *,
+    db_connection_string: str
+) -> None:
     """
     Load attendance violin data from CSV file into the attendance_violin 
     table.
@@ -710,13 +709,11 @@ def load_database_table_attendance_violin(*, connection_params: dict) -> None:
     table in PostgreSQL.
 
     Args:
-        connection_params: Dictionary containing database connection
-                          parameters including host, port, database,
-                          user, and password.
+        db_connection_string: PostgreSQL connection string.
     """
     try:
         # Connect to the database
-        conn = psycopg2.connect(**connection_params)
+        conn = psycopg2.connect(db_connection_string)
         logging.info("Successfully connected to database for attendance "
                      "violin data loading")
 
@@ -806,51 +803,57 @@ if __name__ == "__main__":
     # Initialize logging before any operations
     setup_logging()
 
-    # Locate .env file - it's in the 5 Django app directory
-    # Navigate up from Database_creation to project root, then to Django app
-    ENV_DIR = Path(__file__).resolve().parent.parent.parent / "5 Django app"
-
-    # Load environment variables from .env file
-    # Using RepositoryEnv to ensure .env file is properly read
-    # This resolved a bug where the .env file was not being read
-    config = Config(RepositoryEnv(os.path.join(ENV_DIR, ".env")))
-
-    # Build database connection parameters from environment variables
-    connection_params = {
-        'host':  config('FOOTBALL_HOST'),
-        'port': int(config('FOOTBALL_PORT')),  # Convert port to integer
-        'database': config('FOOTBALL_NAME'),
-        'user': config('FOOTBALL_USER'),
-        'password': config('FOOTBALL_PASSWORD')
-    }
-
     try:
+        # Get the current script's directory and navigate to Django app folder
+        current_dir = Path(__file__).resolve().parent
+        project_root = current_dir.parent.parent
+        django_app_path = project_root / "5 Django app"
+        env_path = django_app_path / ".env"
+        
+        if not env_path.exists():
+            raise FileNotFoundError(
+                f".env file not found at: {env_path}. "
+                f"Please ensure the file exists in the Django app folder."
+            )
+        
+        load_dotenv(dotenv_path=env_path)
+        db_connection_string = os.environ.get('DATABASE_URL_REMOTE')
+        if not db_connection_string:
+            raise ValueError(
+                "DATABASE_URL_REMOTE environment variable is not set in the "
+                ".env file"
+            )
+        
+        # Extract database name from connection string for database creation
+        # Format: postgresql://user:password@host:port/database
+        db_name_match = re.search(r'/([^/]+)$', db_connection_string)
+        db_name = db_name_match.group(1)
+
         # Step 0: Create database if it doesn't exist
-        db_name = connection_params['database']
         create_database_if_not_exists(
             db_name=db_name,
-            connection_params=connection_params
+            db_connection_string=db_connection_string
         )
         
         # Step 1: Create all database tables
-        create_database_tables(connection_params=connection_params)
+        create_database_tables(db_connection_string=db_connection_string)
 
         # Step 2: Load league data (must be loaded first due to foreign keys)
-        load_database_table_league(connection_params=connection_params)
+        load_database_table_league(db_connection_string=db_connection_string)
 
         # Step 3: Load match data (depends on league table)
-        load_database_table_football_match(connection_params=connection_params)
+        load_database_table_football_match(db_connection_string=db_connection_string)
 
         # Step 4: Load club history data
-        load_database_table_club_history(connection_params=connection_params)
+        load_database_table_club_history(db_connection_string=db_connection_string)
 
         # Step 5: Load attendance violin data (depends on league table)
         load_database_table_attendance_violin(
-            connection_params=connection_params
+            db_connection_string=db_connection_string
         )
 
         # Step 6: Load club season data (depends on league table)
-        load_database_table_club_season(connection_params=connection_params)
+        load_database_table_club_season(db_connection_string=db_connection_string)
 
         logging.info("All data loading completed successfully")
 
