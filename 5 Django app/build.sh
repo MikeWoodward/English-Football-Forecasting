@@ -5,4 +5,5 @@ pip install -r requirements.txt
 
 python manage.py migrate
 
-python manage.py createsuperuser --noinput
+# Only needed the first time a service is brought up
+# python manage.py createsuperuser --noinput
