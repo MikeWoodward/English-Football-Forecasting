@@ -26,6 +26,28 @@ class AdminLoginView(auth_views.LoginView):
         """
         return '/'
 
+    def form_valid(self, form):
+        """
+        Override form_valid to ensure user object is refreshed after login.
+        """
+        # Get the user before login
+        user = form.get_user()
+        # Call parent to perform login (this sets request.user)
+        response = super().form_valid(form)
+        # Ensure user object is fresh from database
+        # This is important for custom user attributes like is_admin
+        try:
+            # Refresh user from database to get latest is_admin value
+            user.refresh_from_db()
+            # Re-authenticate to update session with fresh user data
+            from django.contrib.auth import login
+            login(self.request, user)
+        except Exception:
+            # If refresh fails, the user is still logged in
+            # The template should still work with request.user
+            pass
+        return response
+
     def dispatch(self, request, *args, **kwargs):
         """
         Redirect already authenticated admin users.

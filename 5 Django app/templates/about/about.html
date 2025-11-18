@@ -73,7 +73,7 @@
                                        style="background-color: #90EE90; border-color: #90EE90; color: black;">
                                         Club Analysis
                                     </a>
-                                    {% if user.is_admin %}
+                                    {% if user.is_authenticated and user.is_admin %}
                                         <a href="{% url 'admin_app:dashboard' %}" 
                                            class="btn btn-warning btn-lg w-100">
                                             Admin Panel

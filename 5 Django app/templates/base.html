@@ -118,7 +118,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'club_analysis:club_analysis' %}">Club Analysis</a>
                         </li>
-                        {% if user.is_admin %}
+                        {% if user.is_authenticated and user.is_admin %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'admin_app:dashboard' %}">Admin</a>
                             </li>
