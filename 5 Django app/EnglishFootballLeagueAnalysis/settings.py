@@ -13,9 +13,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError(
+        'SECRET_KEY environment variable is not set'
+    )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'RENDER' not in os.environ
+# DEBUG is False when RENDER_EXTERNAL_HOSTNAME is set (production)
+DEBUG = os.environ.get('RENDER_EXTERNAL_HOSTNAME') is None
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -113,11 +118,15 @@ STATICFILES_DIRS = [
 # Set STATIC_ROOT for production (Render deployment)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Enable WhiteNoise for static files in production
 # This production code might break development mode, so we check whether we're in DEBUG mode
 if not DEBUG:
     # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
     # and renames the files with unique names for each version to support long-term caching
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    # In development, use default static files storage
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

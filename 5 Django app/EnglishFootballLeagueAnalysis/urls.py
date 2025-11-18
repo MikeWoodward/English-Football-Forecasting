@@ -4,7 +4,16 @@ URL configuration for EnglishFootballLeagueAnalysis project.
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from admin_app.admin import admin_site
+
+# Import admin_site with error handling to prevent startup failures
+try:
+    from admin_app.admin import admin_site
+except ImportError as e:
+    import sys
+    print(f"Error importing admin_site: {e}", file=sys.stderr)
+    # Fallback to default admin if custom admin fails to import
+    from django.contrib import admin
+    admin_site = admin.site
 
 urlpatterns = [
     path('admin/', admin_site.urls),

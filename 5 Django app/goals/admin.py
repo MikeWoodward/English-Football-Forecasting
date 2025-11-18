@@ -2,8 +2,15 @@
 Admin configuration for the goals app.
 """
 from django.contrib.admin import ModelAdmin
-from admin_app.admin import admin_site
 from .models import FootballMatch, League, ClubSeason
+
+# Import admin_site with error handling
+try:
+    from admin_app.admin import admin_site
+except ImportError:
+    # Fallback to default admin if custom admin fails to import
+    from django.contrib import admin
+    admin_site = admin.site
 
 
 class FootballMatchAdmin(ModelAdmin):
