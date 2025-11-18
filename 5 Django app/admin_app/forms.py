@@ -4,7 +4,7 @@ Forms for the admin app.
 from django import forms
 from django.contrib.auth import get_user_model
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column
+from crispy_forms.layout import Layout, Row, Column
 
 User = get_user_model()
 
@@ -59,7 +59,6 @@ class UserCreateForm(forms.ModelForm):
                 Column('is_active', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'
             ),
-            Submit('submit', 'Create User', css_class='btn btn-success')
         )
 
     def clean_password2(self):
@@ -115,5 +114,4 @@ class UserEditForm(forms.ModelForm):
                 Column('is_active', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'
             ),
-            Submit('submit', 'Update User', css_class='btn btn-primary')
         )

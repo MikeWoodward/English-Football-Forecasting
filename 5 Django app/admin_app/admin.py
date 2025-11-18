@@ -24,25 +24,31 @@ class AdminOnlyAdminSite(AdminSite):
         
         Returns True only if user is authenticated and is_admin=True.
         """
+        if not request.user.is_authenticated:
+            return False
+        if not request.user.is_active:
+            return False
+        # Check if user has is_admin attribute and it's True
         return (
-            request.user.is_active and
-            request.user.is_authenticated and
+            hasattr(request.user, 'is_admin') and
             request.user.is_admin
         )
 
     def login(self, request, extra_context=None):
         """
-        Override login to redirect admin users appropriately.
+        Override login to redirect to custom admin login page.
         """
         if request.method == 'GET' and self.has_permission(request):
-            # Already logged in and is admin, redirect to index
-            try:
-                index_path = reverse('admin:index', current_app=self.name)
-                return redirect(index_path)
-            except Exception:
-                # Fallback if reverse fails
-                return redirect('/admin/')
-        return super().login(request, extra_context)
+            # Already logged in and is admin, redirect to home page
+            return redirect('/')
+        # Redirect to custom admin login page
+        from django.urls import reverse as url_reverse
+        try:
+            admin_login_url = url_reverse('admin_login')
+            return redirect(admin_login_url)
+        except Exception:
+            # Fallback to default admin login if custom URL doesn't exist
+            return super().login(request, extra_context)
 
 
 # Create custom admin site instance
