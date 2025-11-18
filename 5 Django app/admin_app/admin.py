@@ -36,8 +36,12 @@ class AdminOnlyAdminSite(AdminSite):
         """
         if request.method == 'GET' and self.has_permission(request):
             # Already logged in and is admin, redirect to index
-            index_path = reverse('admin:index', current_app=self.name)
-            return redirect(index_path)
+            try:
+                index_path = reverse('admin:index', current_app=self.name)
+                return redirect(index_path)
+            except Exception:
+                # Fallback if reverse fails
+                return redirect('/admin/')
         return super().login(request, extra_context)
 
 
