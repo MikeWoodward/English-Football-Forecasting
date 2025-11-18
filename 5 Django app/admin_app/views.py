@@ -14,17 +14,44 @@ User = get_user_model()
 
 def is_admin_user(user):
     """Check if user is an admin."""
-    return user.is_authenticated and user.is_admin
+    if not user.is_authenticated:
+        return False
+    if not user.is_active:
+        return False
+    # Check if user has is_admin attribute and it's True
+    return (
+        hasattr(user, 'is_admin') and
+        user.is_admin
+    )
 
 
-@login_required
-@user_passes_test(is_admin_user)
+@login_required(login_url='/accounts/admin-login/')
+@user_passes_test(
+    is_admin_user,
+    login_url='/accounts/admin-login/'
+)
 def admin_dashboard(request):
     """
     Admin dashboard showing user management options.
 
     Only accessible to logged in admin users.
     """
+    # Refresh user from database to ensure is_admin is current
+    try:
+        request.user.refresh_from_db()
+    except Exception:
+        pass
+    
+    # Double-check user is admin (defensive programming)
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        from django.contrib import messages
+        messages.error(
+            request,
+            'You do not have permission to access this page.'
+        )
+        from django.shortcuts import redirect
+        return redirect('/')
+    
     context = {
         'title': 'Admin Dashboard',
         'total_users': User.objects.count(),
