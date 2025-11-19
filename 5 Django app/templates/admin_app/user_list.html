@@ -59,7 +59,7 @@
                                     <td>{{ user.email|default:"—" }}</td>
                                     <td>{{ user.get_full_name|default:"—" }}</td>
                                     <td>
-                                        {% if user.is_admin %}
+                                        {% if user.is_superuser %}
                                             <span class="badge bg-success">Yes</span>
                                         {% else %}
                                             <span class="badge bg-secondary">No</span>

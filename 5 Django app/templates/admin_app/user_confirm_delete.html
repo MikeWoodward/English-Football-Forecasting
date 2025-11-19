@@ -30,7 +30,7 @@
                         <strong>User Details:</strong><br>
                         Email: {{ user.email|default:"Not provided" }}<br>
                         Full Name: {{ user.get_full_name|default:"Not provided" }}<br>
-                        Admin Status: {{ user.is_admin|yesno:"Yes,No" }}<br>
+                        Admin Status: {{ user.is_superuser|yesno:"Yes,No" }}<br>
                         Active Status: {{ user.is_active|yesno:"Active,Inactive" }}
                     </p>
                 </div>
