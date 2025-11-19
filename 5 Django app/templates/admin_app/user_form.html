@@ -23,6 +23,15 @@
                 <form method="post">
                     {% csrf_token %}
                     {{ form|crispy }}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                        <a href="{% url 'admin_app:user_list' %}" 
+                           class="btn btn-secondary me-md-2">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            {% if title|slice:":5" == "Edit" %}Update User{% else %}Create User{% endif %}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
