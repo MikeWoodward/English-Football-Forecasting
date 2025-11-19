@@ -704,8 +704,7 @@ class FootballMatchManager(models.Manager):
         # This is a security risk that should be fixed
         with connection.cursor() as cursor:
             cursor.execute(
-                sql,
-                [league_tier, season, league_tier, season],
+                sql
             )
             # Convert query results to list of dictionaries
             columns = [col[0] for col in cursor.description]
