@@ -34,8 +34,8 @@ def bokeh_score_distribution_plots(data, year):
         high=max_frequency
     )
     plots = []
-    # Create a separate plot for each league tier
-    for league_tier in list(dict.fromkeys(data['league_tier'])):
+    # Create a separate plot for each league tier. Tiers ordered in increasing order.
+    for league_tier in sorted(list(dict.fromkeys(data['league_tier']))):
         # Filter data for current league tier
         data_subset: Dict[str, List[Any]] = {
             k: [
