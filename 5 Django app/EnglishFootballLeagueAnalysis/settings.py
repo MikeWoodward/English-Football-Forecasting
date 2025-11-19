@@ -20,7 +20,7 @@ if not SECRET_KEY:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG is False when RENDER_EXTERNAL_HOSTNAME is set (production)
-DEBUG = True #False # os.environ.get('RENDER_EXTERNAL_HOSTNAME') is None
+DEBUG = False # os.environ.get('RENDER_EXTERNAL_HOSTNAME') is None
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
