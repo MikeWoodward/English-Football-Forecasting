@@ -13,7 +13,7 @@ class AdminLoginView(auth_views.LoginView):
     """
     Custom login view for admin users.
     
-    Shows "Admin user login" header and redirects to admin panel
+    Shows "Super user login" header and redirects to home page
     after successful login.
     """
     template_name = 'registration/admin_login.html'

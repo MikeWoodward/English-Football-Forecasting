@@ -60,11 +60,13 @@
                             <div class="card-body text-center">
                                 {% if user.is_authenticated %}
                                     <p class="mb-3">Welcome back, {{ user.username }}!</p>
-                                    {% if user.is_authenticated and user.is_admin %}
-                                        <p class="mb-3 text-warning fw-bold">
-                                            You are an Admin User!
-                                        </p>
-                                    {% endif %}
+                                    <p class="mb-3">
+                                        {% if user.is_superuser %}
+                                            User Type: Super User
+                                        {% else %}
+                                            User Type: Regular User
+                                        {% endif %}
+                                    </p>
                                     <a href="{% url 'trends:dashboard' %}" 
                                        class="btn btn-primary btn-lg mb-2 w-100">
                                         View Trends

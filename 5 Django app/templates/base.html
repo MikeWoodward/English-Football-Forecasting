@@ -118,10 +118,12 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'club_analysis:club_analysis' %}">Club Analysis</a>
                         </li>
-                        {% if user.is_authenticated and user.is_admin %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'admin_app:dashboard' %}">Admin</a>
-                            </li>
+                        {% if user.is_authenticated %}
+                            {% if user.is_admin or user.is_superuser %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'admin_app:dashboard' %}">Admin</a>
+                                </li>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 </ul>
@@ -134,10 +136,10 @@
                                 {{ user.username }}
                             </a>
                             <ul class="dropdown-menu">
-                                {% if user.is_authenticated and user.is_admin %}
+                                {% if user.is_admin or user.is_superuser %}
                                     <li><a class="dropdown-item" 
                                            href="{% url 'admin_app:dashboard' %}">
-                                        Admin Panel</a></li>
+                                        Admin Dashboard</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                 {% endif %}
                                 <li><a class="dropdown-item" 

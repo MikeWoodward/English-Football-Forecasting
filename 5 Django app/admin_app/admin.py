@@ -22,12 +22,15 @@ class AdminOnlyAdminSite(AdminSite):
         """
         Check if user has permission to access the admin site.
         
-        Returns True only if user is authenticated and is_admin=True.
+        Returns True if user is authenticated and is_admin=True or is_superuser=True.
         """
         if not request.user.is_authenticated:
             return False
         if not request.user.is_active:
             return False
+        # Check if user is superuser (has all permissions)
+        if hasattr(request.user, 'is_superuser') and request.user.is_superuser:
+            return True
         # Check if user has is_admin attribute and it's True
         return (
             hasattr(request.user, 'is_admin') and

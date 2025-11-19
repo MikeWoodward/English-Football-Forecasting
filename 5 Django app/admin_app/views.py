@@ -13,11 +13,14 @@ User = get_user_model()
 
 
 def is_admin_user(user):
-    """Check if user is an admin."""
+    """Check if user is an admin or superuser."""
     if not user.is_authenticated:
         return False
     if not user.is_active:
         return False
+    # Check if user is superuser (has all permissions)
+    if hasattr(user, 'is_superuser') and user.is_superuser:
+        return True
     # Check if user has is_admin attribute and it's True
     return (
         hasattr(user, 'is_admin') and
@@ -42,8 +45,12 @@ def admin_dashboard(request):
     except Exception:
         pass
     
-    # Double-check user is admin (defensive programming)
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    # Double-check user is admin or superuser (defensive programming)
+    is_admin = (
+        (hasattr(request.user, 'is_admin') and request.user.is_admin) or
+        (hasattr(request.user, 'is_superuser') and request.user.is_superuser)
+    )
+    if not is_admin:
         from django.contrib import messages
         messages.error(
             request,
