@@ -1,6 +1,9 @@
 """
 Views for the club analysis app.
 """
+import os
+import json
+import re
 from typing import Dict, List, Any, Optional
 from django.shortcuts import render
 from django.http import HttpRequest, JsonResponse
@@ -9,6 +12,7 @@ from django.db.models.functions import Substr, Cast
 from bokeh.embed import components
 from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource, HoverTool
+from google import genai
 from goals.models import (
     ClubHistory,
     ClubSeason,
@@ -19,7 +23,14 @@ from goals.models import (
 
 def club_analysis(request: HttpRequest):
     """
-    Main view for club analysis page.
+    Landing page for club analysis with dropdown menu.
+    """
+    return render(request, 'club_analysis/club_analysis.html')
+
+
+def club_league_performance(request: HttpRequest):
+    """
+    Main view for club league performance page.
     Handles initial page load and club selection.
     """
     # Get all unique club names from club_history, sorted alphabetically
@@ -77,7 +88,276 @@ def club_analysis(request: HttpRequest):
                 'chart_div': chart_div,
             })
     
-    return render(request, 'club_analysis/club_analysis.html', context)
+    return render(
+        request,
+        'club_analysis/club_league_performance.html',
+        context
+    )
+
+
+def club_league_season_analysis(request: HttpRequest):
+    """
+    View for club league and season analysis page.
+    """
+    # Check if GOOGLE_API_KEY is defined
+    has_api_key = bool(os.environ.get('GOOGLE_API_KEY'))
+    
+    # Handle AJAX request for seasons (only if API key is available)
+    if request.method == 'GET' and request.GET.get('club'):
+        if not has_api_key:
+            return JsonResponse(
+                {'error': 'API key not available'},
+                status=500
+            )
+        club_name = request.GET.get('club')
+        # Get all seasons for this club from club_season
+        seasons = (
+            ClubSeason.objects
+            .filter(club_name=club_name)
+            .select_related('league')
+            .values_list('league__season', flat=True)
+            .distinct()
+            .order_by('league__season')
+        )
+        return JsonResponse({'seasons': list(seasons)})
+    
+    # Get all unique club names from club_history, sorted alphabetically
+    # (only if API key is available)
+    clubs = []
+    if has_api_key:
+        clubs = (
+            ClubHistory.objects
+            .values_list('club_name', flat=True)
+            .distinct()
+            .order_by('club_name')
+        )
+    
+    context: Dict[str, Any] = {
+        'has_api_key': has_api_key,
+        'clubs': clubs,
+    }
+    
+    return render(
+        request,
+        'club_analysis/club_league_season_analysis.html',
+        context
+    )
+
+
+def get_club_season_analysis(request: HttpRequest):
+    """
+    Handle AJAX request to get AI-powered analysis for a club's season.
+    """
+    # Check if GOOGLE_API_KEY is defined
+    api_key = os.environ.get('GOOGLE_API_KEY')
+    if not api_key:
+        return JsonResponse(
+            {
+                'error': (
+                    'GOOGLE_API_KEY environment variable is not set'
+                ),
+                'html': ''
+            },
+            status=500
+        )
+    
+    # Get club and season from request
+    club = request.GET.get('club', '')
+    season = request.GET.get('season', '')
+    
+    if not club or not season:
+        return JsonResponse(
+            {
+                'error': 'Club and season are required',
+                'html': ''
+            },
+            status=400
+        )
+    
+    try:
+        # Build prompt
+        prompt: str = (
+            '* Overview : Using only soccer websites, give me an analysis '
+            f'of the English soccer team {club}\'s season {season}.\n'
+            '* Return your results as a JSON object with the following '
+            'format:\n'
+            '    * {\'Domestic performance\': "HTML text string"\n'
+            '        \'International performance\': "HTML text string",\n'
+            '        \'Team notes\':"HTML text string",\n'
+            '        \'Notable events\':"HTML text string".}\n'
+            '* Analysis to include:\n'
+            '    * Domestic league and cup perfromance. Include any '
+            'notable victories or losses. Return your results as a HTML '
+            'text string\n'
+            '    * International performance. If there were no '
+            'international games or competitins, return None. Return your '
+            'results as a HTML text string\n'
+            '    * Team notes, including best players, team changes, '
+            'management changes. Include links to pictures of the team '
+            'from this season, but only if you are sure the pictures are '
+            'the right team for the right season - give details above '
+            'each link (e.g. the name of the website), a good place to look '
+            'for pictures is the team\'s official website. Return your '
+            'results as a HTML text string.\n'
+            '    * Any off-pitch drama (e.g. scandals, high-profile '
+            'changes). Return your results as a HTML text string.'
+        )
+        
+        # Initialize Google AI client
+        client = genai.Client(api_key=api_key)
+        
+        # Send prompt to Gemini API
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+        )
+        
+        # Check for errors in response
+        if hasattr(response, 'prompt_feedback'):
+            if hasattr(response.prompt_feedback, 'block_reason') and (
+                response.prompt_feedback.block_reason
+            ):
+                error_msg = (
+                    f'API error: {response.prompt_feedback.block_reason}'
+                )
+                return JsonResponse(
+                    {'error': error_msg, 'html': ''},
+                    status=500
+                )
+        
+        # Check for candidates and errors
+        if hasattr(response, 'candidates') and response.candidates:
+            candidate = response.candidates[0]
+            if hasattr(candidate, 'finish_reason') and (
+                candidate.finish_reason not in ['STOP', None]
+            ):
+                error_msg = (
+                    f'API error: {candidate.finish_reason}'
+                )
+                return JsonResponse(
+                    {'error': error_msg, 'html': ''},
+                    status=500
+                )
+        
+        # Extract text from response
+        response_text = ''
+        if hasattr(response, 'text'):
+            response_text = response.text
+        elif hasattr(response, 'candidates') and response.candidates:
+            candidate = response.candidates[0]
+            if hasattr(candidate, 'content') and (
+                hasattr(candidate.content, 'parts')
+            ):
+                parts = candidate.content.parts
+                if parts:
+                    response_text = getattr(parts[0], 'text', '')
+        
+        if not response_text:
+            return JsonResponse(
+                {
+                    'error': 'Empty response from AI',
+                    'html': ''
+                },
+                status=500
+            )
+        
+        # Parse JSON from response text
+        json_pattern = r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
+        matches = re.findall(json_pattern, response_text, re.DOTALL)
+        
+        if not matches:
+            return JsonResponse(
+                {
+                    'error': (
+                        'Could not find JSON in AI response'
+                    ),
+                    'html': ''
+                },
+                status=500
+            )
+        
+        # Try to find the longest match (most likely to be complete JSON)
+        json_candidate = max(matches, key=len)
+        
+        try:
+            club_season = json.loads(json_candidate)
+        except json.JSONDecodeError as e:
+            return JsonResponse(
+                {
+                    'error': f'Invalid JSON in response: {str(e)}',
+                    'html': ''
+                },
+                status=500
+            )
+        
+        # Check that required fields exist and have content
+        # Note: "International performance" can be null/empty
+        required_fields = [
+            'Domestic performance',
+            'Team notes',
+            'Notable events'
+        ]
+        
+        for field in required_fields:
+            if field not in club_season:
+                return JsonResponse(
+                    {
+                        'error': (
+                            f'Missing required field: {field}'
+                        ),
+                        'html': ''
+                    },
+                    status=500
+                )
+            if not club_season[field] or (
+                club_season[field] == 'None'
+            ):
+                return JsonResponse(
+                    {
+                        'error': (
+                            f'Empty content in field: {field}'
+                        ),
+                        'html': ''
+                    },
+                    status=500
+                )
+        
+        # Handle "International performance" - set to "None" if missing/empty
+        international_perf = club_season.get(
+            'International performance',
+            'None'
+        )
+        if not international_perf or international_perf == 'None':
+            international_perf = 'None'
+        
+        # Create HTML string
+        html_content = (
+            f'<body>\n'
+            f'    <hr>\n'
+            f'    <h1>Club: {club} Season: {season}</h1>\n'
+            f'    <h2>Domestic performance</h2>\n'
+            f'    <p>{club_season["Domestic performance"]}</p>\n'
+            f'    <h2>International performance</h2>\n'
+            f'    <p>{international_perf}</p>\n'
+            f'    <h2>Team notes</h2>\n'
+            f'    <p>{club_season["Team notes"]}</p>\n'
+            f'    <h2>Notable events</h2>\n'
+            f'    <p>{club_season["Notable events"]}</p>\n'
+            f'</body>\n'
+        )
+        
+        return JsonResponse(
+            {'error': None, 'html': html_content},
+            status=200
+        )
+        
+    except Exception as e:
+        # Handle any other errors
+        error_msg = f'Error generating analysis: {str(e)}'
+        return JsonResponse(
+            {'error': error_msg, 'html': ''},
+            status=500
+        )
 
 
 def get_club_history_data(
@@ -218,6 +498,7 @@ def create_league_tier_chart(
             height=400,
             sizing_mode="stretch_width",
         )
+        plot.y_range.flipped = True
         script, div = components(plot)
         return script, div
     
@@ -241,6 +522,9 @@ def create_league_tier_chart(
         sizing_mode="stretch_width",
         toolbar_location=None,
     )
+    
+    # Reverse y-axis so league 1 is at the top
+    plot.y_range.flipped = True
     
     # Create bar chart
     plot.vbar(

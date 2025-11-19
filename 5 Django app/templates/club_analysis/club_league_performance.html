@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Club League Performance - English Football League Analysis{% endblock %}
+
+{% block extra_css %}
+<!-- Bokeh CSS -->
+<link rel="stylesheet"
+      href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css"
+      type="text/css" />
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title text-center mb-0">Club League Performance</h1>
+            </div>
+            <div class="card-body">
+                <!-- Club Selection Dropdown -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label for="club-select" class="form-label">
+                            Select a Club:
+                        </label>
+                        <select class="form-select" id="club-select" 
+                                onchange="handleClubSelection()">
+                            <option value="">-- Select a Club --</option>
+                            {% for club in clubs %}
+                                <option value="{{ club }}" 
+                                        {% if selected_club == club %}selected{% endif %}>
+                                    {{ club }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                {% if not selected_club %}
+                    <!-- Initial message when no club is selected -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-info text-center">
+                                Please select a club from the dropdown above.
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Selected Club Message -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="alert alert-success">
+                                You have selected the club <strong>{{ selected_club }}</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Club History Table -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h3>Club History</h3>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Year</th>
+                                            <th>Club Name</th>
+                                            <th>Modern Name</th>
+                                            <th>Nickname</th>
+                                            <th>Event</th>
+                                            <th>Wikipedia Link</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for record in club_history_data %}
+                                            <tr>
+                                                <td>{{ record.year }}</td>
+                                                <td>{{ record.club_name }}</td>
+                                                <td>{{ record.modern_name }}</td>
+                                                <td>{{ record.nickname }}</td>
+                                                <td>{{ record.event }}</td>
+                                                <td>
+                                                    {% if record.wikipedia %}
+                                                        <a href="{{ record.wikipedia }}" 
+                                                           target="_blank" 
+                                                           rel="noopener noreferrer">
+                                                            {{ record.wikipedia }}
+                                                        </a>
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- League Tier Bar Chart -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h3>League Tier Over Time</h3>
+                            <p>Football was suspended during World War I and World War II.</p>
+                            <div class="chart-container">
+                                {{ chart_div|safe }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Matches by Season -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h3>Matches by Season</h3>
+                            {% for season, matches in match_data_by_season.items %}
+                                <div class="mb-4">
+                                    <h4>Matches for club {{ selected_club }} for season {{ season }}</h4>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-bordered">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th>Season</th>
+                                                    <th>Match Date</th>
+                                                    <th>League Tier</th>
+                                                    <th>Home Club</th>
+                                                    <th>Away Club</th>
+                                                    <th>Home Goals</th>
+                                                    <th>Away Goals</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for match in matches %}
+                                                    <tr>
+                                                        <td>{{ match.season }}</td>
+                                                        <td>{{ match.match_date }}</td>
+                                                        <td>{{ match.league_tier }}</td>
+                                                        <td>{{ match.home_club }}</td>
+                                                        <td>{{ match.away_club }}</td>
+                                                        <td>{{ match.home_goals }}</td>
+                                                        <td>{{ match.away_goals }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bokeh JS -->
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js"></script>
+{{ chart_script|safe }}
+
+<script>
+function handleClubSelection() {
+    const selectElement = document.getElementById('club-select');
+    const selectedClub = selectElement.value;
+    
+    if (selectedClub) {
+        // Redirect to the same page with the selected club as a query parameter
+        window.location.href = '{% url "club_analysis:club_league_performance" %}?club=' + encodeURIComponent(selectedClub);
+    } else {
+        // If no club selected, redirect to base URL
+        window.location.href = '{% url "club_analysis:club_league_performance" %}';
+    }
+}
+</script>
+{% endblock %}
+
+
+
