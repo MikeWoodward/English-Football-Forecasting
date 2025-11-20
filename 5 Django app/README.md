@@ -11,7 +11,7 @@ You can read more about how this app was developed on my blog:
 
 ### Response times
 
-The app is a little slow to update some pages, especially when there's a lot of data. I'm running some tests to find out causes and diagnosis.
+The app is a little slow to update some pages, especially when there's a lot of data. I'm running some tests to find out causes.
 
 ### AI response
 
