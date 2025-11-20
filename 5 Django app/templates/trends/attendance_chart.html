@@ -4,7 +4,7 @@
 
 {% block extra_css %}
 <!-- Bokeh CSS -->
-<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css" type="text/css" />
+<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css" type="text/css" async blocking="render" />
 {% endblock %}
 
 {% block content %}
@@ -154,9 +154,9 @@
 
 {% block extra_js %}
 <!-- Bokeh JS -->
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js" async blocking="render"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js" async blocking="render"></script>
+<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js" async blocking="render"></script>
 
 {{ script_season|safe }}
 {{ script_mean|safe }}
