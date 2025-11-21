@@ -4,7 +4,13 @@ Views for the club analysis app.
 import os
 import json
 import re
-from typing import Dict, List, Any, Optional
+from typing import (
+    Dict,
+    List,
+    Any,
+    Optional,
+    TypedDict,
+)
 from django.shortcuts import render
 from django.http import HttpRequest, JsonResponse
 from django.db.models import Q, F, IntegerField
@@ -13,6 +19,8 @@ from bokeh.embed import components
 from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource, HoverTool
 from google import genai
+# Import the specific APIError from the SDK
+from google.genai.errors import APIError
 from goals.models import (
     ClubHistory,
     ClubSeason,
@@ -68,7 +76,10 @@ def club_league_performance(request: HttpRequest):
             )
             
             # Get club history data
-            club_history_data = get_club_history_data(selected_club, modern_name)
+            club_history_data = get_club_history_data(
+                selected_club,
+                modern_name
+            )
             
             # Get league tier data for bar chart
             league_tier_data = get_league_tier_data(all_club_names)
@@ -77,7 +88,9 @@ def club_league_performance(request: HttpRequest):
             match_data_by_season = get_match_data_by_season(all_club_names)
             
             # Create bar chart
-            chart_script, chart_div = create_league_tier_chart(league_tier_data)
+            chart_script, chart_div = create_league_tier_chart(
+                league_tier_data
+            )
             
             context.update({
                 'modern_name': modern_name,
@@ -175,177 +188,87 @@ def get_club_season_analysis(request: HttpRequest):
         )
     
     try:
+
+        # This ensures the model returns a valid, predictable JSON object.
+        class SoccerAnalysis(TypedDict):
+            """Defines the required keys and value types for the JSON output."""
+            Domestic_performance: str
+            International_performance: str
+            Team_notes: str
+            Team_photos: str
+            Notable_events: str
+
         # Build prompt
         prompt: str = (
-            '* Overview : Using only soccer websites, give me an analysis '
-            f'of the English soccer team {club}\'s season {season}.\n'
-            '* Return your results as a JSON object with the following '
-            'format:\n'
-            '    * {\'Domestic performance\': "HTML text string"\n'
-            '        \'International performance\': "HTML text string",\n'
-            '        \'Team notes\':"HTML text string",\n'
-            '        \'Notable events\':"HTML text string".}\n'
-            '* Analysis to include:\n'
-            '    * Domestic league and cup perfromance. Include any '
-            'notable victories or losses. Return your results as a HTML '
-            'text string\n'
-            '    * International performance. If there were no '
-            'international games or competitins, return None. Return your '
-            'results as a HTML text string\n'
-            '    * Team notes, including best players, team changes, '
-            'management changes. Include links to pictures of the team '
-            'from this season, but only if you are sure the pictures are '
-            'the right team for the right season - give details above '
-            'each link (e.g. the name of the website), a good place to look '
-            'for pictures is the team\'s official website. Return your '
-            'results as a HTML text string.\n'
-            '    * Any off-pitch drama (e.g. scandals, high-profile '
-            'changes). Return your results as a HTML text string.'
+            f'Using only soccer websites, give me an analysis of the '
+            f'English soccer team {club}\'s season {season}. '
+            'The analysis MUST be returned as a JSON object, strictly '
+            'following the provided schema. '
+            'The analysis should include: '
+            '* Domestic league and cup performance. Include best and worst '
+            'results. (HTML string). '
+            '* International performance ("No international games played." '
+            'if no games) (HTML string). '
+            '* Team notes (best players, team and manager changes) '
+            '(HTML string). '
+            '* Team photos (if you can definitely find photos for this team '
+            'for this season, include them as links. If not, say so.) '
+            '* Any notable drama/scandals on or off the pitch (HTML string).'
         )
-        
+
         # Initialize Google AI client
         client = genai.Client(api_key=api_key)
-        
+
+        # Configure the generation request
+        config = genai.types.GenerateContentConfig(
+            # CRITICAL: Specify JSON output format
+            response_mime_type="application/json",
+            # CRITICAL: Provide the TypedDict schema
+            response_schema=SoccerAnalysis,
+        )
+
         # Send prompt to Gemini API
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=prompt,
+            config=config,
         )
-        
-        # Check for errors in response
-        if hasattr(response, 'prompt_feedback'):
-            if hasattr(response.prompt_feedback, 'block_reason') and (
-                response.prompt_feedback.block_reason
-            ):
-                error_msg = (
-                    f'API error: {response.prompt_feedback.block_reason}'
-                )
-                return JsonResponse(
-                    {'error': error_msg, 'html': ''},
-                    status=500
-                )
-        
-        # Check for candidates and errors
-        if hasattr(response, 'candidates') and response.candidates:
-            candidate = response.candidates[0]
-            if hasattr(candidate, 'finish_reason') and (
-                candidate.finish_reason not in ['STOP', None]
-            ):
-                error_msg = (
-                    f'API error: {candidate.finish_reason}'
-                )
-                return JsonResponse(
-                    {'error': error_msg, 'html': ''},
-                    status=500
-                )
-        
-        # Extract text from response
-        response_text = ''
-        if hasattr(response, 'text'):
-            response_text = response.text
-        elif hasattr(response, 'candidates') and response.candidates:
-            candidate = response.candidates[0]
-            if hasattr(candidate, 'content') and (
-                hasattr(candidate.content, 'parts')
-            ):
-                parts = candidate.content.parts
-                if parts:
-                    response_text = getattr(parts[0], 'text', '')
-        
-        if not response_text:
-            return JsonResponse(
-                {
-                    'error': 'Empty response from AI',
-                    'html': ''
-                },
-                status=500
-            )
-        
-        # Parse JSON from response text
-        json_pattern = r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
-        matches = re.findall(json_pattern, response_text, re.DOTALL)
-        
-        if not matches:
-            return JsonResponse(
-                {
-                    'error': (
-                        'Could not find JSON in AI response'
-                    ),
-                    'html': ''
-                },
-                status=500
-            )
-        
-        # Try to find the longest match (most likely to be complete JSON)
-        json_candidate = max(matches, key=len)
-        
-        try:
-            club_season = json.loads(json_candidate)
-        except json.JSONDecodeError as e:
-            return JsonResponse(
-                {
-                    'error': f'Invalid JSON in response: {str(e)}',
-                    'html': ''
-                },
-                status=500
-            )
-        
-        # Check that required fields exist and have content
-        # Note: "International performance" can be null/empty
-        required_fields = [
-            'Domestic performance',
-            'Team notes',
-            'Notable events'
-        ]
-        
-        for field in required_fields:
-            if field not in club_season:
-                return JsonResponse(
-                    {
-                        'error': (
-                            f'Missing required field: {field}'
-                        ),
-                        'html': ''
-                    },
-                    status=500
-                )
-            if not club_season[field] or (
-                club_season[field] == 'None'
-            ):
-                return JsonResponse(
-                    {
-                        'error': (
-                            f'Empty content in field: {field}'
-                        ),
-                        'html': ''
-                    },
-                    status=500
-                )
-        
-        # Handle "International performance" - set to "None" if missing/empty
-        international_perf = club_season.get(
-            'International performance',
-            'None'
+
+    except APIError as e:
+        # Handle API-specific errors (e.g., authentication, rate limiting,
+        # invalid model)
+        return JsonResponse(
+            {
+                'error': f'Google GenAI API Error occurred: {str(e)}',
+                'html': ''
+            },
+            status=500
         )
-        if not international_perf or international_perf == 'None':
-            international_perf = 'None'
-        
+
+
+    try:
+        # Parse the JSON response from the API
+        response_text = response.text
+        club_season = json.loads(response_text)
+
         # Create HTML string
         html_content = (
             f'<body>\n'
             f'    <hr>\n'
             f'    <h1>Club: {club} Season: {season}</h1>\n'
             f'    <h2>Domestic performance</h2>\n'
-            f'    <p>{club_season["Domestic performance"]}</p>\n'
+            f'    <p>{club_season["Domestic_performance"]}</p>\n'
             f'    <h2>International performance</h2>\n'
-            f'    <p>{international_perf}</p>\n'
+            f'    <p>{club_season["International_performance"]}</p>\n'
             f'    <h2>Team notes</h2>\n'
-            f'    <p>{club_season["Team notes"]}</p>\n'
+            f'    <p>{club_season["Team_notes"]}</p>\n'
+            f'    <h2>Team photos</h2>\n'
+            f'    <p>{club_season["Team_photos"]}</p>\n'
             f'    <h2>Notable events</h2>\n'
-            f'    <p>{club_season["Notable events"]}</p>\n'
+            f'    <p>{club_season["Notable_events"]}</p>\n'
             f'</body>\n'
         )
-        
+
         return JsonResponse(
             {'error': None, 'html': html_content},
             status=200
