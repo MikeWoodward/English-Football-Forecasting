@@ -9,8 +9,8 @@ from typing import (
     List,
     Any,
     Optional,
-    TypedDict,
 )
+from pydantic import BaseModel
 from django.shortcuts import render
 from django.http import HttpRequest, JsonResponse
 from django.db.models import Q, F, IntegerField
@@ -190,7 +190,9 @@ def get_club_season_analysis(request: HttpRequest):
     try:
 
         # This ensures the model returns a valid, predictable JSON object.
-        class SoccerAnalysis(TypedDict):
+        # Using Pydantic BaseModel instead of TypedDict because
+        # Google GenAI SDK requires a Pydantic model for response_schema
+        class SoccerAnalysis(BaseModel):
             """Defines the required keys and value types for the JSON output."""
             Domestic_performance: str
             International_performance: str
@@ -259,26 +261,23 @@ def get_club_season_analysis(request: HttpRequest):
         response_text = response.text
         club_season = json.loads(response_text)
 
-        html_content = "TEST TSET TEST"
-
-
-        # # Create HTML string
-        # html_content = (
-        #     f'<body>\n'
-        #     f'    <hr>\n'
-        #     f'    <h1>Club: {club} Season: {season}</h1>\n'
-        #     f'    <h2>Domestic performance</h2>\n'
-        #     f'    <p>{club_season["Domestic_performance"]}</p>\n'
-        #     f'    <h2>International performance</h2>\n'
-        #     f'    <p>{club_season["International_performance"]}</p>\n'
-        #     f'    <h2>Team notes</h2>\n'
-        #     f'    <p>{club_season["Team_notes"]}</p>\n'
-        #     f'    <h2>Team photos</h2>\n'
-        #     f'    <p>{club_season["Team_photos"]}</p>\n'
-        #     f'    <h2>Notable events</h2>\n'
-        #     f'    <p>{club_season["Notable_events"]}</p>\n'
-        #     f'</body>\n'
-        # )
+        # Create HTML string
+        html_content = (
+            f'<body>\n'
+            f'    <hr>\n'
+            f'    <h1>Club: {club} Season: {season}</h1>\n'
+            f'    <h2>Domestic performance</h2>\n'
+            f'    <p>{club_season["Domestic_performance"]}</p>\n'
+            f'    <h2>International performance</h2>\n'
+            f'    <p>{club_season["International_performance"]}</p>\n'
+            f'    <h2>Team notes</h2>\n'
+            f'    <p>{club_season["Team_notes"]}</p>\n'
+            f'    <h2>Team photos</h2>\n'
+            f'    <p>{club_season["Team_photos"]}</p>\n'
+            f'    <h2>Notable events</h2>\n'
+            f'    <p>{club_season["Notable_events"]}</p>\n'
+            f'</body>\n'
+        )
 
         return JsonResponse(
             {'error': None, 'html': html_content},
