@@ -245,6 +245,14 @@ def get_club_season_analysis(request: HttpRequest):
             status=500
         )
 
+    except Exception as e:
+        # Handle any other errors
+        error_msg = f'Error generating analysis: {str(e)}'
+        return JsonResponse(
+            {'error': error_msg, 'html': ''},
+            status=500
+        )
+
 
     try:
         # Parse the JSON response from the API
