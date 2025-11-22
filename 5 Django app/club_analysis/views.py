@@ -259,23 +259,26 @@ def get_club_season_analysis(request: HttpRequest):
         response_text = response.text
         club_season = json.loads(response_text)
 
-        # Create HTML string
-        html_content = (
-            f'<body>\n'
-            f'    <hr>\n'
-            f'    <h1>Club: {club} Season: {season}</h1>\n'
-            f'    <h2>Domestic performance</h2>\n'
-            f'    <p>{club_season["Domestic_performance"]}</p>\n'
-            f'    <h2>International performance</h2>\n'
-            f'    <p>{club_season["International_performance"]}</p>\n'
-            f'    <h2>Team notes</h2>\n'
-            f'    <p>{club_season["Team_notes"]}</p>\n'
-            f'    <h2>Team photos</h2>\n'
-            f'    <p>{club_season["Team_photos"]}</p>\n'
-            f'    <h2>Notable events</h2>\n'
-            f'    <p>{club_season["Notable_events"]}</p>\n'
-            f'</body>\n'
-        )
+        html_content = "TEST TSET TEST"
+
+
+        # # Create HTML string
+        # html_content = (
+        #     f'<body>\n'
+        #     f'    <hr>\n'
+        #     f'    <h1>Club: {club} Season: {season}</h1>\n'
+        #     f'    <h2>Domestic performance</h2>\n'
+        #     f'    <p>{club_season["Domestic_performance"]}</p>\n'
+        #     f'    <h2>International performance</h2>\n'
+        #     f'    <p>{club_season["International_performance"]}</p>\n'
+        #     f'    <h2>Team notes</h2>\n'
+        #     f'    <p>{club_season["Team_notes"]}</p>\n'
+        #     f'    <h2>Team photos</h2>\n'
+        #     f'    <p>{club_season["Team_photos"]}</p>\n'
+        #     f'    <h2>Notable events</h2>\n'
+        #     f'    <p>{club_season["Notable_events"]}</p>\n'
+        #     f'</body>\n'
+        # )
 
         return JsonResponse(
             {'error': None, 'html': html_content},

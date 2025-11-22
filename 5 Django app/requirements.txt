@@ -29,3 +29,6 @@ uvicorn==0.34.2
 
 # Google AI
 google-genai==0.5.0
+
+# Data Validation
+pydantic==2.12.4
