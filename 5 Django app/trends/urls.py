@@ -7,21 +7,15 @@ from . import views
 app_name = 'trends'
 
 urlpatterns = [
-    path('', views.trends_dashboard, name='dashboard'),
-    path('goals-over-time/', views.goals_over_time, name='goals_over_time'),
-    path('home-advantage-over-time/', views.home_advantage_over_time,
-         name='home_advantage_over_time'),
-    path('draw-fraction-over-time/', views.draw_fraction_over_time,
-         name='draw_fraction_over_time'),
     path(
-        'inequality-win-fraction-sd-over-time/',
-        views.inequality_win_fraction_sd_over_time,
-        name='inequality_win_fraction_sd_over_time',
+        '',
+        views.trends_dashboard,
+        name='dashboard',
     ),
     path(
-        'discipline-over-time/',
-        views.discipline_over_time,
-        name='discipline_over_time',
+        'attendance-violin-json/',
+        views.attendance_violin_json,
+        name='attendance_violin_json',
     ),
     path(
         'attendance-over-time/',
@@ -29,8 +23,78 @@ urlpatterns = [
         name='attendance_over_time',
     ),
     path(
-        'attendance-violin-json/',
-        views.attendance_violin_json,
-        name='attendance_violin_json',
+        'attendance-over-time-total-json/',
+        views.attendance_over_time_total_json,
+        name='attendance_over_time_total_json',
+    ),
+    path(
+        'attendance-over-time-mean-json/',
+        views.attendance_over_time_mean_json,
+        name='attendance_over_time_mean_json',
+    ),
+    path(
+        'discipline-over-time/',
+        views.discipline_over_time,
+        name='discipline_over_time',
+    ),
+    path(
+        'discipline-over-time-red-cards-json/',
+        views.discipline_over_time_red_cards_json,
+        name='discipline_over_time_red_cards_json',
+    ),
+    path(
+        'discipline-over-time-yellow-cards-json/',
+        views.discipline_over_time_yellow_cards_json,
+        name='discipline_over_time_yellow_cards_json',
+    ),
+    path(
+        'discipline-over-time-fouls-json/',
+        views.discipline_over_time_fouls_json,
+        name='discipline_over_time_fouls_json',
+    ),
+    path(
+        'draw-fraction-over-time/',
+        views.draw_fraction_over_time,
+        name='draw_fraction_over_time',
+    ),
+    path(
+        'draw-fraction-over-time-json/',
+        views.draw_fraction_over_time_json,
+        name='draw_fraction_over_time_json',
+    ),
+    path(
+        'goals-over-time/',
+        views.goals_over_time,
+        name='goals_over_time',
+    ),
+    path(
+        'goals-over-time-json/',
+        views.goals_over_time_json,
+        name='goals_over_time_json',
+    ),
+    path(
+        'home-advantage-over-time/',
+        views.home_advantage_over_time,
+        name='home_advantage_over_time',
+    ),
+    path(
+        'home-advantage-over-time-hwf-json/',
+        views.home_advantage_over_time_hwf_json,
+        name='home_advantage_over_time_hwf_json',
+    ),
+    path(
+        'home-advantage-over-time-hwgd-json/',
+        views.home_advantage_over_time_hwgd_json,
+        name='home_advantage_over_time_hwgd_json',
+    ),
+    path(
+        'inequality-win-fraction-sd-over-time/',
+        views.inequality_win_fraction_sd_over_time,
+        name='inequality_win_fraction_sd_over_time',
+    ),
+    path(
+        'inequality-win-fraction-sd-over-time-json/',
+        views.inequality_win_fraction_sd_over_time_json,
+        name='inequality_win_fraction_sd_over_time_json',
     ),
 ]

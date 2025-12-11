@@ -3,8 +3,6 @@
 {% block title %}{{ title }} - English Football League Analysis{% endblock %}
 
 {% block extra_css %}
-<!-- Bokeh CSS -->
-<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css" type="text/css" />
 {% endblock %}
 
 {% block content %}
@@ -23,7 +21,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <!-- Bootstrap Tabs for Charts -->
                 <div class="row">
                     <div class="col-12">
@@ -62,7 +60,7 @@
                                  role="tabpanel" 
                                  aria-labelledby="win-fraction-tab">
                                 <div class="chart-container">
-                                    {{ div_hwf|safe }}
+                                    <div id="{{ chart_div_id_hwf }}" style="width: 100%;"></div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" 
@@ -70,13 +68,13 @@
                                  role="tabpanel" 
                                  aria-labelledby="goals-diff-tab">
                                 <div class="chart-container">
-                                    {{ div_hwg|safe }}
+                                    <div id="{{ chart_div_id_hwgd }}" style="width: 100%;"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Chart Controls - Under Chart -->
                 <div class="row mt-4">
                     <div class="col-12">
@@ -86,12 +84,12 @@
                             </div>
                             <div class="card-body">
                                 <p class="analysis-text">{{ chart_controls }}
-								</p>
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Analysis Details - Under Chart Controls -->
                 <div class="row mt-4">
                     <div class="col-12">
@@ -113,23 +111,83 @@
 </div>
 {% endblock %}
 
+{% load static %}
 {% block extra_js %}
 <!-- Bokeh JS -->
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js"></script>
+<script type="module">
+    // Main script: Uses an immediately invoked async function expression
+    // (IIFE) to ensure Bokeh is loaded before creating the plot
+    // Check if Bokeh is undefined, if so dynamically load the scripts
+    (async () => {
+        // Check if Bokeh library is already loaded (e.g., from another script)
+        if (typeof Bokeh === 'undefined') {
+            // Helper function to dynamically load a script and return a promise.
+            // This allows us to load Bokeh only if it's not already available
+            const loadScript = (src) => {
+                return new Promise((resolve, reject) => {
+                    // Create a new script element
+                    const script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = src;
+                    // Resolve promise when script loads successfully
+                    script.onload = resolve;
+                    // Reject promise if script fails to load
+                    script.onerror = reject;
+                    // Append script to document head to trigger loading
+                    document.head.appendChild(script);
+                });
+            };
+            
+            // Load the required Bokeh scripts sequentially. The API script must
+            // load after the core library
+            try {
+                // Load core Bokeh library first
+                await loadScript(
+                    'https://cdn.bokeh.org/bokeh/release/bokeh-3.8.1.min.js'
+                );
+                // Load Bokeh API (includes Plotting.show and other utilities)
+                await loadScript(
+                    'https://cdn.bokeh.org/bokeh/release/bokeh-api-3.8.1.min.js'
+                );
+            } catch (error) {
+                // If loading fails, log error and exit early
+                console.error('Failed to load Bokeh scripts:', error);
+                return;
+            }
+        }
 
-{{ script_hwf|safe }}
-{{ script_hwg|safe }}
+        // Import from the ChartLibrary.js file using Django static path
+        // Django's static tag will be replaced with the actual URL
+        const chartLibraryUrl = '{% static "js/ChartLibrary.js" %}';
+        const { BokehLinesPlot } = await import(chartLibraryUrl);
+
+        // Build the charts with dummy data
+        const bokehPlotHwf = new BokehLinesPlot({
+            chart_div_id: "{{ chart_div_id_hwf }}",
+            league_tiers: {{ league_tiers|safe }},
+            league_tier_colors: {{ league_tier_colors|safe }},
+            title: "{{ titl_hwf|escapejs }}",
+            x_axis_title: "{{ x_axis_title_hwf|escapejs }}",
+            y_axis_title: "{{ y_axis_title_hwf|escapejs }}",
+            callback_url: "{{ callback_url_hwf|escapejs }}",
+            show_wars: {{ show_wars|safe }},
+        });
+        const bokehPlotHwgd = new BokehLinesPlot({
+            chart_div_id: "{{ chart_div_id_hwgd }}",
+            league_tiers: {{ league_tiers|safe }},
+            league_tier_colors: {{ league_tier_colors|safe }},
+            title: "{{ title_hwgd|escapejs }}",
+            x_axis_title: "{{ x_axis_title_hwgd|escapejs }}",
+            y_axis_title: "{{ y_axis_title_hwgd|escapejs }}",
+            callback_url: "{{ callback_url_hwgd|escapejs }}",
+            show_wars: {{ show_wars|safe }},
+        });
+        // Update the charts with real data
+        bokehPlotHwf.update();
+        bokehPlotHwgd.update();
+    })();
+</script>
 {% endblock %}
-
-
-
-
-
-
-
-
 
 
 

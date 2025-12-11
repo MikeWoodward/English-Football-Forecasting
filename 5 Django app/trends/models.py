@@ -749,6 +749,7 @@ class LeagueManager(models.Manager):
                 STDDEV(win_fraction) AS win_fraction_sd
             FROM club_win_fractions
             GROUP BY league_tier, season
+            ORDER BY league_tier, season_start
         """
 
         # Execute the query and return results as a list of dictionaries

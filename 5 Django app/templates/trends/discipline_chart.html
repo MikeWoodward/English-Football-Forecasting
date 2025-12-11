@@ -3,8 +3,6 @@
 {% block title %}{{ title }} - English Football League Analysis{% endblock %}
 
 {% block extra_css %}
-<!-- Bokeh CSS -->
-<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css" type="text/css" />
 {% endblock %}
 
 {% block content %}
@@ -23,7 +21,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <!-- Bootstrap Tabs for Charts -->
                 <div class="row">
                     <div class="col-12">
@@ -38,7 +36,7 @@
                                         role="tab" 
                                         aria-controls="red-cards-panel" 
                                         aria-selected="true"
-                                        title="The mean number of red cards per match.">
+                                        title="Mean red cards per match by season start for each league tier.">
                                     Red cards
                                 </button>
                             </li>
@@ -51,7 +49,7 @@
                                         role="tab" 
                                         aria-controls="yellow-cards-panel" 
                                         aria-selected="false"
-                                        title="The mean number of yellow cards per match.">
+                                        title="Mean yellow cards per match by season start for each league tier.">
                                     Yellow cards
                                 </button>
                             </li>
@@ -64,7 +62,7 @@
                                         role="tab" 
                                         aria-controls="fouls-panel" 
                                         aria-selected="false"
-                                        title="The mean number of fouls per match.">
+                                        title="Mean fouls per match by season start for each league tier.">
                                     Fouls
                                 </button>
                             </li>
@@ -75,7 +73,7 @@
                                  role="tabpanel" 
                                  aria-labelledby="red-cards-tab">
                                 <div class="chart-container">
-                                    {{ div_red|safe }}
+                                    <div id="{{ chart_div_id_red }}" style="width: 100%;"></div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" 
@@ -83,7 +81,7 @@
                                  role="tabpanel" 
                                  aria-labelledby="yellow-cards-tab">
                                 <div class="chart-container">
-                                    {{ div_yellow|safe }}
+                                    <div id="{{ chart_div_id_yellow }}" style="width: 100%;"></div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" 
@@ -91,13 +89,13 @@
                                  role="tabpanel" 
                                  aria-labelledby="fouls-tab">
                                 <div class="chart-container">
-                                    {{ div_foul|safe }}
+                                    <div id="{{ chart_div_id_foul }}" style="width: 100%;"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Chart Controls - Under Chart -->
                 <div class="row mt-4">
                     <div class="col-12">
@@ -107,12 +105,12 @@
                             </div>
                             <div class="card-body">
                                 <p class="analysis-text">{{ chart_controls }}
-								</p>
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Analysis Details - Under Chart Controls -->
                 <div class="row mt-4">
                     <div class="col-12">
@@ -134,34 +132,91 @@
 </div>
 {% endblock %}
 
+{% load static %}
 {% block extra_js %}
 <!-- Bokeh JS -->
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js"></script>
+<script type="module">
+    // Main script: Uses an immediately invoked async function expression
+    // (IIFE) to ensure Bokeh is loaded before creating the plot
+    // Check if Bokeh is undefined, if so dynamically load the scripts
+    (async () => {
+        // Check if Bokeh library is already loaded (e.g., from another script)
+        if (typeof Bokeh === 'undefined') {
+            // Helper function to dynamically load a script and return a promise.
+            // This allows us to load Bokeh only if it's not already available
+            const loadScript = (src) => {
+                return new Promise((resolve, reject) => {
+                    // Create a new script element
+                    const script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = src;
+                    // Resolve promise when script loads successfully
+                    script.onload = resolve;
+                    // Reject promise if script fails to load
+                    script.onerror = reject;
+                    // Append script to document head to trigger loading
+                    document.head.appendChild(script);
+                });
+            };
+            
+            // Load the required Bokeh scripts sequentially. The API script must
+            // load after the core library
+            try {
+                // Load core Bokeh library first
+                await loadScript(
+                    'https://cdn.bokeh.org/bokeh/release/bokeh-3.8.1.min.js'
+                );
+                // Load Bokeh API (includes Plotting.show and other utilities)
+                await loadScript(
+                    'https://cdn.bokeh.org/bokeh/release/bokeh-api-3.8.1.min.js'
+                );
+            } catch (error) {
+                // If loading fails, log error and exit early
+                console.error('Failed to load Bokeh scripts:', error);
+                return;
+            }
+        }
 
-{{ script_red|safe }}
-{{ script_yellow|safe }}
-{{ script_foul|safe }}
+        // Import from the ChartLibrary.js file using Django static path
+        // Django's static tag will be replaced with the actual URL
+        const chartLibraryUrl = '{% static "js/ChartLibrary.js" %}';
+        const { BokehLinesPlot } = await import(chartLibraryUrl);
+
+        // Build the charts with dummy data
+        const bokehPlotRed = new BokehLinesPlot({
+            chart_div_id: "{{ chart_div_id_red|escapejs }}",
+            league_tiers: {{ league_tiers|safe }},
+            league_tier_colors: {{ league_tier_colors|safe }},
+            title: "{{ title_red|escapejs }}",
+            x_axis_title: "{{ x_axis_title_red|escapejs }}",
+            y_axis_title: "{{ y_axis_title_red|escapejs }}",
+            callback_url: "{{ callback_url_red|escapejs }}",
+            show_wars: {{ show_wars|safe }},
+        });
+        const bokehPlotYellow = new BokehLinesPlot({
+            chart_div_id: "{{ chart_div_id_yellow|escapejs }}",
+            league_tiers: {{ league_tiers|safe }},
+            league_tier_colors: {{ league_tier_colors|safe }},
+            title: "{{ title_yellow|escapejs }}",
+            x_axis_title: "{{ x_axis_title_yellow|escapejs }}",
+            y_axis_title: "{{ y_axis_title_yellow|escapejs }}",
+            callback_url: "{{ callback_url_yellow|escapejs }}",
+            show_wars: {{ show_wars|safe }},
+        });
+        const bokehPlotFoul = new BokehLinesPlot({
+            chart_div_id: "{{ chart_div_id_foul|escapejs }}",
+            league_tiers: {{ league_tiers|safe }},
+            league_tier_colors: {{ league_tier_colors|safe }},
+            title: "{{ title_foul|escapejs }}",
+            x_axis_title: "{{ x_axis_title_foul|escapejs }}",
+            y_axis_title: "{{ y_axis_title_foul|escapejs }}",
+            callback_url: "{{ callback_url_foul|escapejs }}",
+            show_wars: {{ show_wars|safe }},
+        });
+        // Update the charts with real data
+        bokehPlotRed.update();
+        bokehPlotYellow.update();
+        bokehPlotFoul.update();
+    })();
+</script>
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
