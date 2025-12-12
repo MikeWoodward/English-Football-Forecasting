@@ -9,4 +9,4 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 
 # Only needed the first time a service is brought up
-# python manage.py createsuperuser --noinput
+python manage.py createsuperuser --noinput
