@@ -1,32 +1,28 @@
 """
 Views for the club analysis app.
 """
-import os
 import json
+import os
 import re
-from typing import (
-    Dict,
-    List,
-    Any,
-    Optional,
-)
-from pydantic import BaseModel
-from django.shortcuts import render
-from django.http import HttpRequest, JsonResponse
+from typing import Dict, List, Any, Optional
+
+from bokeh.embed import components
+from bokeh.models import ColumnDataSource, HoverTool
+from bokeh.plotting import figure
 from django.db.models import Q, F, IntegerField
 from django.db.models.functions import Substr, Cast
-from bokeh.embed import components
-from bokeh.plotting import figure
-from bokeh.models import ColumnDataSource, HoverTool
+from django.http import HttpRequest, JsonResponse
+from django.shortcuts import render
 from google import genai
 # Import the specific APIError from the SDK
 from google.genai.errors import APIError
 from goals.models import (
     ClubHistory,
     ClubSeason,
-    League,
     FootballMatch,
+    League,
 )
+from pydantic import BaseModel
 
 
 def club_analysis(request: HttpRequest):
@@ -207,15 +203,17 @@ def get_club_season_analysis(request: HttpRequest):
             'The analysis MUST be returned as a JSON object, strictly '
             'following the provided schema. '
             'The analysis should include: '
-            '* Domestic league and cup performance. Include best and worst '
-            'results. (HTML string). '
+            '* Domestic league and cup performance. Include best and '
+            'worst results. (HTML string). '
             '* International performance ("No international games played." '
             'if no games) (HTML string). '
             '* Team notes (best players, team and manager changes) '
             '(HTML string). '
-            '* Team photos (if you can definitely find photos for this team '
-            'for this season, include them as links. If not, say so.) '
-            '* Any notable drama/scandals on or off the pitch (HTML string).'
+            '* Team photos (if you can definitely find photos for this '
+            'team for this season, include them as links. If not, say '
+            'so.) '
+            '* Any notable drama/scandals on or off the pitch '
+            '(HTML string).'
         )
 
         # Initialize Google AI client
@@ -237,8 +235,8 @@ def get_club_season_analysis(request: HttpRequest):
         )
 
     except APIError as e:
-        # Handle API-specific errors (e.g., authentication, rate limiting,
-        # invalid model)
+        # Handle API-specific errors (e.g., authentication, rate
+        # limiting, invalid model)
         return JsonResponse(
             {
                 'error': f'Google GenAI API Error occurred: {str(e)}',
@@ -283,7 +281,7 @@ def get_club_season_analysis(request: HttpRequest):
             {'error': None, 'html': html_content},
             status=200
         )
-        
+
     except Exception as e:
         # Handle any other errors
         error_msg = f'Error generating analysis: {str(e)}'
@@ -299,9 +297,9 @@ def get_club_history_data(
 ) -> List[Dict[str, Any]]:
     """
     Get club history data for the selected club.
-    
+
     Returns:
-        List of dictionaries with year, club_name, modern_name, 
+        List of dictionaries with year, club_name, modern_name,
         nickname, event, wikipedia.
     """
     history_records = (
@@ -328,7 +326,7 @@ def get_league_tier_data(
 ) -> List[Dict[str, Any]]:
     """
     Get league tier data for bar chart.
-    
+
     Returns:
         List of dictionaries with club_name, season_start, league_tier.
     """
@@ -364,9 +362,10 @@ def get_match_data_by_season(
 ) -> Dict[str, List[Dict[str, Any]]]:
     """
     Get match data grouped by season.
-    
+
     Returns:
-        Dictionary where keys are seasons and values are lists of match dicts.
+        Dictionary where keys are seasons and values are lists of
+        match dicts.
     """
     # Get all matches where the club is either home or away
     matches = (
@@ -418,7 +417,7 @@ def create_league_tier_chart(
 ) -> tuple:
     """
     Create a bar chart showing league tier vs season start.
-    
+
     Returns:
         Tuple of (script, div) for Bokeh chart embedding.
     """

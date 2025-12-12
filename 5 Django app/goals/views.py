@@ -1,24 +1,31 @@
 """
 Views for the goals app.
 """
-from typing import Dict, List, Any
-from django.shortcuts import render
-from django.http import HttpRequest, JsonResponse
-from bokeh.models.mappers import LinearColorMapper
+import json
 from datetime import date
+from typing import Dict, List, Any
+
+import numpy as np
 from bokeh.embed import components
 from bokeh.layouts import column, row
-from bokeh.transform import transform
+from bokeh.models import Band, ColumnDataSource, HoverTool
+from bokeh.models.mappers import LinearColorMapper
 from bokeh.palettes import Viridis256
 from bokeh.plotting import figure
-from bokeh.models import (Band, ColumnDataSource, HoverTool)
-import numpy as np
-from goals.models import FootballMatch, ClubSeason
+from bokeh.transform import transform
+from django.http import HttpRequest, JsonResponse
+from django.shortcuts import render
+from django.urls import reverse
+
+from goals.models import ClubSeason, FootballMatch
 
 # Default height for Bokeh plots in pixels
 PLOT_HEIGHT = 400
 
-def bokeh_score_distribution_plots(data, year):
+def bokeh_score_distribution_plots(
+    data,
+    year,
+):
     """
     Create Bokeh plots for score distribution analysis.
     """
@@ -34,8 +41,11 @@ def bokeh_score_distribution_plots(data, year):
         high=max_frequency
     )
     plots = []
-    # Create a separate plot for each league tier. Tiers ordered in increasing order.
-    for league_tier in sorted(list(dict.fromkeys(data['league_tier']))):
+    # Create a separate plot for each league tier.
+    # Tiers ordered in increasing order.
+    for league_tier in sorted(
+        list(dict.fromkeys(data['league_tier']))
+    ):
         # Filter data for current league tier
         data_subset: Dict[str, List[Any]] = {
             k: [
@@ -52,12 +62,12 @@ def bokeh_score_distribution_plots(data, year):
         source = ColumnDataSource(data_subset, name=source_name)
         plot = figure(
             title=(
-            f'League {league_tier} '
-            f'season {year}'
-        ),
+                f'League {league_tier} '
+                f'season {year}'
+            ),
             x_axis_label='Home Goals',
             y_axis_label='Away Goals',
-            height=int(PLOT_HEIGHT/2),
+            height=int(PLOT_HEIGHT / 2),
             sizing_mode="stretch_width",
             toolbar_location=None,
             name='score_distribution_plot' + '_' + str(league_tier),
@@ -96,7 +106,14 @@ def bokeh_score_distribution_plots(data, year):
     script, div = components(plots)
     return script, div
 
-def bokeh_goals_plots(data, x_axis, y_axes, league_tier, season_start):
+
+def bokeh_goals_plots(
+    data,
+    x_axis,
+    y_axes,
+    league_tier,
+    season_start,
+):
     """
     Create Bokeh plots for goals analysis.
     """
@@ -126,9 +143,10 @@ def bokeh_goals_plots(data, x_axis, y_axes, league_tier, season_start):
         plot = figure(
             title=(
                 f"{y_axis.replace('_', ' ')} vs "
-                f"{x_axis.replace('_', ' ')} for league {league_tier} "
-                f"and season starting in {season_start} "
-                f"R-squared: {data[y_axis + '_r2']:.2f}, "
+                f"{x_axis.replace('_', ' ')} for league "
+                f"{league_tier} and season starting in "
+                f"{season_start} R-squared: "
+                f"{data[y_axis + '_r2']:.2f}, "
                 f"p-value: {data[y_axis + '_pvalue']:.2f}"
             ),
             # Only show x-axis label on the last plot to avoid repetition
@@ -150,7 +168,9 @@ def bokeh_goals_plots(data, x_axis, y_axes, league_tier, season_start):
             name=y_axis + '_plot',
         )
         # Hide x-axis on all plots except the last one to avoid repetition
-        plot.xaxis.visible = False if y_axis != y_axes[-1] else True
+        plot.xaxis.visible = (
+            False if y_axis != y_axes[-1] else True
+        )
         # Scatter plot showing actual data points (one per club)
         scatter = plot.scatter(
             x=x_axis,
@@ -268,24 +288,15 @@ def money_and_goals(request):
 
     # Default to Premier League (tier 1)
     league_tier: int = 1
-    # Get aggregated goals data by market value for the most recent season
-    json_data = FootballMatch.objects.get_goals_by_money(
-        season_start=max_year,
-        league_tier=league_tier,
-    )
 
-    # Generate Bokeh plot components (JavaScript and HTML div)
-    script, div = bokeh_goals_plots(
-        data=json_data,
-        x_axis='total_market_value',
-        y_axes=['for_goals', 'against_goals', 'net_goals'],
-        league_tier=1,
-        season_start=max_year,
-    )
     context = {
         'title': 'Money and Goals',
-        'script': script,
-        'div': div,
+        'chart_div_id': 'goals_chart_div',
+        'x_axis_title': 'total_market_value',
+        'y_axes': json.dumps(
+            ['for_goals', 'against_goals', 'net_goals']
+        ),
+        'callback_url': 'money_goals_json',
         'callback': 'money_goals_json',
         'x_field': 'total_market_value',
         'chart_controls': (
@@ -301,13 +312,14 @@ def money_and_goals(request):
         'max_year': max_year,
         'current_year': max_year,
         'description': """
-        This chart shows the relationship between the tenure of clubs in a
-        league and the number of goals scored, conceded, and net goals.
-        Tenure means the number of contguous seasons a club has been in a
-        league. <br/><br/>
-        The r-squared values show that although tenure is factor for goals
-        scored, it's not the only factor.The p-values show that the
-        relationship is mostly statistically significant. <br/><br/>
+        This chart shows the relationship between the tenure of clubs
+        in a league and the number of goals scored, conceded, and net
+        goals. Tenure means the number of contguous seasons a club has
+        been in a league. <br/><br/>
+        The r-squared values show that although tenure is factor for
+        goals scored, it's not the only factor.The p-values show that
+        the relationship is mostly statistically significant.
+        <br/><br/>
         """.replace('\n', '').replace("<br/>", "\n")
     }
     return render(request, 'goals/chart_detail.html', context)
@@ -320,8 +332,9 @@ def money_goals_json(
     season_start: int,
 ) -> JsonResponse:
     """
-    Return JSON data structure for money and goals analysis. Note we do NOT 
-    convert the season_start to a date object.
+    Return JSON data structure for money and goals analysis.
+    
+    Note we do NOT convert the season_start to a date object.
 
     Args:
         request: HTTP request object
@@ -378,23 +391,15 @@ def tenure_and_goals(request):
 
     # Default to Premier League (tier 1)
     league_tier: int = 1
-    # Get aggregated goals data by tenure for the most recent season
-    json_data = FootballMatch.objects.get_goals_by_tenure(
-        season_start=max_year,
-        league_tier=league_tier,
-    )
 
-    script, div = bokeh_goals_plots(
-        data=json_data,
-        x_axis='tenure',
-        y_axes=['for_goals', 'against_goals', 'net_goals'],
-        league_tier=1,
-        season_start=max_year,
-    )
     context = {
         'title': 'Tenure and Goals',
-        'script': script,
-        'div': div,
+        'chart_div_id': 'goals_chart_div',
+        'x_axis_title': 'tenure',
+        'y_axes': json.dumps(
+            ['for_goals', 'against_goals', 'net_goals']
+        ),
+        'callback_url': 'tenure_goals_json',
         'callback': 'tenure_goals_json',
         'x_field': 'tenure',
         'chart_controls': (
@@ -410,17 +415,18 @@ def tenure_and_goals(request):
         'max_year': max_year,
         'current_year': max_year,
         'description': """
-        This chart shows the relationship between the total market value of
-        clubs at the start of a season and the number of goals scored,
+        This chart shows the relationship between the total market value
+        of clubs at the start of a season and the number of goals scored,
         conceded, and net goals in the top four tiers of the English
         football league. <br/><br/>
-        The r-squared values show that although money is an important factor
-        for goals scored, it's not the only factor. The p-values show that
-        the relationship is mostly tatistically significant. <br/><br/>
-        The r-squared values are higher for the Premier League (tier 1) and
-        higher for more recent seasons. It's well-known that more money is
-        coming into the game, and we can clearly see the effect of money
-        inequality in terms of goals scored.
+        The r-squared values show that although money is an important
+        factor for goals scored, it's not the only factor. The p-values
+        show that the relationship is mostly tatistically significant.
+        <br/><br/>
+        The r-squared values are higher for the Premier League (tier 1)
+        and higher for more recent seasons. It's well-known that more
+        money is coming into the game, and we can clearly see the effect
+        of money inequality in terms of goals scored.
         """.replace('\n', '').replace("<br/>", "\n")
     }
     return render(request, 'goals/chart_detail.html', context)
@@ -433,8 +439,9 @@ def tenure_goals_json(
     season_start: int,
 ) -> JsonResponse:
     """
-    Return JSON data structure for tenure and goals analysis. Note we do NOT 
-    convert the season_start to a date object.
+    Return JSON data structure for tenure and goals analysis.
+    
+    Note we do NOT convert the season_start to a date object.
 
     Args:
         request: HTTP request object
@@ -488,23 +495,15 @@ def mean_age_and_goals(request):
 
     # Default to Premier League (tier 1)
     league_tier: int = 1
-    # Get aggregated goals data by mean age for the most recent season
-    json_data = FootballMatch.objects.get_goals_by_mean_age(
-        season_start=max_year,
-        league_tier=league_tier,
-    )
 
-    script, div = bokeh_goals_plots(
-        data=json_data,
-        x_axis='mean_age',
-        y_axes=['for_goals', 'against_goals', 'net_goals'],
-        league_tier=1,
-        season_start=max_year,
-    )
     context = {
         'title': 'Mean Age and Goals',
-        'script': script,
-        'div': div,
+        'chart_div_id': 'goals_chart_div',
+        'x_axis_title': 'mean_age',
+        'y_axes': json.dumps(
+            ['for_goals', 'against_goals', 'net_goals']
+        ),
+        'callback_url': 'mean_age_goals_json',
         'callback': 'mean_age_goals_json',
         'x_field': 'mean_age',
         'chart_controls': (
@@ -520,13 +519,13 @@ def mean_age_and_goals(request):
         'max_year': max_year,
         'current_year': max_year,
         'description': """
-        This chart shows the relationship between the mean age of clubs at
-        the start of a season and the number of goals scored, conceded, and
-        net goals in the top four tiers of the English football league.
-        <br/><br/>
-        The the curve slope and the r-squared values show club mean age only
-        has a slight, if any, effect on goals scored. The p-values show
-        that the relationship is mostly statistically insignificant.
+        This chart shows the relationship between the mean age of clubs
+        at the start of a season and the number of goals scored, conceded,
+        and net goals in the top four tiers of the English football
+        league. <br/><br/>
+        The the curve slope and the r-squared values show club mean age
+        only has a slight, if any, effect on goals scored. The p-values
+        show that the relationship is mostly statistically insignificant.
         <br/><br/>
         """.replace('\n', '').replace("<br/>", "\n")
     }
@@ -540,8 +539,9 @@ def mean_age_goals_json(
     season_start: int,
 ) -> JsonResponse:
     """
-    Return JSON data structure for mean age and goals analysis. Note we do NOT 
-    convert the season_start to a date object.
+    Return JSON data structure for mean age and goals analysis.
+    
+    Note we do NOT convert the season_start to a date object.
 
     Args:
         request: HTTP request object
@@ -595,23 +595,15 @@ def foreigner_count_and_goals(request):
 
     # Default to Premier League (tier 1)
     league_tier: int = 1
-    # Get aggregated goals data by foreigner count for the most recent season
-    json_data = FootballMatch.objects.get_goals_by_foreigner_count(
-        season_start=max_year,
-        league_tier=league_tier,
-    )
 
-    script, div = bokeh_goals_plots(
-        data=json_data,
-        x_axis='foreigner_count',
-        y_axes=['for_goals', 'against_goals', 'net_goals'],
-        league_tier=1,
-        season_start=max_year,
-    )
     context = {
         'title': 'Foreigner Count and Goals',
-        'script': script,
-        'div': div,
+        'chart_div_id': 'goals_chart_div',
+        'x_axis_title': 'foreigner_count',
+        'y_axes': json.dumps(
+            ['for_goals', 'against_goals', 'net_goals']
+        ),
+        'callback_url': 'foreigner_count_goals_json',
         'callback': 'foreigner_count_goals_json',
         'x_field': 'foreigner_count',
         'chart_controls': (
@@ -647,6 +639,7 @@ def foreigner_count_goals_json(
 ) -> JsonResponse:
     """
     Return JSON data structure for foreigner count and goals analysis.
+    
     Note we do NOT convert the season_start to a date object.
 
     Args:
@@ -698,25 +691,21 @@ def score_heatmaps(request):
     min_year = int(min_season[:4])
     max_year = int(max_season[:4])
 
-    # Get score distribution data for the most recent season
-    json_data = FootballMatch.objects.get_score_distribution(
-        season_start=max_year,
+    # Get base URL for the JSON endpoint (without season_start parameter)
+    # We'll construct the full URL in JavaScript by appending the
+    # season_start
+    callback_url_base = (
+        reverse('goals:score_heatmaps_json', args=[0])
+        .replace('/0/', '/')
     )
-    # Generate Bokeh plot components (JavaScript and HTML div)
-    # Note: league_tier and season_start parameters are missing
-    script, div = bokeh_score_distribution_plots(
-        data=json_data,
-        year=max_year,
-    )
+    
     context = {
         'title': 'Score Heatmaps',
-        'script': script,
-        'div': div,
+        'chart_div_id': 'score_heatmap_chart',
+        'league_tiers': json.dumps([1, 2, 3, 4, 5]),
+        'callback_url': callback_url_base,
         'chart_controls': (
             """
-            The legend on the right is interactive. Click items to toggle.
-            Use the toolbar to zoom and pan. Hover over points for
-            details. <br/><br/>
             The year slider allows you to select the season start year. 
             """.replace('\n', '').replace("<br/>", "\n")
         ),
@@ -725,16 +714,21 @@ def score_heatmaps(request):
         'current_year': max_year,
         'callback': 'score_heatmaps_json',
         'description': """
-        This chart shows the distribution of scores for a given league tier
-        and season. The x-axis shows the number of home goals and the
-        y-axis shows the frequency of that score. The frequency is the
-        number of times a score occurred divided by the total number of
-        matches.
+        This chart shows the distribution of scores for a given league
+        tier and season. The x-axis shows the number of home goals and
+        the y-axis shows the number of away goals. The color intensity
+        represents the frequency of that score combination. The frequency
+        is the number of times a score occurred divided by the total
+        number of matches.
         """.replace('\n', '').replace("<br/>", "\n")
     }
     return render(request, 'goals/chart_score_distributions.html', context)
 
-def score_heatmaps_json(request, *, season_start: int):
+def score_heatmaps_json(
+    request,
+    *,
+    season_start: int,
+):
     """
     Return JSON data structure for score heatmaps analysis.
 

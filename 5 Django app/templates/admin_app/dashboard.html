@@ -1,15 +1,19 @@
+<!-- Admin dashboard template: Main admin interface with user statistics -->
 {% extends 'base.html' %}
 
 {% block title %}{{ title }} - English Football League Analysis{% endblock %}
 
 {% block content %}
+<!-- Main content container with centered layout -->
 <div class="row justify-content-center">
     <div class="col-lg-10">
+        <!-- Card container for the admin dashboard content -->
         <div class="card">
             <div class="card-header">
                 <h1 class="card-title text-center mb-0">{{ title }}</h1>
             </div>
             <div class="card-body">
+                <!-- Introduction section -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <p class="lead text-center">
@@ -19,7 +23,9 @@
                     </div>
                 </div>
                 
+                <!-- Statistics cards: Display user counts -->
                 <div class="row">
+                    <!-- Total users card -->
                     <div class="col-md-4 mb-4">
                         <div class="card text-center">
                             <div class="card-body">
@@ -29,6 +35,7 @@
                         </div>
                     </div>
                     
+                    <!-- Admin users card -->
                     <div class="col-md-4 mb-4">
                         <div class="card text-center">
                             <div class="card-body">
@@ -38,6 +45,7 @@
                         </div>
                     </div>
                     
+                    <!-- Regular users card -->
                     <div class="col-md-4 mb-4">
                         <div class="card text-center">
                             <div class="card-body">
@@ -48,13 +56,16 @@
                     </div>
                 </div>
                 
+                <!-- Action buttons: User management links -->
                 <div class="row">
                     <div class="col-12">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                            <!-- Link to user list page -->
                             <a href="{% url 'admin_app:user_list' %}" 
                                class="btn btn-primary btn-lg me-md-2">
                                 Manage Users
                             </a>
+                            <!-- Link to create new user page -->
                             <a href="{% url 'admin_app:user_create' %}" 
                                class="btn btn-success btn-lg">
                                 Create New User

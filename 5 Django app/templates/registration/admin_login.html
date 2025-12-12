@@ -1,3 +1,4 @@
+<!-- Admin login page template: Super user authentication form -->
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
@@ -5,8 +6,10 @@
 {% endblock %}
 
 {% block content %}
+<!-- Centered admin login form container -->
 <div class="row justify-content-center">
     <div class="col-lg-6">
+        <!-- Card container for the admin login form -->
         <div class="card">
             <div class="card-header">
                 <h1 class="card-title text-center mb-0">
@@ -14,8 +17,11 @@
                 </h1>
             </div>
             <div class="card-body">
+                <!-- Admin login form: POSTs to the admin login view -->
                 <form method="post">
+                    <!-- CSRF token for security -->
                     {% csrf_token %}
+                    <!-- Crispy forms renders the form with Bootstrap styling -->
                     {{ form|crispy }}
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary btn-lg">

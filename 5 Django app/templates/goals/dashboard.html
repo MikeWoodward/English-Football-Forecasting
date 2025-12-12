@@ -1,15 +1,19 @@
+<!-- Goals dashboard template: Main page for goals analysis with chart selection -->
 {% extends 'base.html' %}
 
 {% block title %}{{ title }} - English Football League Analysis{% endblock %}
 
 {% block content %}
+<!-- Main content container with centered layout -->
 <div class="row justify-content-center">
     <div class="col-lg-10">
+        <!-- Card container for the goals dashboard content -->
         <div class="card">
             <div class="card-header">
                 <h1 class="card-title text-center mb-0">{{ title }}</h1>
             </div>
             <div class="card-body">
+                <!-- Introduction section -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <p class="lead text-center">
@@ -20,6 +24,7 @@
                     </div>
                 </div>
                 
+                <!-- Chart selection dropdown -->
                 <div class="row justify-content-center">
                     <div class="col-md-6">
                         <div class="card">
@@ -27,13 +32,16 @@
                                 <h5 class="mb-0">Select Analysis to View</h5>
                             </div>
                             <div class="card-body">
+                                <!-- Bootstrap dropdown for chart selection -->
                                 <div class="dropdown">
                                     <button class="btn btn-success btn-lg dropdown-toggle w-100" 
                                             type="button" id="chartDropdown" 
                                             data-bs-toggle="dropdown" aria-expanded="false">
                                         Choose an Analysis
                                     </button>
+                                    <!-- Dropdown menu with available chart options -->
                                     <ul class="dropdown-menu w-100" aria-labelledby="chartDropdown">
+                                        <!-- Loop through charts provided by the view -->
                                         {% for chart in charts %}
                                             <li>
                                                 <a class="dropdown-item" href="{% url chart.url %}">

@@ -1,18 +1,24 @@
+<!-- User login page template: Standard user authentication form -->
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}Login - English Football League Analysis{% endblock %}
 
 {% block content %}
+<!-- Centered login form container -->
 <div class="row justify-content-center">
     <div class="col-lg-6">
+        <!-- Card container for the login form -->
         <div class="card">
             <div class="card-header">
                 <h1 class="card-title text-center mb-0">User login</h1>
             </div>
             <div class="card-body">
+                <!-- Login form: POSTs to the login view -->
                 <form method="post">
+                    <!-- CSRF token for security -->
                     {% csrf_token %}
+                    <!-- Crispy forms renders the form with Bootstrap styling -->
                     {{ form|crispy }}
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary btn-lg">

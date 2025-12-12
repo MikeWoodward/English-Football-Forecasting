@@ -3,8 +3,6 @@
 {% block title %}{{ title }} - English Football League Analysis{% endblock %}
 
 {% block extra_css %}
-<!-- Bokeh CSS -->
-<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.css" type="text/css" />
 {% endblock %}
 
 {% block content %}
@@ -29,9 +27,7 @@
                     <div class="col-12">
                         <div class="chart-container" 
                              style="display: flex; flex-direction: column;">
-                            <div style="width: 100%; display: block; clear: both;">
-                                {{ div|safe }}
-                            </div>
+                            <div id="{{ chart_div_id }}" style="width: 100%; display: block; clear: both;"></div>
                             <!-- Year Slider - Under Chart (for Goals) -->
                             {% if min_year and max_year and current_year %}
                             <div style="width: 100%; margin-top: 20px; display: block; clear: both;">
@@ -92,176 +88,107 @@
 </div>
 {% endblock %}
 
+{% load static %}
 {% block extra_js %}
 <!-- Bokeh JS -->
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.8.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.8.0.min.js"></script>
-<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.8.0.min.js"></script>
-
-{{ script|safe }}
-
-{% if min_year and max_year and current_year %}
-<script>
-    // Update year slider display and plot
-    document.addEventListener('DOMContentLoaded', function() {
-        const yearSlider = document.getElementById(
-            'year-slider'
-        );
-        const yearValue = document.getElementById(
-            'year-value'
-        );
-        
-        if (yearSlider && yearValue) {
-            // Update display value on input
-            yearSlider.addEventListener('input', function() {
-                yearValue.textContent = this.value;
-            });
+<script type="module">
+    // Main script: Uses an immediately invoked async function expression
+    // (IIFE) to ensure Bokeh is loaded before creating the plot
+    // Check if Bokeh is undefined, if so dynamically load the scripts
+    (async () => {
+        // Check if Bokeh library is already loaded (e.g., from another script)
+        if (typeof Bokeh === 'undefined') {
+            // Helper function to dynamically load a script and return a promise.
+            // This allows us to load Bokeh only if it's not already available
+            const loadScript = (src) => {
+                return new Promise((resolve, reject) => {
+                    // Create a new script element
+                    const script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = src;
+                    // Resolve promise when script loads successfully
+                    script.onload = resolve;
+                    // Reject promise if script fails to load
+                    script.onerror = reject;
+                    // Append script to document head to trigger loading
+                    document.head.appendChild(script);
+                });
+            };
             
-            // Update plot data on change (when user releases slider)
-            yearSlider.addEventListener('change', function() {
-                updateScoreDistributionPlot();
-            });
-        }
-    });
-    
-    /**
-     * Update the score distribution plot with new data for the selected season.
-     * 
-     * Fetches data from the API based on the current year slider selection,
-     * then updates the Bokeh plot.
-     */
-    function updateScoreDistributionPlot() {
-        // Get the selected year value from the slider input element
-        const yearSlider = document.getElementById('year-slider');
-        // Get the span element that displays the year value
-        const yearValue = document.getElementById('year-value');
-        
-        // Check if required elements exist
-        if (!yearSlider || !yearValue) {
-            console.error('Year slider or value display element not found');
-            return;
-        }
-        
-        // Parse the slider value as an integer
-        const seasonStart = parseInt(yearSlider.value, 10);
-        
-        // Validate season start is a valid number
-        if (isNaN(seasonStart)) {
-            console.error('Invalid season start value:', yearSlider.value);
-            alert('Invalid year selected. Please try again.');
-            return;
-        }
-
-        // Show loading state by updating the display text
-        const originalText = yearValue.textContent;
-        yearValue.textContent = seasonStart + ' (loading...)';
-
-        // Get the API endpoint URL
-        // Construct URL path using callback variable from context
-        const callbackName = '{{ callback }}';
-        const urlPath = callbackName.replace(/_/g, '-');
-        const apiUrl = '/goals/' + urlPath + '/' + seasonStart + '/';
-
-        // Fetch data from API
-        fetch(apiUrl)
-            .then(response => {
-                // Check if the HTTP response is successful
-                if (!response.ok) {
-                    throw new Error(
-                        'Network response was not ok: ' + response.status
-                    );
-                }
-                // Parse the JSON response
-                return response.json();
-            })
-            .then(data => {
-                // Check if the API returned an error
-                if (data.error) {
-                    console.error('Error fetching data:', data.error);
-                    alert('Error loading score distribution data: ' + data.error);
-                    // Restore original text on error
-                    yearValue.textContent = originalText;
-                    return;
-                }
-
-                // Update the Bokeh plot with new data
-                updateBokehScoreDistributionPlot(data, seasonStart);
-                // Update the year slider value display, removing loading text
-                yearValue.textContent = seasonStart;
-            })
-            .catch(error => {
-                // Handle network or parsing errors
-                console.error('Error fetching score distribution data:', error);
-                alert('Error loading data. Please try again.');
-                // Restore original text on error
-                yearValue.textContent = originalText;
-            });
-    }
-    
-    /**
-     * Update the Bokeh score distribution plot with new data.
-     * 
-     * @param {Object} data - The JSON data from the API
-     * @param {number} seasonStart - The season start year
-     */
-    function updateBokehScoreDistributionPlot(data, seasonStart) {
-        // Implementation to be added
-        console.log('updateBokehScoreDistributionPlot', data, seasonStart);
-        // Get the Bokeh document
-        const doc = Bokeh.documents[0];
-        // Loop through the the five league tiers
-        for (let tier = 1; tier <= 5; tier++) {
-            // Get the plot
-            const plot = doc.get_model_by_name('score_distribution_plot_' + tier);
-            // Update the plot with new data. Replace the last four
-            // characters with the season start year.
-            plot.title.text = plot.title.text.replace(
-                plot.title.text.slice(-4),
-                seasonStart
-            );
-            // Select only the data with league_tier matching current tier
-            // Data structure is a dict with arrays, so we need to filter
-            // by indices
-            const indices = [];
-            for (let i = 0; i < data.league_tier.length; i++) {
-                if (data.league_tier[i] === tier) {
-                    indices.push(i);
-                }
+            // Load the required Bokeh scripts sequentially. The API script must
+            // load after the core library
+            try {
+                // Load core Bokeh library first
+                await loadScript(
+                    'https://cdn.bokeh.org/bokeh/release/bokeh-3.8.1.min.js'
+                );
+                // Load Bokeh API (includes Plotting.show and other utilities)
+                await loadScript(
+                    'https://cdn.bokeh.org/bokeh/release/bokeh-api-3.8.1.min.js'
+                );
+            } catch (error) {
+                // If loading fails, log error and exit early
+                console.error('Failed to load Bokeh scripts:', error);
+                return;
             }
-            // Extract subset data for this tier
-            let dataSubset;
-            if (indices.length === 0) {
-                // If no data for this tier, use empty arrays
-                dataSubset = {
-                    league_tier: [],
-                    home_goals: [],
-                    away_goals: [],
-                    frequency: []
-                };
+        }
+
+        // Import from the ChartLibrary.js file using Django static path
+        // Django's static tag will be replaced with the actual URL
+        const chartLibraryUrl = '{% static "js/ChartLibrary.js" %}';
+        const { BokehScoreHeatmap } = await import(chartLibraryUrl);
+
+        // Build the heatmap with initial data
+        const bokehHeatmap = new BokehScoreHeatmap({
+            chart_div_id: "{{ chart_div_id|escapejs }}",
+            league_tiers: {{ league_tiers|safe }},
+            callback_url: "{{ callback_url|escapejs }}",
+        });
+        
+        // Update the heatmap with initial season year
+        {% if min_year and max_year and current_year %}
+        bokehHeatmap.update({{ current_year }});
+        
+        // Set up year slider handler
+        // Use a function that runs after DOM is ready (module scripts run after DOM is ready)
+        // But also handle case where elements might not be ready yet
+        function setupYearSlider() {
+            const yearSlider = document.getElementById('year-slider');
+            const yearValue = document.getElementById('year-value');
+            
+            if (yearSlider && yearValue) {
+                // Update display value on input
+                yearSlider.addEventListener('input', function() {
+                    yearValue.textContent = this.value;
+                });
+                
+                // Update plot data on change (when user releases slider)
+                yearSlider.addEventListener('change', function() {
+                    const seasonStart = parseInt(this.value, 10);
+                    if (!isNaN(seasonStart) && bokehHeatmap) {
+                        // Show loading state
+                        const originalText = yearValue.textContent;
+                        yearValue.textContent = seasonStart + ' (loading...)';
+                        
+                        // Update the heatmap
+                        bokehHeatmap.update(seasonStart);
+                        
+                        // Update display after a short delay to allow for async update
+                        setTimeout(() => {
+                            yearValue.textContent = seasonStart;
+                        }, 100);
+                    }
+                });
             } else {
-                // Extract values at matching indices
-                dataSubset = {
-                    league_tier: indices.map(i => data.league_tier[i]),
-                    home_goals: indices.map(i => data.home_goals[i]),
-                    away_goals: indices.map(i => data.away_goals[i]),
-                    frequency: indices.map(i => data.frequency[i])
-                };
+                // If elements not ready, try again after a short delay
+                setTimeout(setupYearSlider, 100);
             }
-            // Update the plot with new data
-            const source = doc.get_model_by_name(
-                'score_distribution_data_' + tier
-            );
-            source.data.league_tier = dataSubset.league_tier;
-            source.data.home_goals = dataSubset.home_goals;
-            source.data.away_goals = dataSubset.away_goals;
-            source.data.frequency = dataSubset.frequency;
-            // Trigger change events to update the plot
-            source.change.emit();
-            plot.change.emit();
         }
-    }
-    
+        
+        // Try to set up immediately (module scripts run after DOM is ready)
+        setupYearSlider();
+        {% endif %}
+    })();
 </script>
-{% endif %}
 {% endblock %}
 

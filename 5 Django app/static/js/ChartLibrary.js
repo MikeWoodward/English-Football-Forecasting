@@ -489,6 +489,477 @@ class BokehViolinsPlot {
     }
 }
 
+class BokehScoreHeatmap {
+    // Constructor: Initialize the score heatmap plots with league tiers using
+    // destructured parameters. Score heatmaps use rect glyphs to show
+    // frequency of score combinations (home_goals vs away_goals).
+    // Parameters:
+    //   chart_div_id: String ID of the HTML element where the plots will be rendered
+    //   league_tiers: Array of league tier numbers (e.g., [1, 2, 3, 4, 5])
+    //   callback_url: String URL template for fetching data (will receive season_start parameter)
+    constructor({
+        chart_div_id,
+        league_tiers,
+        callback_url,
+    }) {
+        // Store the league tiers and callback URL for later use
+        this.league_tiers = league_tiers;
+        this.callback_url = callback_url;
+        
+        // Store plots and sources for each tier
+        this.plots = [];
+        this.sources = {};
+        this.rect_renderers = {};
+        
+        // Create a plot for each league tier
+        for (let league_tier of this.league_tiers) {
+            // Create a Bokeh figure (plot canvas) for this tier
+            const plot = Bokeh.Plotting.figure({
+                title: `Wait while I call the database & get the data`,
+                x_axis_label: 'Home Goals',
+                y_axis_label: 'Away Goals',
+                height: 200,  // Half of PLOT_HEIGHT (400) from Python
+                sizing_mode: "stretch_width",
+                toolbar_location: null,  // No toolbar for cleaner look
+            });
+            
+            // Configure axis properties
+            // Remove grid lines for cleaner appearance
+            plot.xgrid.visible = false;
+            plot.ygrid.visible = false;
+            
+            // Create initial data source with empty data
+            // This will be updated when real data arrives
+            const zero_data = {
+                'league_tier': [],
+                'home_goals': [],
+                'away_goals': [],
+                'frequency': [],
+                'fill_color': [],
+                'line_color': []
+            };
+            const source = new Bokeh.ColumnDataSource({
+                data: zero_data
+            });
+            
+            // Store source and plot for this tier
+            this.sources[league_tier] = source;
+            this.plots.push(plot);
+            
+            // Create initial rect renderer (will be updated with data)
+            const rect_renderer = plot.rect({
+                x: { field: 'home_goals' },
+                y: { field: 'away_goals' },
+                width: 1,
+                height: 1,
+                fill_color: { field: 'fill_color' },
+                line_color: { field: 'line_color' },
+                line_width: 1,
+                source: source
+            });
+            this.rect_renderers[league_tier] = rect_renderer;
+        }
+        
+        // Store the container div ID for later use
+        this.chart_div_id = chart_div_id;
+        const container = document.getElementById(chart_div_id);
+        
+        // Set container to use flexbox for horizontal arrangement
+        container.style.display = 'flex';
+        container.style.flexDirection = 'row';
+        container.style.flexWrap = 'wrap';
+        container.style.width = '100%';
+        
+        // Show each plot in its own div for reliable horizontal arrangement
+        // This approach works regardless of Bokeh version
+        this.plotContainers = [];
+        this.plots.forEach((plot, index) => {
+            const plotDiv = document.createElement('div');
+            plotDiv.style.flex = '1';
+            plotDiv.style.minWidth = '200px';
+            plotDiv.style.width = `${100 / this.plots.length}%`;
+            container.appendChild(plotDiv);
+            this.plotContainers.push(plotDiv);
+            Bokeh.Plotting.show(plot, plotDiv);
+        });
+    }
+    
+    // Helper function to map frequency to Viridis color
+    // Uses a simplified Viridis color palette
+    _mapFrequencyToColor(frequency, maxFrequency) {
+        if (maxFrequency === 0) return '#440154';  // Dark purple (lowest)
+        
+        // Viridis256 color palette (simplified - using key colors)
+        const viridisColors = [
+            '#440154', '#481567', '#482677', '#453781', '#404788',
+            '#39568c', '#33638d', '#2d708e', '#287d8e', '#238a8d',
+            '#1f968b', '#20a386', '#29af7f', '#3cbb75', '#55c667',
+            '#73d055', '#95d840', '#b8de29', '#dce319', '#fde725'
+        ];
+        
+        const normalized = frequency / maxFrequency;
+        const index = Math.floor(normalized * (viridisColors.length - 1));
+        return viridisColors[Math.min(index, viridisColors.length - 1)];
+    }
+    
+    // Update method: Updates the heatmap plots with data from the API.
+    // This method fetches data, processes it, filters by league tier,
+    // computes colors, and triggers plot redraws
+    // 
+    // @param {number} seasonStart - Season start year to fetch data for
+    update(seasonStart) {
+        // Build the callback URL with season_start as path parameter
+        // The callback_url should end with '/' and we append seasonStart + '/'
+        const callbackUrl = this.callback_url + seasonStart + '/';
+       
+        // Fetch data from the API
+        fetch(callbackUrl)
+            .then(response => response.json())
+            .then(responseData => {
+                // Check if there's an error in the response
+                if (responseData.error) {
+                    console.error('Error from API:', responseData.error);
+                    return;
+                }
+                
+                // Extract the data from the response
+                // API returns flat arrays: {league_tier: [], home_goals: [], away_goals: [], frequency: []}
+                const apiData = responseData;
+                
+                // Find maximum frequency across all data for color mapping
+                const maxFrequency = apiData.frequency.length > 0 
+                    ? Math.max(...apiData.frequency) 
+                    : 1;
+                
+                // Update each plot for each league tier
+                for (let league_tier of this.league_tiers) {
+                    const plot = this.plots[league_tier - 1];
+                    const source = this.sources[league_tier];
+                    
+                    // Filter data for current league tier
+                    const filteredData = {
+                        'league_tier': [],
+                        'home_goals': [],
+                        'away_goals': [],
+                        'frequency': [],
+                        'fill_color': [],
+                        'line_color': []
+                    };
+                    
+                    for (let i = 0; i < apiData.league_tier.length; i++) {
+                        if (apiData.league_tier[i] === league_tier) {
+                            filteredData.league_tier.push(apiData.league_tier[i]);
+                            filteredData.home_goals.push(apiData.home_goals[i]);
+                            filteredData.away_goals.push(apiData.away_goals[i]);
+                            filteredData.frequency.push(apiData.frequency[i]);
+                            // Map frequency to color
+                            filteredData.fill_color.push(
+                                this._mapFrequencyToColor(apiData.frequency[i], maxFrequency)
+                            );
+                            filteredData.line_color.push('white');
+                        }
+                    }
+                    
+                    // Calculate max goals for this tier's axis ranges
+                    const maxHomeGoals = filteredData.home_goals.length > 0 
+                        ? Math.max(...filteredData.home_goals) 
+                        : 0;
+                    const maxAwayGoals = filteredData.away_goals.length > 0 
+                        ? Math.max(...filteredData.away_goals) 
+                        : 0;
+                    
+                    // Update plot title with season year
+                    plot.title.text = `League ${league_tier} season ${seasonStart}`;
+                    
+                    // Update source data - this will trigger plot redraw
+                    source.data = filteredData;
+                    
+                    // Explicitly trigger change event to ensure plot updates
+                    source.change.emit();
+                    
+                    // Configure axis tick marks to show integer values
+                    if (maxHomeGoals >= 0) {
+                        const xTicks = [];
+                        for (let i = 0; i <= maxHomeGoals; i++) {
+                            xTicks.push(i);
+                        }
+                        plot.xaxis.ticker = new Bokeh.FixedTicker({ ticks: xTicks });
+                    }
+                    
+                    if (maxAwayGoals >= 0) {
+                        const yTicks = [];
+                        for (let i = 0; i <= maxAwayGoals; i++) {
+                            yTicks.push(i);
+                        }
+                        plot.yaxis.ticker = new Bokeh.FixedTicker({ ticks: yTicks });
+                    }
+                    
+                    // Set axis limits with small padding
+                    plot.x_range.start = -0.5;
+                    plot.x_range.end = maxHomeGoals + 0.5;
+                    plot.y_range.start = -0.5;
+                    plot.y_range.end = maxAwayGoals + 0.5;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+}
+
+class BokehTrendsPlot {
+    // Constructor: Initialize the trends plot with scatter plots, regression
+    // lines, and confidence bands for multiple y-axes
+    // Parameters:
+    //   chart_div_id: String ID of the HTML element where the plot will be rendered
+    //   x_axis_title: String name of the x-axis data field (e.g., 'total_market_value')
+    //   y_axes: Array of y-axis names (e.g., ['for_goals', 'against_goals', 'net_goals'])
+    //   callback_url: String URL template for fetching data (will receive league_tier and season_start)
+    //   title: String to display as the overall plot title
+    constructor({
+        chart_div_id,
+        x_axis_title,
+        y_axes,
+        callback_url,
+        title,
+    }) {
+        // Store configuration for later use
+        this.chart_div_id = chart_div_id;
+        this.x_axis_title = x_axis_title;
+        this.y_axes = y_axes;
+        this.callback_url = callback_url;
+        this.title = title;
+
+        // Calculate height for each plot (divide total height by number of y-axes)
+        const PLOT_HEIGHT = 400;
+        const height_per_plot = Math.floor(PLOT_HEIGHT / y_axes.length);
+
+        // Create a Bokeh figure for each y-axis
+        this.plots = [];
+        this.sources = {};
+        this.scatter_renderers = {};
+        this.line_renderers = {};
+        this.band_renderers = {};
+
+        // Create initial empty data structure
+        const zero_data = {
+            'club_name': [],
+            [x_axis_title]: [],
+        };
+        // Add y-axis fields to the data structure
+        for (const y_axis of y_axes) {
+            zero_data[y_axis] = [];
+            zero_data[y_axis + '_fit'] = [];
+            zero_data[y_axis + '_fit_lower'] = [];
+            zero_data[y_axis + '_fit_upper'] = [];
+        }
+
+        // Create separate data sources for each plot to avoid document conflicts
+        // We'll update them all together when data arrives
+        this.sources = {};
+        for (const y_axis of y_axes) {
+            this.sources[y_axis] = new Bokeh.ColumnDataSource({
+                data: { ...zero_data }
+            });
+        }
+
+        // Create a plot for each y-axis
+        for (let i = 0; i < y_axes.length; i++) {
+            const y_axis = y_axes[i];
+            const is_last = (i === y_axes.length - 1);
+
+            // Create a Bokeh figure for this y-axis
+            const plot = Bokeh.Plotting.figure({
+                title: "Wait while I call the database & get the data",
+                sizing_mode: "stretch_width",
+                toolbar_location: "right",
+                // Only show x-axis label on the last plot
+                x_axis_label: is_last ? x_axis_title.replaceAll('_', ' ') : null,
+                y_axis_label: y_axis.replaceAll('_', ' '),
+                // Add extra height to last plot to accommodate x-axis label
+                height: is_last ? height_per_plot + 40 : height_per_plot,
+            });
+
+            // Hide x-axis on all plots except the last one
+            if (!is_last) {
+                plot.xaxis.visible = false;
+            }
+
+            // Get the data source for this plot
+            const plot_source = this.sources[y_axis];
+
+            // Create scatter plot for data points
+            const scatter_renderer = plot.scatter({
+                x: { field: x_axis_title },
+                y: { field: y_axis },
+                source: plot_source,
+                size: 8,
+                alpha: 0.6,
+            });
+            this.scatter_renderers[y_axis] = scatter_renderer;
+
+            // Create regression line
+            const line_renderer = plot.line({
+                x: { field: x_axis_title },
+                y: { field: y_axis + '_fit' },
+                source: plot_source,
+                line_width: 2,
+                line_color: "blue",
+            });
+            this.line_renderers[y_axis] = line_renderer;
+
+            // Create confidence band
+            const band = new Bokeh.Band({
+                base: { field: x_axis_title },
+                lower: { field: y_axis + '_fit_lower' },
+                upper: { field: y_axis + '_fit_upper' },
+                source: plot_source,
+                fill_alpha: 0.05,
+                fill_color: "blue",
+                line_color: "blue",
+            });
+            plot.add_layout(band);
+            this.band_renderers[y_axis] = band;
+
+            // Create hover tooltips showing club name, x_field, and all y values
+            const hover_tips = [
+                ["Club", "@club_name"],
+                [x_axis_title.replaceAll('_', ' '), "@" + x_axis_title]
+            ];
+            // Add all y-axis values to hover tooltips
+            for (const y_axis_name of y_axes) {
+                hover_tips.push([
+                    y_axis_name.replaceAll('_', ' '),
+                    "@" + y_axis_name
+                ]);
+            }
+
+            const hover = new Bokeh.HoverTool({
+                tooltips: hover_tips,
+                renderers: [scatter_renderer]
+            });
+            plot.add_tools(hover);
+
+            this.plots.push(plot);
+        }
+
+        // Create a container div for the plots
+        const container = document.getElementById(chart_div_id);
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.width = '100%';
+        
+        // Create individual divs for each plot
+        // Since each plot now has its own data source, they can be shown separately
+        this.plotContainers = [];
+        this.plots.forEach((plot) => {
+            const plotDiv = document.createElement('div');
+            plotDiv.style.width = '100%';
+            container.appendChild(plotDiv);
+            this.plotContainers.push(plotDiv);
+            // Show each plot - they can be in separate documents now
+            Bokeh.Plotting.show(plot, plotDiv);
+        });
+    }
+
+    // Update method: Updates the plots with data from the API
+    // Parameters:
+    //   league_tier: Integer representing league tier (1-4)
+    //   season_start: Integer representing season start year
+    update(league_tier, season_start) {
+        // Build the callback URL with league_tier and season_start as path parameters
+        // The callback_url should be a base URL pattern or we construct it from callback name
+        let callbackUrl;
+        if (this.callback_url.includes('/')) {
+            // If callback_url is already a URL pattern, replace placeholders
+            callbackUrl = this.callback_url
+                .replace('<int:league_tier>', league_tier)
+                .replace('<int:season_start>', season_start);
+        } else {
+            // If callback_url is a callback name, construct the URL
+            const urlPath = this.callback_url.replace(/_/g, '-');
+            callbackUrl = `/goals/${urlPath}/${league_tier}/${season_start}/`;
+        }
+        
+        // Update plot titles with loading message
+        for (const y_axis of this.y_axes) {
+            const plot = this.plots[this.y_axes.indexOf(y_axis)];
+            plot.title.text = "Loading data...";
+        }
+
+        // Fetch data from the API
+        fetch(callbackUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                // Check if there's an error in the response
+                if (responseData.error) {
+                    console.error('Error from API:', responseData.error);
+                    // Update plot titles with error message
+                    for (const y_axis of this.y_axes) {
+                        const plot = this.plots[this.y_axes.indexOf(y_axis)];
+                        plot.title.text = `Error: ${responseData.error}`;
+                    }
+                    return;
+                }
+
+                // Extract the data from the response
+                const apiData = responseData;
+
+                // Update plot titles with r2 and p-value
+                for (const y_axis of this.y_axes) {
+                    const plot = this.plots[this.y_axes.indexOf(y_axis)];
+                    const r2 = apiData[y_axis + '_r2'];
+                    const pvalue = apiData[y_axis + '_pvalue'];
+                    const xField = this.x_axis_title.replaceAll('_', ' ');
+                    const yAxisLabel = y_axis.replaceAll('_', ' ');
+                    plot.title.text = (
+                        `${yAxisLabel} vs ${xField} for league ${league_tier} ` +
+                        `and season starting in ${season_start} ` +
+                        `R-squared: ${r2.toFixed(2)}, ` +
+                        `p-value: ${pvalue.toFixed(2)}`
+                    );
+                }
+
+                // Prepare data for the shared source
+                // Filter out r2 and pvalue scalars to make arrays the same size
+                const excluded_keys = [];
+                for (const y_axis of this.y_axes) {
+                    excluded_keys.push(y_axis + '_r2');
+                    excluded_keys.push(y_axis + '_pvalue');
+                }
+
+                const source_data = {};
+                for (const key in apiData) {
+                    if (!excluded_keys.includes(key)) {
+                        source_data[key] = apiData[key];
+                    }
+                }
+
+                // Update all data sources with the same data
+                // Each plot has its own source, but we update them all together
+                for (const y_axis of this.y_axes) {
+                    this.sources[y_axis].data = source_data;
+                    // Trigger change event to ensure plot updates
+                    this.sources[y_axis].change.emit();
+                }
+
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                // Update plot titles with error message
+                for (const y_axis of this.y_axes) {
+                    const plot = this.plots[this.y_axes.indexOf(y_axis)];
+                    plot.title.text = `Error loading data: ${error.message}`;
+                }
+            });
+    }
+}
+
 // Export the class for use in other modules
-export { BokehLinesPlot, BokehViolinsPlot };
+export { BokehLinesPlot, BokehViolinsPlot, BokehScoreHeatmap, BokehTrendsPlot };
 

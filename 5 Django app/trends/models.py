@@ -1,3 +1,10 @@
+"""
+Models for the trends app.
+
+This module contains Django models and custom managers for analyzing
+football match trends, including attendance, goals, home advantage,
+discipline metrics, and other statistical measures over time.
+"""
 from django.db import models
 from django.db.models import (
     Avg,

@@ -26,10 +26,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import (
-    AttendanceViolin,
-    LeagueManager,
-)
+from .models import AttendanceViolin, LeagueManager
 
 PLOT_HEIGHT = 400
 
@@ -48,8 +45,8 @@ def attendance_over_time_mean_json(
         request: HTTP request object
 
     Returns:
-        JsonResponse: JSON response containing mean attendance data with
-        fields: league_tier, season_start, and mean_attendance
+        JsonResponse: JSON response containing mean attendance data
+        with fields: league_tier, season_start, and mean_attendance
     """
     logger = logging.getLogger(__name__)
     try:
@@ -82,8 +79,8 @@ def attendance_over_time_mean_json(
         )
         error_message = (
             f"Error retrieving mean attendance data. "
-            f"Exception occurred at line {line_number}: {str(e)}. "
-            f"Line content: {error_line}"
+            f"Exception occurred at line {line_number}: "
+            f"{str(e)}. Line content: {error_line}"
         )
         logger.error(error_message)
         return JsonResponse(
@@ -105,8 +102,8 @@ def attendance_over_time_total_json(
         request: HTTP request object
 
     Returns:
-        JsonResponse: JSON response containing total attendance data with
-        fields: league_tier, season_start, and total_attendance
+        JsonResponse: JSON response containing total attendance data
+        with fields: league_tier, season_start, and total_attendance
     """
     logger = logging.getLogger(__name__)
     try:
@@ -139,8 +136,8 @@ def attendance_over_time_total_json(
         )
         error_message = (
             f"Error retrieving total attendance data. "
-            f"Exception occurred at line {line_number}: {str(e)}. "
-            f"Line content: {error_line}"
+            f"Exception occurred at line {line_number}: "
+            f"{str(e)}. Line content: {error_line}"
         )
         logger.error(error_message)
         return JsonResponse(
@@ -150,7 +147,9 @@ def attendance_over_time_total_json(
         )
 
 @login_required
-def attendance_over_time(request: HttpRequest) -> HttpResponse:
+def attendance_over_time(
+    request: HttpRequest,
+) -> HttpResponse:
     """
     Display a Bokeh chart showing attendance trends over time from the
     Football database.

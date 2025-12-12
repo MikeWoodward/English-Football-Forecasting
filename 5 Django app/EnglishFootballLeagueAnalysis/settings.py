@@ -20,7 +20,8 @@ if not SECRET_KEY:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG is False when RENDER_EXTERNAL_HOSTNAME is set (production)
-DEBUG = True #False # os.environ.get('RENDER_EXTERNAL_HOSTNAME') is None
+# False # os.environ.get('RENDER_EXTERNAL_HOSTNAME') is None
+DEBUG = os.environ.get('RENDER_EXTERNAL_HOSTNAME') is None
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -91,16 +92,28 @@ DATABASES = {
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': (
+            'django.contrib.auth.password_validation.'
+            'UserAttributeSimilarityValidator'
+        ),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': (
+            'django.contrib.auth.password_validation.'
+            'MinimumLengthValidator'
+        ),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': (
+            'django.contrib.auth.password_validation.'
+            'CommonPasswordValidator'
+        ),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': (
+            'django.contrib.auth.password_validation.'
+            'NumericPasswordValidator'
+        ),
     },
 ]
 
@@ -119,11 +132,15 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Enable WhiteNoise for static files in production
-# This production code might break development mode, so we check whether we're in DEBUG mode
+# This production code might break development mode, so we check whether
+# we're in DEBUG mode
 if not DEBUG:
-    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
-    # and renames the files with unique names for each version to support long-term caching
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # Enable the WhiteNoise storage backend, which compresses static
+    # files to reduce disk use and renames the files with unique names
+    # for each version to support long-term caching
+    STATICFILES_STORAGE = (
+        'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    )
 else:
     # In development, use default static files storage
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
