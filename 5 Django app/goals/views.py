@@ -312,14 +312,18 @@ def money_and_goals(request):
         'max_year': max_year,
         'current_year': max_year,
         'description': """
-        This chart shows the relationship between the tenure of clubs
-        in a league and the number of goals scored, conceded, and net
-        goals. Tenure means the number of contguous seasons a club has
-        been in a league. <br/><br/>
-        The r-squared values show that although tenure is factor for
-        goals scored, it's not the only factor.The p-values show that
-        the relationship is mostly statistically significant.
+        This chart shows the relationship between the total market value
+        of clubs at the start of a season and the number of goals scored,
+        conceded, and net goals in the top four tiers of the English
+        football league. <br/><br/>
+        The r-squared values show that although money is an important
+        factor for goals scored, it's not the only factor. The p-values
+        show that the relationship is mostly tatistically significant.
         <br/><br/>
+        The r-squared values are higher for the Premier League (tier 1)
+        and higher for more recent seasons. It's well-known that more
+        money is coming into the game, and we can clearly see the effect
+        of money inequality in terms of goals scored.
         """.replace('\n', '').replace("<br/>", "\n")
     }
     return render(request, 'goals/chart_detail.html', context)
@@ -415,18 +419,13 @@ def tenure_and_goals(request):
         'max_year': max_year,
         'current_year': max_year,
         'description': """
-        This chart shows the relationship between the total market value
-        of clubs at the start of a season and the number of goals scored,
-        conceded, and net goals in the top four tiers of the English
-        football league. <br/><br/>
-        The r-squared values show that although money is an important
-        factor for goals scored, it's not the only factor. The p-values
-        show that the relationship is mostly tatistically significant.
-        <br/><br/>
-        The r-squared values are higher for the Premier League (tier 1)
-        and higher for more recent seasons. It's well-known that more
-        money is coming into the game, and we can clearly see the effect
-        of money inequality in terms of goals scored.
+        This chart shows the relationship between the tenure of clubs
+        in a league and the number of goals scored, conceded, and net
+        goals. Tenure means the number of contguous seasons a club has
+        been in a league. <br/><br/>
+        The r-squared values show that although tenure is factor for
+        goals scored, it's not the only factor. The p-values show that
+        the relationship is mostly statistically significant.
         """.replace('\n', '').replace("<br/>", "\n")
     }
     return render(request, 'goals/chart_detail.html', context)
@@ -519,14 +518,14 @@ def mean_age_and_goals(request):
         'max_year': max_year,
         'current_year': max_year,
         'description': """
-        This chart shows the relationship between the mean age of clubs
+        This chart shows the relationship between the mean age of a 
+        club's players 
         at the start of a season and the number of goals scored, conceded,
         and net goals in the top four tiers of the English football
         league. <br/><br/>
         The the curve slope and the r-squared values show club mean age
         only has a slight, if any, effect on goals scored. The p-values
         show that the relationship is mostly statistically insignificant.
-        <br/><br/>
         """.replace('\n', '').replace("<br/>", "\n")
     }
     return render(request, 'goals/chart_detail.html', context)
@@ -583,7 +582,6 @@ def foreigner_count_and_goals(request):
     Returns:
         HTTP response with foreigner count and goals chart page
     """
-    # TODO: Implement foreigner count and goals analysis
     # Get the range of seasons for which foreigner count data exists
     min_season, max_season = (
         ClubSeason.objects.get_club_foreigner_count_season_min_max()
@@ -622,10 +620,11 @@ def foreigner_count_and_goals(request):
         This chart shows the relationship between the foreigner count of
         clubs at the start of a season and the number of goals scored,
         conceded, and net goals in the top four tiers of the English
-        football league. <br/><br/>
+        football league. Foreigner count means the number of 
+        players born outside England.<br/><br/>
         The slope and the r-squared values show that foreigner count is
         mostly not a factor. The p-values show that the relationship is
-        mostly statistically insignificant. <br/><br/>
+        mostly statistically insignificant. 
         """.replace('\n', '').replace("<br/>", "\n")
     }
     return render(request, 'goals/chart_detail.html', context)
