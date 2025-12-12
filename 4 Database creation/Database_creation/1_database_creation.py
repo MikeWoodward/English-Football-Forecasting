@@ -54,12 +54,7 @@ def create_database_if_not_exists(
     try:
         # Connect to the default 'postgres' database to create new database
         # Replace the database name in the connection string with 'postgres'
-        postgres_connection_string = re.sub(
-            r'/([^/]+)$',
-            '/postgres',
-            db_connection_string
-        )
-        conn = psycopg2.connect(postgres_connection_string)
+        conn = psycopg2.connect(db_connection_string)
         conn.autocommit = True  # Required for CREATE DATABASE
         cursor = conn.cursor()
         
