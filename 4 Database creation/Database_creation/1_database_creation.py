@@ -798,6 +798,11 @@ if __name__ == "__main__":
     # Initialize logging before any operations
     setup_logging()
 
+    # Are we running the script to populate the local or the remote database?
+    local = True
+
+    logging.info(f"Running script to populate the {'local' if local else 'remote'} database")
+
     try:
         # Get the current script's directory and navigate to Django app folder
         current_dir = Path(__file__).resolve().parent
@@ -812,10 +817,14 @@ if __name__ == "__main__":
             )
         
         load_dotenv(dotenv_path=env_path)
-        db_connection_string = os.environ.get('DATABASE_URL_REMOTE')
+
+        # Set either DATABASE_URL_REMOTE or DATABASE_URL_LOCAL environment variable
+        database_url_key = 'DATABASE_URL_LOCAL' if local else 'DATABASE_URL_REMOTE'
+        db_connection_string = os.environ.get(database_url_key)
+
         if not db_connection_string:
             raise ValueError(
-                "DATABASE_URL_REMOTE environment variable is not set in the "
+                f"{database_url_key} environment variable is not set in the "
                 ".env file"
             )
         

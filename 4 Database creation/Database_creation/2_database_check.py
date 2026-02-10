@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 from typing import Dict, Any, List, Tuple
 from decouple import Config, RepositoryEnv
+from urllib.parse import urlparse
+from dotenv import load_dotenv
 
 
 def setup_logging() -> None:
@@ -406,20 +408,35 @@ def generate_database_summary(*, connection_params: Dict[str, Any]) -> None:
 if __name__ == "__main__":
     setup_logging()
     
-    # Locate .env file - it's in the 5 Django app directory
-    ENV_DIR = Path(__file__).resolve().parent.parent.parent / "5 Django app"
+    # Are we running the script to populate the local or the remote database?
+    local = True
 
-    # Not entirely sure this is needed - but it resolved a bug where the .env 
-    # file was not being read.
-    config = Config(RepositoryEnv(os.path.join(ENV_DIR, ".env")))
+    current_dir = Path(__file__).resolve().parent
+    project_root = current_dir.parent.parent
+    django_app_path = project_root / "5 Django app"
+    env_path = django_app_path / ".env"
+    
+    if not env_path.exists():
+        raise FileNotFoundError(
+            f".env file not found at: {env_path}. "
+            f"Please ensure the file exists in the Django app folder."
+        )
+    
+    load_dotenv(dotenv_path=env_path)
+
+    # Set either DATABASE_URL_REMOTE or DATABASE_URL_LOCAL environment variable
+    database_url_key = 'DATABASE_URL_LOCAL' if local else 'DATABASE_URL_REMOTE'
+    db_connection_string = os.environ.get(database_url_key)
+
+    parsed_url = urlparse(db_connection_string)
 
     # Database connection parameters
     connection_params = {
-        'host':  config('FOOTBALL_HOST'),
-        'port': int(config('FOOTBALL_PORT')),
-        'database': config('FOOTBALL_NAME'),
-        'user': config('FOOTBALL_USER'),
-        'password': config('FOOTBALL_PASSWORD')
+        'host': parsed_url.hostname,
+        'port': parsed_url.port,
+        'database': parsed_url.path[1:],
+        'user': parsed_url.username,
+        'password': parsed_url.password
     }
     
     try:

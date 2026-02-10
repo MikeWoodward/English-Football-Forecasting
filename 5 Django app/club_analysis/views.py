@@ -16,6 +16,7 @@ from django.shortcuts import render
 from google import genai
 # Import the specific APIError from the SDK
 from google.genai.errors import APIError
+from google.genai import types
 from goals.models import (
     ClubHistory,
     ClubSeason,
@@ -44,14 +45,14 @@ def club_league_performance(request: HttpRequest):
         .distinct()
         .order_by('club_name')
     )
-    
+
     selected_club: Optional[str] = request.GET.get('club')
-    
+
     context: Dict[str, Any] = {
         'clubs': clubs,
         'selected_club': selected_club,
     }
-    
+
     if selected_club:
         # Get the modern_name for the selected club
         modern_name_record = (
@@ -59,10 +60,10 @@ def club_league_performance(request: HttpRequest):
             .filter(club_name=selected_club)
             .first()
         )
-        
+
         if modern_name_record:
             modern_name = modern_name_record.modern_name
-            
+
             # Get all club names that share the same modern_name
             all_club_names = (
                 ClubHistory.objects
@@ -70,24 +71,24 @@ def club_league_performance(request: HttpRequest):
                 .values_list('club_name', flat=True)
                 .distinct()
             )
-            
+
             # Get club history data
             club_history_data = get_club_history_data(
                 selected_club,
                 modern_name
             )
-            
+
             # Get league tier data for bar chart
             league_tier_data = get_league_tier_data(all_club_names)
-            
+
             # Get match data grouped by season
             match_data_by_season = get_match_data_by_season(all_club_names)
-            
+
             # Create bar chart
             chart_script, chart_div = create_league_tier_chart(
                 league_tier_data
             )
-            
+
             context.update({
                 'modern_name': modern_name,
                 'club_history_data': club_history_data,
@@ -96,7 +97,7 @@ def club_league_performance(request: HttpRequest):
                 'chart_script': chart_script,
                 'chart_div': chart_div,
             })
-    
+
     return render(
         request,
         'club_analysis/club_league_performance.html',
@@ -110,7 +111,7 @@ def club_league_season_analysis(request: HttpRequest):
     """
     # Check if GOOGLE_API_KEY is defined
     has_api_key = bool(os.environ.get('GOOGLE_API_KEY'))
-    
+
     # Handle AJAX request for seasons (only if API key is available)
     if request.method == 'GET' and request.GET.get('club'):
         if not has_api_key:
@@ -129,7 +130,7 @@ def club_league_season_analysis(request: HttpRequest):
             .order_by('league__season')
         )
         return JsonResponse({'seasons': list(seasons)})
-    
+
     # Get all unique club names from club_history, sorted alphabetically
     # (only if API key is available)
     clubs = []
@@ -140,12 +141,12 @@ def club_league_season_analysis(request: HttpRequest):
             .distinct()
             .order_by('club_name')
         )
-    
+
     context: Dict[str, Any] = {
         'has_api_key': has_api_key,
         'clubs': clubs,
     }
-    
+
     return render(
         request,
         'club_analysis/club_league_season_analysis.html',
@@ -169,11 +170,11 @@ def get_club_season_analysis(request: HttpRequest):
             },
             status=500
         )
-    
+
     # Get club and season from request
     club = request.GET.get('club', '')
     season = request.GET.get('season', '')
-    
+
     if not club or not season:
         return JsonResponse(
             {
@@ -182,7 +183,7 @@ def get_club_season_analysis(request: HttpRequest):
             },
             status=400
         )
-    
+
     try:
 
         # This ensures the model returns a valid, predictable JSON object.
@@ -198,41 +199,45 @@ def get_club_season_analysis(request: HttpRequest):
 
         # Build prompt
         prompt: str = (
-            f'Using only soccer websites, give me an analysis of the '
-            f'English soccer team {club}\'s season {season}. '
-            'The analysis MUST be returned as a JSON object, strictly '
-            'following the provided schema. '
-            'The analysis should include: '
-            '* Domestic league and cup performance. Include best and '
-            'worst results. (HTML string). '
-            '* International performance ("No international games played." '
-            'if no games) (HTML string). '
-            '* Team notes (best players, team and manager changes) '
-            '(HTML string). '
-            '* Team photos (if you can definitely find photos for this '
-            'team for this season, include them as links. If not, say '
-            'so.) '
-            '* Any notable drama/scandals on or off the pitch '
-            '(HTML string).'
+            f"Using only soccer websites, give me an analysis of the "
+            f"English soccer team {club}'s season {season}. "
+            "The analysis should include: "
+            "* Domestic league and cup performance. Include best and "
+            "worst results. "
+            "* International performance. If no games played, say so. "
+            "* Team notes (best players, team and manager changes). "
+            "* Team photos (if you can definitely find photos for this "
+            "team for this season, include them as links. If not, say "
+            "so.) "
+            "* Any notable drama/scandals on or off the pitch "
         )
 
-        # Initialize Google AI client
+        model = "gemini-2.5-flash"
+
+        # Call the Gemini API using tools to search the web
         client = genai.Client(api_key=api_key)
-
-        # Configure the generation request
-        config = genai.types.GenerateContentConfig(
-            # CRITICAL: Specify JSON output format
-            response_mime_type="application/json",
-            # CRITICAL: Provide the TypedDict schema
-            response_schema=SoccerAnalysis,
-        )
-
-        # Send prompt to Gemini API
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
+        search_response = client.models.generate_content(
+            model=model,
             contents=prompt,
-            config=config,
+            config=types.GenerateContentConfig(
+                tools=[types.Tool(google_search=types.GoogleSearch())]
+            )
         )
+
+        # Format the response as a JSON object
+        format_prompt = (
+            f"Format this information as JSON: {search_response.text}"
+        )
+        formatted_response = client.models.generate_content(
+            model=model,
+            contents=format_prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=SoccerAnalysis
+            )
+        )
+        # Parse the JSON response
+        club_season = json.loads(formatted_response.text)
 
     except APIError as e:
         # Handle API-specific errors (e.g., authentication, rate
@@ -253,12 +258,7 @@ def get_club_season_analysis(request: HttpRequest):
             status=500
         )
 
-
     try:
-        # Parse the JSON response from the API
-        response_text = response.text
-        club_season = json.loads(response_text)
-
         # Create HTML string
         html_content = (
             f'<body>\n'
@@ -307,7 +307,7 @@ def get_club_history_data(
         .filter(modern_name=modern_name)
         .order_by('year_changed')
     )
-    
+
     return [
         {
             'year': record.year_changed,
@@ -342,7 +342,7 @@ def get_league_tier_data(
         )
         .order_by('league__season')
     )
-    
+
     result = []
     for cs in club_seasons:
         season = cs['league__season']
@@ -353,7 +353,7 @@ def get_league_tier_data(
             'season_start': season_start,
             'league_tier': cs['league__league_tier'],
         })
-    
+
     return result
 
 
@@ -386,15 +386,15 @@ def get_match_data_by_season(
         )
         .order_by('league__season', 'match_date')
     )
-    
+
     # Group by season
     matches_by_season: Dict[str, List[Dict[str, Any]]] = {}
-    
+
     for match in matches:
         season = match['league__season']
         if season not in matches_by_season:
             matches_by_season[season] = []
-        
+
         matches_by_season[season].append({
             'season': season,
             'league_tier': match['league__league_tier'],
@@ -404,11 +404,11 @@ def get_match_data_by_season(
             'away_goals': match['away_goals'],
             'match_date': match['match_date'],
         })
-    
+
     # Sort each season's matches by match_date
     for season in matches_by_season:
         matches_by_season[season].sort(key=lambda x: x['match_date'])
-    
+
     return matches_by_season
 
 
@@ -433,19 +433,19 @@ def create_league_tier_chart(
         plot.y_range.flipped = True
         script, div = components(plot)
         return script, div
-    
+
     # Sort data by season_start to ensure proper ordering
     sorted_data = sorted(league_tier_data, key=lambda x: x['season_start'])
-    
+
     # Prepare data for chart
     season_starts = [d['season_start'] for d in sorted_data]
     league_tiers = [d['league_tier'] for d in sorted_data]
-    
+
     source = ColumnDataSource({
         'season_start': season_starts,
         'league_tier': league_tiers,
     })
-    
+
     plot = figure(
         title='League Tier Over Time',
         x_axis_label='Season Start',
@@ -454,10 +454,10 @@ def create_league_tier_chart(
         sizing_mode="stretch_width",
         toolbar_location=None,
     )
-    
+
     # Reverse y-axis so league 1 is at the top
     plot.y_range.flipped = True
-    
+
     # Create bar chart
     plot.vbar(
         x='season_start',
@@ -467,7 +467,7 @@ def create_league_tier_chart(
         fill_color='lightgreen',
         line_color='lightgreen',
     )
-    
+
     # Add hover tool
     hover = HoverTool(
         tooltips=[
@@ -476,11 +476,11 @@ def create_league_tier_chart(
         ]
     )
     plot.add_tools(hover)
-    
+
     # Set y-axis to show integer tiers
     if league_tiers:
         max_tier = max(league_tiers)
         plot.yaxis.ticker = list(range(1, max_tier + 2))
-    
+
     script, div = components(plot)
     return script, div

@@ -4,7 +4,7 @@ Django settings for EnglishFootballLeagueAnalysis project.
 
 import os
 from pathlib import Path
-from decouple import Config
+from decouple import config
 
 import dj_database_url
 
@@ -12,20 +12,15 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
-if not SECRET_KEY:
-    raise ValueError(
-        'SECRET_KEY environment variable is not set'
-    )
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG is False when RENDER_EXTERNAL_HOSTNAME is set (production)
-# False # os.environ.get('RENDER_EXTERNAL_HOSTNAME') is None
-DEBUG = os.environ.get('RENDER_EXTERNAL_HOSTNAME') is None
+RENDER_EXTERNAL_HOSTNAME = config('RENDER_EXTERNAL_HOSTNAME', default=None)
+DEBUG = RENDER_EXTERNAL_HOSTNAME is None
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
@@ -82,12 +77,14 @@ WSGI_APPLICATION = 'EnglishFootballLeagueAnalysis.wsgi.application'
 # Database
 DATABASES = {
     'default': dj_database_url.config(
-        default=(
-            os.environ.get('DATABASE_URL')
-        ),
+        default=config('DATABASE_URL_LOCAL'),
         conn_max_age=600
     )
 }
+
+# Google AI API Key
+# Load from .env and set in os.environ so views can access it
+os.environ['GOOGLE_API_KEY'] = config('GOOGLE_API_KEY', default='')
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
