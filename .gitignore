@@ -127,6 +127,7 @@ __pypackages__/
 *.xlsx
 /999 OLD - do not use
 *.gif
+6 FastAPI and Plotly app/
 5 Django app/env.example
 /999 Utility code
 /3 Analysis/Score distributions/Plots
