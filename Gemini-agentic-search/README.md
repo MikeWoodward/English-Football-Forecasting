@@ -1,8 +1,16 @@
 # Gemini agentic search
 
-Calls the Gemini API with Google Search grounding to run an internet search and return the top results (e.g. for "Mike Woodward").
+This repository is a small set of **test code** for getting an **agentic Gemini-based system** up and running.
 
-Uses the same Gemini service as the Django app: `google-genai`, model `gemini-2.5-flash`.
+It uses the Gemini API with Google Search grounding to run internet searches and return structured results (e.g. soccer season analyses), via the same Gemini client as the Django app: **google-genai**, model **gemini-2.5-flash**.
+
+## Project contents
+
+| File | Description |
+|------|-------------|
+| `hand_test.py` | Minimal check: loads `GOOGLE_API_KEY` from `.env`, calls Gemini with Google Search for a Wrexham AFC 2024–2025 analysis, parses JSON with a `SoccerAnalysis` Pydantic schema, and prints the result. |
+| `wrexham_season_report.py` | Full report: fetches the same analysis, validates against `SoccerAnalysis`, builds an HTML report, saves it as `wrexham_2024_2025_season.html`, and opens it in the default browser. |
+| `requirements.txt` | Dependencies: `google-genai`, `python-decouple`, `pydantic`. |
 
 ## Setup
 
@@ -21,7 +29,7 @@ Uses the same Gemini service as the Django app: `google-genai`, model `gemini-2.
 
 3. **Configure the API key**:
 
-   Copy `GOOGLE_API_KEY` from the Django app `.env` (in `5 Django app/.env`) into a `.env` file in this directory:
+   Copy `GOOGLE_API_KEY` from the Django app `.env` (e.g. `5 Django app/.env`) into a `.env` file in this directory:
 
    ```
    GOOGLE_API_KEY=your-key-here
@@ -33,10 +41,18 @@ Uses the same Gemini service as the Django app: `google-genai`, model `gemini-2.
 
 From this directory (with the venv activated):
 
-### Wrexham season report
+### Hand test (minimal check)
+
+```bash
+python hand_test.py
+```
+
+Loads the API key, calls Gemini with Google Search for Wrexham AFC 2024–2025, formats the response as JSON using the `SoccerAnalysis` schema, and prints each field to the console.
+
+### Wrexham season report (HTML report)
 
 ```bash
 python wrexham_season_report.py
 ```
 
-The script uses Gemini with Google Search grounding to fetch an analysis of Wrexham AFC's 2024-2025 season. The result is validated against a Pydantic schema (`SoccerAnalysis`), turned into an HTML page with headings for domestic performance, international performance, team notes, team photos, and notable events, then saved as `wrexham_2024_2025_season.html` and opened in your default browser.
+Uses Gemini with Google Search grounding to fetch an analysis of Wrexham AFC's 2024–2025 season. The result is validated against the `SoccerAnalysis` Pydantic schema, turned into an HTML page with sections for domestic performance, international performance, team notes, team photos, and notable events, then saved as `wrexham_2024_2025_season.html` and opened in your default browser.
